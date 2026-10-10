@@ -58,3 +58,5 @@ ziVpSNTx
 # Logs
 *.log
 logs/
+
+!functions/package-lock.json
