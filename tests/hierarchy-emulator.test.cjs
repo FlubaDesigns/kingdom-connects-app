@@ -131,6 +131,35 @@ test('business and church uploads require the actual owner or platform administr
   for (const path of ['businesses/business-one/logo.png','churches/church-one/logo.png']) {
     await assertFails(uploadBytes(storageRef(env.authenticatedContext('stranger').storage(),path),new Uint8Array([1])));
   }
-  await assertSucceeds(uploadBytes(storageRef(env.authenticatedContext('owner').storage(),'businesses/business-one/logo.png'),new Uint8Array([1])));
+  await assertFails(uploadBytes(storageRef(env.authenticatedContext('owner').storage(),'businesses/business-one/logo.png'),new Uint8Array([1])));
+  await assertSucceeds(uploadBytes(storageRef(env.authenticatedContext('platform').storage(),'businesses/business-one/logo.png'),new Uint8Array([1])));
   await assertSucceeds(uploadBytes(storageRef(env.authenticatedContext('pastor').storage(),'churches/church-one/logo.png'),new Uint8Array([1])));
+});
+
+
+test('business media backend checks live owner, parent, and account authority before writing or deleting', async () => {
+  const { createBusinessMediaService } = require('../functions/business-media');
+  const writes = [], deletes = [];
+  const media = createBusinessMediaService(db, { name: 'test-bucket', file: path => ({
+    save: async bytes => writes.push({path,size:bytes.length}), delete: async () => deletes.push(path)
+  }) });
+  const input = { action:'uploadBusinessMedia',businessId:'business-one',name:'photo.png',contentType:'image/png',data:'AQ==' };
+  const result = await media.execute(actor('owner'),input);
+  assert.equal(result.success,true); assert.equal(writes.length,1);
+  for (const uid of ['stranger','otherPastor','pastor']) await assert.rejects(media.execute(actor(uid),input),{status:403});
+  await db.doc('churches/church-one').update({listing_status:'suspended'});
+  await assert.rejects(media.execute(actor('owner'),input),{status:403});
+  await db.doc('churches/church-one').update({listing_status:'active'});
+  await db.doc('business_listings_public/business-one').update({platform_suspended:true});
+  await assert.rejects(media.execute(actor('owner'),input),{status:403});
+  await db.doc('business_listings_public/business-one').update({platform_suspended:false});
+  await db.doc('users/owner').update({account_status:'disabled'});
+  await assert.rejects(media.execute(actor('owner'),input),{status:403});
+  await db.doc('users/owner').update({account_status:'active'});
+  assert.equal(writes.length,1);
+  await assert.rejects(media.execute(actor('owner'),{...input,action:'deleteBusinessMedia',path:'businesses/someone-else/photo.png'}),{status:400});
+  await assert.rejects(media.execute(actor('owner'),{...input,type:'../elsewhere'}),{status:400});
+  await assert.rejects(media.execute(actor('owner'),{...input,contentType:'text/html'}),{status:400});
+  await media.execute(actor('owner'),{...input,action:'deleteBusinessMedia',path:result.path});
+  assert.deepEqual(deletes,[result.path]);
 });

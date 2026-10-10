@@ -11,14 +11,6 @@ service firebase.storage {
       return enabled() && (userData().get('role', '') in ['admin', 'platform_admin'] ||
         userData().get('roles', []).hasAny(['admin', 'platform_admin']));
     }
-    function churchEnabled(churchId) {
-      return churchId == null || firestore.get(/databases/(default)/documents/churches/$(churchId)).data.listing_status == 'active';
-    }
-    function businessOwner(businessId) {
-      let business = firestore.get(/databases/(default)/documents/business_listings_public/$(businessId)).data;
-      return enabled() && firestore.get(/databases/(default)/documents/business_listings_private/$(businessId)).data.owner_uid == request.auth.uid &&
-        !(business.listing_status in ['suspended', 'rejected']) && churchEnabled(business.get('church_id', null));
-    }
     function churchOwner(churchId) {
       let church = firestore.get(/databases/(default)/documents/churches/$(churchId)).data;
       return enabled() && church.admin_uid == request.auth.uid && !(church.listing_status in ['suspended', 'rejected']);
@@ -26,7 +18,9 @@ service firebase.storage {
     // Business photos, logos, videos
     match /businesses/{businessId}/{allPaths=**} {
       allow read: if true;
-      allow write: if admin() || businessOwner(businessId);
+      // Owner writes go through the authenticated hierarchy backend, which
+      // checks all four records without Storage's two-document limit.
+      allow write: if admin();
     }
     
     // Church media

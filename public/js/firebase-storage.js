@@ -74,41 +74,42 @@ export async function uploadBusinessImage(businessId, file, type = 'images', onP
     return { success: false, error: v.error, code: 'invalid/file' };
   }
   
-  const path = `businesses/${businessId}/${type}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-  const storageRef = ref(storage, path);
-  
-  const metadata = {
-    contentType: v.contentType || file.type || inferContentType(file) || 'application/octet-stream',
-    cacheControl: 'public,max-age=31536000'
-  };
-  
-  console.log('[STORAGE v17] Starting upload to:', path, 'contentType:', metadata.contentType);
-  
-  return new Promise((resolve) => {
-    const uploadTask = uploadBytesResumable(storageRef, file, metadata);
-    
-    uploadTask.on('state_changed',
-      (snapshot) => {
-        const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-        console.log('[STORAGE v17] Progress:', progress + '%');
-        if (onProgress) onProgress(progress);
-      },
-      (error) => {
-        console.error('[STORAGE v17] FAILED:', error.code, error.message);
-        resolve({ success: false, error: mapStorageError(error), code: error.code });
-      },
-      async () => {
-        try {
-          console.log('[STORAGE v17] Upload complete, getting URL...');
-          const url = await getDownloadURL(uploadTask.snapshot.ref);
-          console.log('[STORAGE v17] SUCCESS:', url.substring(0, 50) + '...');
-          resolve({ success: true, url, path: uploadTask.snapshot.ref.fullPath, name: file.name, size: file.size });
-        } catch (err) {
-          console.error('[STORAGE v17] URL fetch failed:', err.message);
-          resolve({ success: false, error: 'Upload succeeded but could not get URL', code: 'url/failed' });
-        }
-      }
-    );
+  try {
+    const data = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result).split(',')[1]);
+      reader.onerror = () => reject(new Error('Could not read this file.'));
+      reader.readAsDataURL(file);
+    });
+    return await businessMediaRequest({ action: 'uploadBusinessMedia', businessId,
+      type, name: file.name, contentType: v.contentType, data }, onProgress);
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+async function businessMediaRequest(body, onProgress) {
+  if (!auth.currentUser) throw new Error('You must be logged in to manage media.');
+  const token = await auth.currentUser.getIdToken();
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/hierarchy');
+    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.timeout = 120000;
+    if (onProgress) xhr.upload.onprogress = event => {
+      if (event.lengthComputable) onProgress(Math.min(99, Math.round(event.loaded / event.total * 100)));
+    };
+    xhr.onerror = () => reject(new Error('Network error. Please try again.'));
+    xhr.ontimeout = () => reject(new Error('Upload timed out. Please try again.'));
+    xhr.onload = () => {
+      let result;
+      try { result = JSON.parse(xhr.responseText); } catch { return reject(new Error('Unable to save media.')); }
+      if (xhr.status < 200 || xhr.status >= 300) return reject(new Error(result.error || 'Unable to save media.'));
+      if (onProgress) onProgress(100);
+      resolve(result);
+    };
+    xhr.send(JSON.stringify(body));
   });
 }
 
@@ -160,6 +161,9 @@ export async function uploadChurchImage(churchId, file, type = 'images', onProgr
 
 export async function deleteFile(filePath) {
   try {
+    if (filePath.startsWith('businesses/')) {
+      return await businessMediaRequest({ action: 'deleteBusinessMedia', businessId: filePath.split('/')[1], path: filePath });
+    }
     const fileRef = ref(storage, filePath);
     await deleteObject(fileRef);
     return { success: true };

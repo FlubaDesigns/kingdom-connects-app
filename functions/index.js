@@ -12,13 +12,17 @@ admin.initializeApp();
 const hierarchyPolicy = require('./hierarchy-policy');
 const { createHierarchyService } = require('./hierarchy-service');
 const hierarchy = createHierarchyService(admin.firestore(), () => admin.firestore.FieldValue.serverTimestamp());
+const { createBusinessMediaService } = require('./business-media');
+const businessMedia = createBusinessMediaService(admin.firestore(), admin.storage().bucket('kingdom-commerce.firebasestorage.app'));
 const { onDocumentUpdated } = require('firebase-functions/v2/firestore');
 
 exports.hierarchyAction = onRequest((req, res) => cors(req, res, async () => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Use POST.' });
   try {
     const { user } = await verifyAuth(req);
-    const result = await hierarchy.execute(user, req.body);
+    const result = ['uploadBusinessMedia', 'deleteBusinessMedia'].includes(req.body?.action)
+      ? await businessMedia.execute(user, req.body)
+      : await hierarchy.execute(user, req.body);
     if (req.body.action === 'setChurchStatus') await hierarchy.syncChurchBusinesses(result.churchId);
     res.json(result);
   } catch (error) {
