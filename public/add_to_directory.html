@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Sign Up - Kingdom Connects</title>
+  <meta name="description" content="Create your free Kingdom Connects account. Sign up as a member, add your business, or register your church.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+
+  <link rel="stylesheet" href="styles/layout.css?v=62">
+  <link rel="stylesheet" href="styles/theme.css?v=8">
+  <link rel="stylesheet" href="styles/buttons.css?v=8">
+  <link rel="stylesheet" href="styles/forms.css?v=8">
+  <link rel="stylesheet" href="styles/help-system.css?v=2">
+  <link rel="stylesheet" href="styles/overrides.css?v=8">
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+        <!-- Context Banner (shown when arriving from specific sources) -->
+        <div id="contextBanner" class="info-box gold-border mb-md hidden">
+          <p id="contextBannerText"></p>
+        </div>
+
+        <!-- Page Heading -->
+        <div class="text-center mb-lg">
+          <h1 class="gold-metallic mb-sm" id="pageTitle">Join Kingdom Connects</h1>
+          <p class="text-muted" id="pageSubtitle">Choose how you'd like to join our faith-based community</p>
+        </div>
+
+        <!-- 40/60 Split Layout -->
+        <div class="directory-split">
+          <!-- LEFT: Role Selection Buttons (40%) -->
+          <div class="directory-left">
+            <div class="action-cards-row" id="quickSelectButtons">
+              <button type="button" class="action-card" data-select-role="member">
+              <span class="card-help-icon" onclick="event.stopPropagation(); toggleCardTooltip(this);">?</span>
+              <span class="card-tooltip">Create a free account to save favorites, write reviews, and support local Christian businesses.</span>
+              <div class="action-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </div>
+              <span class="action-card-title">Member</span>
+              <span class="action-card-desc">Join free</span>
+            </button>
+            
+            <button type="button" class="action-card" data-select-role="business" data-select-tier="free">
+              <span class="card-help-icon" onclick="event.stopPropagation(); toggleCardTooltip(this);">?</span>
+              <span class="card-tooltip">Add your business to the directory for free. Get discovered by Christian consumers in your area.</span>
+              <div class="action-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                  <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+              </div>
+              <span class="action-card-title">Business</span>
+              <span class="action-card-desc">Free listing</span>
+            </button>
+            
+            <button type="button" class="action-card" data-select-role="business" data-select-tier="pro">
+              <span class="card-help-icon" onclick="event.stopPropagation(); toggleCardTooltip(this);">?</span>
+              <span class="card-tooltip">Premium listing with featured placement, photo gallery, up to 5 categories, and 10% of your subscription tithes to your church.</span>
+              <div class="action-card-icon gold-metallic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+              </div>
+              <span class="action-card-title gold-metallic">Business Pro</span>
+              <span class="action-card-desc">$8.99/mo</span>
+            </button>
+            
+            <button type="button" class="action-card" data-select-role="church">
+              <span class="card-help-icon" onclick="event.stopPropagation(); toggleCardTooltip(this);">?</span>
+              <span class="card-tooltip">Register your church to appear in the directory, receive tithing from Pro businesses, and get an admin dashboard.</span>
+              <div class="action-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M18 21V8a2 2 0 0 0-1-1.73l-5-3a2 2 0 0 0-2 0l-5 3A2 2 0 0 0 4 8v13"/>
+                  <path d="M4 21h16"/>
+                  <path d="M12 2v4"/>
+                  <path d="M10 12h4"/>
+                  <path d="M12 10v4"/>
+                </svg>
+              </div>
+              <span class="action-card-title">Church</span>
+              <span class="action-card-desc">Register free</span>
+            </button>
+            </div><!-- end action-cards-row -->
+            
+            <!-- Cinematic Image Area -->
+            <div class="directory-cinema" id="directoryCinema">
+              <img id="cinemaImage" src="" alt="" class="hidden">
+              <div id="cinemaPlaceholder" class="cinema-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <path d="M21 15l-5-5L5 21"/>
+                </svg>
+              </div>
+            </div>
+          </div><!-- end directory-left -->
+
+          <!-- RIGHT: Wizard/Form Area (60%) -->
+          <div class="directory-right" id="wizardContainer">
+            <!-- Placeholder shown before selection -->
+            <div id="wizardPlaceholder" class="card text-center">
+              <div class="opacity-50 mb-md">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                  <polyline points="10 17 15 12 10 7"/>
+                  <line x1="15" y1="12" x2="3" y2="12"/>
+                </svg>
+              </div>
+              <h3 class="gold-metallic mb-sm">Select an Option</h3>
+              <p class="text-muted">Choose from the options on the left to get started.</p>
+            </div>
+
+            <!-- Role detail cards (hidden, shown on selection for context) -->
+            <div id="roleSelectionCards" class="role-cards-grid hidden">
+          <!-- Member Card -->
+          <article class="card role-card" data-role="member">
+            <div class="role-card-header">
+              <svg class="role-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+              <span class="tier-badge free">Free</span>
+            </div>
+            <h3 class="gold-metallic">Become a Member</h3>
+            <p>Join the community, save favorites, and write reviews.</p>
+            <ul class="role-benefits">
+              <li>Browse businesses &amp; churches</li>
+              <li>Save your favorites</li>
+              <li>Write reviews</li>
+              <li>Support local Christian businesses</li>
+            </ul>
+            <button type="button" class="btn btn-block" data-select-role="member">Join Free</button>
+          </article>
+
+          <!-- Business Free Card -->
+          <article class="card role-card" data-role="business" data-tier="free">
+            <div class="role-card-header">
+              <svg class="role-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+              <span class="tier-badge free">Free</span>
+            </div>
+            <h3 class="gold-metallic">List Your Business</h3>
+            <p>Get discovered by Christian consumers in your area.</p>
+            <ul class="role-benefits">
+              <li>Basic directory listing</li>
+              <li>1 business category</li>
+              <li>Contact info &amp; address</li>
+              <li>Customer reviews</li>
+            </ul>
+            <button type="button" class="btn btn-block btn-outline" data-select-role="business" data-select-tier="free">List Free</button>
+          </article>
+
+          <!-- Business Pro Card -->
+          <article id="pro" class="card role-card featured" data-role="business" data-tier="pro">
+            <div class="role-card-header">
+              <svg class="role-icon gold-metallic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+              <span class="tier-badge pro">Pro</span>
+            </div>
+            <h3 class="gold-metallic">Pro Business Listing</h3>
+            <p>Maximum visibility &amp; priority placement.</p>
+            <ul class="role-benefits">
+              <li>Featured in search results</li>
+              <li>Up to 5 categories</li>
+              <li>Photo gallery &amp; custom page</li>
+              <li>10% of subscription tithes to your church</li>
+            </ul>
+            <p class="price-tag">$8.99/mo or $74.99/yr</p>
+            <button type="button" class="btn btn-block gold-gradient" data-select-role="business" data-select-tier="pro">Go Pro</button>
+          </article>
+
+          <!-- Church Card -->
+          <article class="card role-card" data-role="church">
+            <div class="role-card-header">
+              <svg class="role-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 21V8a2 2 0 0 0-1-1.73l-5-3a2 2 0 0 0-2 0l-5 3A2 2 0 0 0 4 8v13"/>
+                <path d="M4 21h16"/>
+                <path d="M12 2v4"/>
+                <path d="M10 12h4"/>
+                <path d="M12 10v4"/>
+              </svg>
+              <span class="tier-badge free">Free</span>
+            </div>
+            <h3 class="gold-metallic">Register a Church</h3>
+            <p>Add a church to the Kingdom Connects network.</p>
+            <ul class="role-benefits">
+              <li>Church appears in directory</li>
+              <li>Church receives 10% tithing</li>
+              <li>Church gets admin dashboard</li>
+              <li>Free for all churches</li>
+            </ul>
+            <button type="button" class="btn btn-block btn-outline" data-select-role="church">Register Church</button>
+          </article>
+            </div><!-- end roleSelectionCards -->
+
+            <!-- ==========================================
+                 FORM SECTION (Initially hidden until role selected)
+                 ========================================== -->
+            <article id="formCard" class="card form-container hidden">
+          <div class="form-header-row">
+            <span id="selectedRoleBadge" class="tier-badge"></span>
+          </div>
+          <h2 class="gold-metallic mb-md" id="formSectionTitle">Complete Your Registration</h2>
+          
+          <p class="text-sm opacity-70 mb-1"><span class="required">Required fields</span></p>
+          <form id="directoryForm" class="form-wrapper" novalidate>
+            
+            <!-- Hidden inputs for submission type and tier -->
+            <input type="hidden" name="submission_type" id="submissionType" value="member">
+            <input type="hidden" name="tier" id="submissionTier" value="free">
+
+            <hr class="form-divider hidden" id="topDivider">
+
+            <!-- ==========================================
+                 MEMBER PATH - 3-Step Wizard
+                 ========================================== -->
+            <div id="memberSection" class="conditional-fields">
+              <!-- Progress Steps -->
+              <div class="progress-bar-container mb-lg">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="memberProgressFill"></div>
+                </div>
+              </div>
+              <div class="progress-steps mb-lg" id="memberProgressSteps">
+                <div class="progress-step active" data-step="1">
+                  <div class="step-number">1</div>
+                  <div class="step-label">Account</div>
+                </div>
+                <div class="progress-step" data-step="2">
+                  <div class="step-number">2</div>
+                  <div class="step-label">Church</div>
+                </div>
+                <div class="progress-step" data-step="3">
+                  <div class="step-number">3</div>
+                  <div class="step-label">Review</div>
+                </div>
+              </div>
+
+              <div class="form-steps-container">
+                <!-- STEP 1: Account Setup -->
+                <div class="form-step active" data-step="1" id="memberStep1">
+                  <h2 class="gold-metallic mb-md">Create Your Account</h2>
+              
+                  <div class="form-field">
+                    <label for="member_name" class="required">Name</label>
+                    <input type="text" id="member_name" class="input-dark" required>
+                  </div>
+
+                  <div class="form-field">
+                    <label for="member_email" class="required">Email</label>
+                    <input type="email" id="member_email" class="input-dark" autocomplete="email" required>
+                  </div>
+
+                  <div class="form-field grid-2">
+                    <div>
+                      <label class="required" for="member_password">Password</label>
+                      <div class="password-field-wrapper">
+                        <input type="password" id="member_password" name="password" autocomplete="new-password" required>
+                        <button type="button" class="password-toggle-btn" id="toggleMember_Password" aria-label="Show password">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                        </button>
+                      </div>
+                      <div id="passwordRequirements" class="password-requirements hidden"></div>
+                    </div>
+                    <div>
+                      <label class="required" for="member_confirmPassword">Confirm Password</label>
+                      <div class="password-field-wrapper">
+                        <input type="password" id="member_confirmPassword" name="confirmPassword" autocomplete="new-password" required>
+                        <button type="button" class="password-toggle-btn" id="toggleMember_ConfirmPassword" aria-label="Show password">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                        </button>
+                      </div>
+                      <div id="confirmPasswordError" class="error-message hidden">Passwords do not match</div>
+                    </div>
+                  </div>
+
+                  <div class="button-row mt-lg wizard-nav">
+                    <button type="button" class="wizard-next" data-wizard="member" data-action="next">Next</button>
+                  </div>
+                </div>
+
+                <!-- STEP 2: Church Connection -->
+                <div class="form-step" data-step="2" id="memberStep2">
+                  <h2 class="gold-metallic mb-md">Select Your Church</h2>
+              
+              <div>
+                <label for="church_selector" class="block font-bold required">Church Affiliation</label>
+                <select id="church_selector" class="input-dark" required>
+                  <option value="">Select Your Church</option>
+                  <option value="none">Not affiliated with a church</option>
+                  <option id="churchSelectorLoading" disabled>Loading churches...</option>
+                  <option value="nominate">My church isn't listed - nominate it</option>
+                </select>
+              </div>
+
+              <!-- Church Nomination Fields (Conditional) -->
+              <div id="nominationFields" class="conditional-fields hidden">
+                <h3 class="gold-metallic mb-md mt-md">Nominate Your Church</h3>
+                
+                <div>
+                  <label for="nomination_church_name" class="block font-bold required">Church Name</label>
+                  <input type="text" id="nomination_church_name" class="input-dark">
+                </div>
+
+                <div>
+                  <label for="nomination_state" class="block font-bold required">State</label>
+                  <select id="nomination_state" class="input-dark">
+                    <option value="">Select State</option>
+                    <option value="AL">Alabama</option>
+                    <option value="AK">Alaska</option>
+                    <option value="AZ">Arizona</option>
+                    <option value="AR">Arkansas</option>
+                    <option value="CA">California</option>
+                    <option value="CO">Colorado</option>
+                    <option value="CT">Connecticut</option>
+                    <option value="DE">Delaware</option>
+                    <option value="FL">Florida</option>
+                    <option value="GA">Georgia</option>
+                    <option value="HI">Hawaii</option>
+                    <option value="ID">Idaho</option>
+                    <option value="IL">Illinois</option>
+                    <option value="IN">Indiana</option>
+                    <option value="IA">Iowa</option>
+                    <option value="KS">Kansas</option>
+                    <option value="KY">Kentucky</option>
+                    <option value="LA">Louisiana</option>
+                    <option value="ME">Maine</option>
+                    <option value="MD">Maryland</option>
+                    <option value="MA">Massachusetts</option>
+                    <option value="MI">Michigan</option>
+                    <option value="MN">Minnesota</option>
+                    <option value="MS">Mississippi</option>
+                    <option value="MO">Missouri</option>
+                    <option value="MT">Montana</option>
+                    <option value="NE">Nebraska</option>
+                    <option value="NV">Nevada</option>
+                    <option value="NH">New Hampshire</option>
+                    <option value="NJ">New Jersey</option>
+                    <option value="NM">New Mexico</option>
+                    <option value="NY">New York</option>
+                    <option value="NC">North Carolina</option>
+                    <option value="ND">North Dakota</option>
+                    <option value="OH">Ohio</option>
+                    <option value="OK">Oklahoma</option>
+                    <option value="OR">Oregon</option>
+                    <option value="PA">Pennsylvania</option>
+                    <option value="RI">Rhode Island</option>
+                    <option value="SC">South Carolina</option>
+                    <option value="SD">South Dakota</option>
+                    <option value="TN">Tennessee</option>
+                    <option value="TX">Texas</option>
+                    <option value="UT">Utah</option>
+                    <option value="VT">Vermont</option>
+                    <option value="VA">Virginia</option>
+                    <option value="WA">Washington</option>
+                    <option value="WV">West Virginia</option>
+                    <option value="WI">Wisconsin</option>
+                    <option value="WY">Wyoming</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label for="nomination_phone" class="block font-bold required">Church Phone</label>
+                  <input type="text" id="nomination_phone" class="input-dark" placeholder="555-123-4567" autocomplete="tel">
+                </div>
+
+                <div>
+                  <label for="nomination_email" class="block font-bold required">Church Email</label>
+                  <input type="email" id="nomination_email" class="input-dark" placeholder="info@church.org">
+                </div>
+
+                <hr class="form-divider">
+
+                <div class="info-box gold-border">
+                  <p class="mb-sm"><strong>Your Information</strong></p>
+                  
+                  <div class="mb-md">
+                    <label for="nominator_name" class="block font-bold required">Your Name</label>
+                    <input type="text" id="nominator_name" class="input-dark" placeholder="First and Last Name">
+                  </div>
+                  
+                  <div class="mb-sm">
+                    <label class="block font-bold">Are you part of church leadership?</label>
+                    <div class="toggle-group mt-sm">
+                      <label class="toggle-option">
+                        <input type="radio" name="is_church_leader" id="is_leader_yes" value="yes">
+                        <span>Yes</span>
+                      </label>
+                      <label class="toggle-option">
+                        <input type="radio" name="is_church_leader" id="is_leader_no" value="no" checked>
+                        <span>No</span>
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div id="leaderPositionFields" class="mt-sm hidden">
+                    <label for="nomination_position" class="block font-bold required">Your Church Position</label>
+                    <select id="nomination_position" class="input-dark">
+                      <option value="">Select Your Position</option>
+                      <option value="Senior Pastor">Senior Pastor</option>
+                      <option value="Associate Pastor">Associate Pastor</option>
+                      <option value="Youth Pastor">Youth Pastor</option>
+                      <option value="Worship Leader">Worship Leader</option>
+                      <option value="Elder">Elder</option>
+                      <option value="Deacon">Deacon</option>
+                      <option value="Administrator">Administrator</option>
+                      <option value="Office Manager">Office Manager</option>
+                      <option value="Ministry Leader">Ministry Leader</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <hr class="form-divider">
+
+              <div class="mt-md mb-md">
+                <p class="block font-bold mb-sm">Do you own a business?</p>
+                <div class="toggle-inline-row">
+                  <span>No</span>
+                  <label class="toggle-label toggle-compact">
+                    <input type="checkbox" id="member_owns_business_toggle">
+                    <span class="toggle-switch"></span>
+                  </label>
+                  <span>Yes</span>
+                </div>
+              </div>
+
+              <div id="memberBusinessFields" class="hidden">
+                <h3 class="gold-metallic mb-md">Your Business</h3>
+                
+                <div class="form-field">
+                  <label for="member_business" class="block font-bold">Business Name</label>
+                  <input type="text" id="member_business" class="input-dark" placeholder="Your business name">
+                </div>
+
+                <div class="form-field">
+                  <label for="member_business_phone" class="block font-bold">Business Phone</label>
+                  <input type="text" id="member_business_phone" class="input-dark" placeholder="555-123-4567" autocomplete="tel">
+                </div>
+              </div>
+
+                  <div class="button-row mt-lg wizard-nav">
+                    <button type="button" class="wizard-prev" data-wizard="member" data-action="prev">Back</button>
+                    <button type="button" class="wizard-next" data-wizard="member" data-action="next">Next</button>
+                  </div>
+                </div>
+
+                <!-- STEP 3: Review & Submit -->
+                <div class="form-step" data-step="3" id="memberStep3">
+                  <h2 class="gold-metallic mb-md">Review & Submit</h2>
+                  
+                  <div class="info-box gold-border mb-lg">
+                    <h3 class="mb-sm">Your Information</h3>
+                    <div id="memberReviewSummary">
+                      <p><strong>Name:</strong> <span id="reviewName">-</span></p>
+                      <p><strong>Email:</strong> <span id="reviewEmail">-</span></p>
+                      <p><strong>Church:</strong> <span id="reviewChurch">-</span></p>
+                    </div>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="checkbox-label">
+                      <input type="checkbox" id="agreeTerms" required>
+                      <span>I agree to the <a href="terms.html" target="_blank">Terms of Service</a> and <a href="privacy.html" target="_blank">Privacy Policy</a></span>
+                    </label>
+                  </div>
+
+                  <div class="button-row mt-lg wizard-nav">
+                    <button type="button" class="wizard-prev" data-wizard="member" data-action="prev">Back</button>
+                    <button type="submit" class="wizard-next">Create Account</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ==========================================
+                 BUSINESS PATH (With Address Fields) - 3-Step Wizard
+                 ========================================== -->
+            <div id="businessSection" class="conditional-fields">
+              <!-- Progress Steps -->
+              <div class="progress-bar-container mb-lg">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="businessProgressFill"></div>
+                </div>
+              </div>
+              <div class="progress-steps mb-lg" id="businessProgressSteps">
+                <div class="progress-step active" data-step="1">
+                  <div class="step-number">1</div>
+                  <div class="step-label">Account</div>
+                </div>
+                <div class="progress-step" data-step="2">
+                  <div class="step-number">2</div>
+                  <div class="step-label">Business</div>
+                </div>
+                <div class="progress-step" data-step="3">
+                  <div class="step-number">3</div>
+                  <div class="step-label">Location</div>
+                </div>
+                <div class="progress-step" data-step="4">
+                  <div class="step-number">4</div>
+                  <div class="step-label">Review</div>
+                </div>
+              </div>
+
+              <div class="form-steps-container">
+                <!-- STEP 1: Account (Owner Info + Password) -->
+                <div class="form-step active" data-step="1" id="businessStep1">
+                  <h2 class="gold-metallic mb-md">Create Your Account</h2>
+
+                  <div class="form-field">
+                    <label class="required" for="owner_name">Your Name</label>
+                    <input type="text" id="owner_name" name="owner_name">
+                  </div>
+
+                  <div class="form-field">
+                    <label class="required" for="business_email">Your Email</label>
+                    <input type="email" id="business_email" name="email" autocomplete="username">
+                  </div>
+
+                  <hr class="form-divider">
+
+                  <h3 class="gold-metallic mb-md">Create Your Account</h3>
+                  <p class="text-sm text-muted mb-md">Create a password to access your Business Dashboard after submission</p>
+
+                  <div class="form-field grid-2">
+                    <div>
+                      <label class="required" for="business_password">Password</label>
+                      <div class="password-field-wrapper">
+                        <input type="password" id="business_password" name="password" autocomplete="new-password">
+                        <button type="button" class="password-toggle-btn" id="toggleBusiness_Password" aria-label="Show password">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                        </button>
+                      </div>
+                      <div id="businessPasswordRequirements" class="password-requirements hidden"></div>
+                    </div>
+                    <div>
+                      <label class="required" for="business_confirmPassword">Confirm Password</label>
+                      <div class="password-field-wrapper">
+                        <input type="password" id="business_confirmPassword" name="confirmPassword" autocomplete="new-password">
+                        <button type="button" class="password-toggle-btn" id="toggleBusiness_ConfirmPassword" aria-label="Show password">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                        </button>
+                      </div>
+                      <div id="businessConfirmPasswordError" class="error-message hidden">Passwords do not match</div>
+                    </div>
+                  </div>
+
+                  <div class="button-row mt-lg wizard-nav">
+                    <button type="button" class="wizard-next" data-wizard="business" data-action="next">Next</button>
+                  </div>
+                </div>
+
+                <!-- STEP 2: Your Business -->
+                <div class="form-step" data-step="2" id="businessStep2">
+                  <h2 class="gold-metallic mb-md">Your Business</h2>
+
+                  <div class="form-field field-help-wrapper">
+                    <div class="label-with-help">
+                      <label class="required" for="business_name">Business Name</label>
+                      <span class="help-icon" data-help="Enter your official business name as it appears on your license or registration.">?</span>
+                    </div>
+                    <p class="help-text">Enter your official business name as it appears on your license or registration.</p>
+                    <input type="text" id="business_name" name="business_name">
+                  </div>
+
+                  <div class="form-field field-help-wrapper">
+                    <div class="label-with-help">
+                      <label class="required" for="description">Brief Description</label>
+                      <span class="help-icon" data-help="Describe what your business does and what makes you unique. This helps customers find you!">?</span>
+                    </div>
+                    <p class="help-text">Describe what your business does and what makes you unique. This helps customers find you!</p>
+                    <textarea id="description" name="description"></textarea>
+                  </div>
+
+                  <div class="form-field field-help-wrapper">
+                    <div class="label-with-help">
+                      <label class="required" for="primary_category">Primary Category</label>
+                      <span class="help-icon" data-help="Choose your MAIN business category. This is how customers will primarily find you.">?</span>
+                    </div>
+                    <p class="help-text">Choose your MAIN business category. This is how customers will primarily find you.</p>
+                    <select id="primary_category" name="primary_category">
+                      <option value="">-- Select Primary Category --</option>
+                    </select>
+                    
+                    <div class="mt-sm">
+                      <button type="button" id="suggestCategoryBtn" class="btn-text-small gold">
+                        Can't find your category? Suggest one
+                      </button>
+                    </div>
+                    
+                    <div id="categorySuggestionSection" class="category-suggestion-panel hidden">
+                      <div class="info-box">
+                        <h4>Suggest a New Category</h4>
+                        <p>We're always adding new categories based on member feedback!</p>
+                        <input type="text" id="suggested_category" placeholder="Enter category name (e.g., 'Mobile Pet Grooming')">
+                        <div class="button-row mt-sm">
+                          <button type="button" id="submitCategoryBtn" class="btn btn-small">Submit Suggestion</button>
+                          <button type="button" id="cancelCategoryBtn" class="btn-text">Cancel</button>
+                        </div>
+                        <div id="categorySuggestionStatus" class="mt-sm hidden"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="required" for="business_phone">Business Phone</label>
+                    <input type="text" id="business_phone" name="business_phone" placeholder="555-123-4567" required autocomplete="tel">
+                  </div>
+
+                  <div class="button-row mt-lg wizard-nav">
+                    <button type="button" class="wizard-prev" data-wizard="business" data-action="prev">Back</button>
+                    <button type="button" class="wizard-next" data-wizard="business" data-action="next">Next</button>
+                  </div>
+                </div>
+
+                <!-- STEP 3: Details (Address, Website, Church) -->
+                <div class="form-step" data-step="3" id="businessStep3">
+                  <h2 class="gold-metallic mb-md">Location & Address</h2>
+
+              <div class="form-field">
+                <label class="required" for="business_address_line1">Street Address</label>
+                <input type="text" id="business_address_line1" name="address_line1">
+              </div>
+
+              <div class="form-field">
+                <label for="business_address_line2">Address Line 2 (Suite, Unit, etc.)</label>
+                <input type="text" id="business_address_line2" name="address_line2">
+              </div>
+
+              <div class="form-field grid-3">
+                <div>
+                  <label class="required" for="business_city">City</label>
+                  <input type="text" id="business_city" name="city">
+                </div>
+                <div>
+                  <label class="required" for="business_state">State</label>
+                  <select id="business_state" name="state">
+                    <option value="">-- Select State --</option>
+                  <option value="AL">Alabama</option>
+                  <option value="AK">Alaska</option>
+                  <option value="AZ">Arizona</option>
+                  <option value="AR">Arkansas</option>
+                  <option value="CA">California</option>
+                  <option value="CO">Colorado</option>
+                  <option value="CT">Connecticut</option>
+                  <option value="DE">Delaware</option>
+                  <option value="FL">Florida</option>
+                  <option value="GA">Georgia</option>
+                  <option value="HI">Hawaii</option>
+                  <option value="ID">Idaho</option>
+                  <option value="IL">Illinois</option>
+                  <option value="IN">Indiana</option>
+                  <option value="IA">Iowa</option>
+                  <option value="KS">Kansas</option>
+                  <option value="KY">Kentucky</option>
+                  <option value="LA">Louisiana</option>
+                  <option value="ME">Maine</option>
+                  <option value="MD">Maryland</option>
+                  <option value="MA">Massachusetts</option>
+                  <option value="MI">Michigan</option>
+                  <option value="MN">Minnesota</option>
+                  <option value="MS">Mississippi</option>
+                  <option value="MO">Missouri</option>
+                  <option value="MT">Montana</option>
+                  <option value="NE">Nebraska</option>
+                  <option value="NV">Nevada</option>
+                  <option value="NH">New Hampshire</option>
+                  <option value="NJ">New Jersey</option>
+                  <option value="NM">New Mexico</option>
+                  <option value="NY">New York</option>
+                  <option value="NC">North Carolina</option>
+                  <option value="ND">North Dakota</option>
+                  <option value="OH">Ohio</option>
+                  <option value="OK">Oklahoma</option>
+                  <option value="OR">Oregon</option>
+                  <option value="PA">Pennsylvania</option>
+                  <option value="RI">Rhode Island</option>
+                  <option value="SC">South Carolina</option>
+                  <option value="SD">South Dakota</option>
+                  <option value="TN">Tennessee</option>
+                  <option value="TX">Texas</option>
+                  <option value="UT">Utah</option>
+                  <option value="VT">Vermont</option>
+                  <option value="VA">Virginia</option>
+                  <option value="WA">Washington</option>
+                  <option value="WV">West Virginia</option>
+                  <option value="WI">Wisconsin</option>
+                  <option value="WY">Wyoming</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="required" for="business_zip_code">ZIP Code</label>
+                  <input type="text" id="business_zip_code" name="zip_code" pattern="[0-9]{5}" maxlength="5" placeholder="12345">
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label for="website">Website (optional)</label>
+                <input type="url" id="website" name="website" placeholder="https://yourbusiness.com">
+              </div>
+
+                  <hr class="form-divider">
+
+                  <h2 class="gold-metallic mb-md">Church Affiliation</h2>
+                  <div class="form-field field-help-wrapper">
+                    <div class="label-with-help">
+                      <label class="required" for="church_affiliation">Which church are you affiliated with?</label>
+                      <span class="help-icon" data-help="Select your home church. Your church admin will approve your affiliation before final listing approval.">?</span>
+                    </div>
+                    <p class="help-text">Select your home church. Your church admin will approve your affiliation before final listing approval.</p>
+                    <select id="church_affiliation" name="church_affiliation">
+                      <option value="">-- Select Your Church --</option>
+                    </select>
+                  </div>
+
+                  <!-- Billing Cycle (Pro only) -->
+                  <div id="billingCycleSection" class="hidden">
+                    <hr class="form-divider">
+                    <h2 class="gold-metallic mb-md">Choose Your Billing Cycle</h2>
+                    <div class="form-field">
+                      <label class="required" for="billing_cycle">How would you like to be billed?</label>
+                      <select id="billing_cycle" name="billing_cycle">
+                        <option value="monthly">Monthly - $8.99/month (Credit card required, no charge for 30 days)</option>
+                        <option value="annual">Annual - $74.99/year (Credit card charged upfront + FREE swag!)</option>
+                      </select>
+                      <p class="help-text" id="billingHelpText">Credit card required. Monthly: 30-day free trial, then billed monthly. Annual: charged upfront. Cancel anytime.</p>
+                    </div>
+                  </div>
+
+                  <div class="button-row mt-lg wizard-nav">
+                    <button type="button" class="wizard-prev" data-wizard="business" data-action="prev">Back</button>
+                    <button type="button" class="wizard-next" data-wizard="business" data-action="next">Next</button>
+                  </div>
+                </div>
+
+                <!-- STEP 4: Review & Submit -->
+                <div class="form-step" data-step="4" id="businessStep4">
+                  <h2 class="gold-metallic mb-md">Review & Submit</h2>
+                  
+                  <div class="info-box gold-border mb-lg">
+                    <p><strong>Business Name:</strong> <span id="businessReviewName">-</span></p>
+                    <p><strong>Owner:</strong> <span id="businessReviewOwner">-</span></p>
+                    <p><strong>Email:</strong> <span id="businessReviewEmail">-</span></p>
+                    <p><strong>Phone:</strong> <span id="businessReviewPhone">-</span></p>
+                    <p><strong>Category:</strong> <span id="businessReviewCategory">-</span></p>
+                    <p><strong>Address:</strong> <span id="businessReviewAddress">-</span></p>
+                    <p><strong>Church Affiliation:</strong> <span id="businessReviewChurch">-</span></p>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="toggle-label">
+                      <input type="checkbox" id="business_terms_agreement" required>
+                      <span class="toggle-switch"></span>
+                      <span class="toggle-text-inline">I agree to the <a href="/terms" target="_blank">Terms of Service</a> and <a href="/privacy" target="_blank">Privacy Policy</a></span>
+                    </label>
+                  </div>
+
+                  <div class="button-row mt-lg wizard-nav">
+                    <button type="button" class="wizard-prev" data-wizard="business" data-action="prev">Back</button>
+                    <button type="submit" class="wizard-next">Submit Business</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ==========================================
+                 CHURCH PATH - 4-Step Wizard
+                 ========================================== -->
+            <div id="churchSection" class="conditional-fields">
+              <!-- Progress Steps -->
+              <div class="progress-bar-container mb-lg">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="churchProgressFill"></div>
+                </div>
+              </div>
+              <div class="progress-steps mb-lg" id="churchProgressSteps">
+                <div class="progress-step active" data-step="1">
+                  <div class="step-number">1</div>
+                  <div class="step-label">You</div>
+                </div>
+                <div class="progress-step" data-step="2">
+                  <div class="step-number">2</div>
+                  <div class="step-label">Your Church</div>
+                </div>
+                <div class="progress-step" data-step="3">
+                  <div class="step-number">3</div>
+                  <div class="step-label">Details</div>
+                </div>
+                <div class="progress-step" data-step="4">
+                  <div class="step-number">4</div>
+                  <div class="step-label">Review</div>
+                </div>
+              </div>
+
+              <div class="form-steps-container">
+                <!-- STEP 1: You (Representative + Account) -->
+                <div class="form-step active" data-step="1" id="churchStep1">
+                  <h2 class="gold-metallic mb-md">About You</h2>
+                  
+                  <div class="form-field">
+                    <label class="required" for="representative_name">Your Name</label>
+                    <input type="text" id="representative_name" class="input-dark" required>
+                  </div>
+
+                  <div class="form-field mt-md mb-md">
+                    <p class="block font-bold mb-sm">Are you part of church leadership?</p>
+                    <label class="toggle-label">
+                      <input type="checkbox" id="church_leader_toggle">
+                      <span class="toggle-switch"></span>
+                      <span class="toggle-text-inline">Yes</span>
+                    </label>
+                  </div>
+
+                  <div id="churchLeaderPositionFields" class="form-field hidden">
+                    <label class="required" for="representative_title">Your Church Position</label>
+                    <select id="representative_title" class="input-dark">
+                      <option value="">Select Position</option>
+                      <option value="Senior Pastor">Senior Pastor</option>
+                      <option value="Associate Pastor">Associate Pastor</option>
+                      <option value="Youth Pastor">Youth Pastor</option>
+                      <option value="Worship Pastor">Worship Pastor</option>
+                      <option value="Executive Pastor">Executive Pastor</option>
+                      <option value="Elder">Elder</option>
+                      <option value="Deacon">Deacon</option>
+                      <option value="Church Administrator">Church Administrator</option>
+                      <option value="Ministry Leader">Ministry Leader</option>
+                      <option value="Other Staff">Other Staff</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="required" for="church_email">Your Email</label>
+                    <input type="email" id="church_email" class="input-dark" placeholder="you@email.com" autocomplete="username" required>
+                  </div>
+
+                  <hr class="form-divider">
+
+                  <h3 class="gold-metallic mb-md">Create Your Account</h3>
+                  <p class="text-sm text-muted mb-md">Create a password to access your Church Dashboard after approval</p>
+
+                  <div class="form-field grid-2">
+                    <div>
+                      <label class="required" for="church_password">Password</label>
+                      <div class="password-field-wrapper">
+                        <input type="password" id="church_password" name="password" autocomplete="new-password" required>
+                        <button type="button" class="password-toggle-btn" id="toggleChurch_Password" aria-label="Show password">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                        </button>
+                      </div>
+                      <div id="churchPasswordRequirements" class="password-requirements hidden"></div>
+                    </div>
+                    <div>
+                      <label class="required" for="church_confirmPassword">Confirm Password</label>
+                      <div class="password-field-wrapper">
+                        <input type="password" id="church_confirmPassword" name="confirmPassword" autocomplete="new-password" required>
+                        <button type="button" class="password-toggle-btn" id="toggleChurch_ConfirmPassword" aria-label="Show password">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                        </button>
+                      </div>
+                      <div id="churchConfirmPasswordError" class="error-message hidden">Passwords do not match</div>
+                    </div>
+                  </div>
+
+                  <div class="button-row mt-lg wizard-nav">
+                    <button type="button" class="wizard-next" data-wizard="church" data-action="next">Next</button>
+                  </div>
+                </div>
+
+                <!-- STEP 2: Your Church -->
+                <div class="form-step" data-step="2" id="churchStep2">
+                  <h2 class="gold-metallic mb-md">Your Church</h2>
+                  
+                  <div class="form-field">
+                    <label class="required" for="church_church_name">Church Name</label>
+                    <input type="text" id="church_church_name" class="input-dark" required>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="required" for="church_phone">Church Phone</label>
+                    <input type="text" id="church_phone" class="input-dark" placeholder="555-123-4567" required autocomplete="tel">
+                  </div>
+
+                  <div class="button-row mt-lg wizard-nav">
+                    <button type="button" class="wizard-prev" data-wizard="church" data-action="prev">Back</button>
+                    <button type="button" class="wizard-next" data-wizard="church" data-action="next">Next</button>
+                  </div>
+                </div>
+
+                <!-- STEP 3: Details (Address) -->
+                <div class="form-step" data-step="3" id="churchStep3">
+                  <h2 class="gold-metallic mb-md">Location & Address</h2>
+
+              <div class="form-field">
+                <label class="required" for="church_address_line1">Street Address</label>
+                <input type="text" id="church_address_line1" name="address_line1" required>
+              </div>
+
+              <div class="form-field">
+                <label for="church_address_line2">Address Line 2 (Suite, Unit, etc.)</label>
+                <input type="text" id="church_address_line2" name="address_line2">
+              </div>
+
+              <div class="form-field grid-3">
+                <div>
+                  <label class="required" for="church_city">City</label>
+                  <input type="text" id="church_city" name="city" required>
+                </div>
+                <div>
+                  <label class="required" for="church_state">State</label>
+                  <select id="church_state" name="state" required>
+                    <option value="">-- Select State --</option>
+                  <option value="AL">Alabama</option>
+                  <option value="AK">Alaska</option>
+                  <option value="AZ">Arizona</option>
+                  <option value="AR">Arkansas</option>
+                  <option value="CA">California</option>
+                  <option value="CO">Colorado</option>
+                  <option value="CT">Connecticut</option>
+                  <option value="DE">Delaware</option>
+                  <option value="FL">Florida</option>
+                  <option value="GA">Georgia</option>
+                  <option value="HI">Hawaii</option>
+                  <option value="ID">Idaho</option>
+                  <option value="IL">Illinois</option>
+                  <option value="IN">Indiana</option>
+                  <option value="IA">Iowa</option>
+                  <option value="KS">Kansas</option>
+                  <option value="KY">Kentucky</option>
+                  <option value="LA">Louisiana</option>
+                  <option value="ME">Maine</option>
+                  <option value="MD">Maryland</option>
+                  <option value="MA">Massachusetts</option>
+                  <option value="MI">Michigan</option>
+                  <option value="MN">Minnesota</option>
+                  <option value="MS">Mississippi</option>
+                  <option value="MO">Missouri</option>
+                  <option value="MT">Montana</option>
+                  <option value="NE">Nebraska</option>
+                  <option value="NV">Nevada</option>
+                  <option value="NH">New Hampshire</option>
+                  <option value="NJ">New Jersey</option>
+                  <option value="NM">New Mexico</option>
+                  <option value="NY">New York</option>
+                  <option value="NC">North Carolina</option>
+                  <option value="ND">North Dakota</option>
+                  <option value="OH">Ohio</option>
+                  <option value="OK">Oklahoma</option>
+                  <option value="OR">Oregon</option>
+                  <option value="PA">Pennsylvania</option>
+                  <option value="RI">Rhode Island</option>
+                  <option value="SC">South Carolina</option>
+                  <option value="SD">South Dakota</option>
+                  <option value="TN">Tennessee</option>
+                  <option value="TX">Texas</option>
+                  <option value="UT">Utah</option>
+                  <option value="VT">Vermont</option>
+                  <option value="VA">Virginia</option>
+                  <option value="WA">Washington</option>
+                  <option value="WV">West Virginia</option>
+                  <option value="WI">Wisconsin</option>
+                  <option value="WY">Wyoming</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="required" for="church_zip_code">ZIP Code</label>
+                  <input type="text" id="church_zip_code" name="zip_code" pattern="[0-9]{5}" maxlength="5" placeholder="12345" required>
+                </div>
+              </div>
+
+                  <div class="button-row mt-lg wizard-nav">
+                    <button type="button" class="wizard-prev" data-wizard="church" data-action="prev">Back</button>
+                    <button type="button" class="wizard-next" data-wizard="church" data-action="next">Next</button>
+                  </div>
+                </div>
+
+                <!-- STEP 4: Review & Submit -->
+                <div class="form-step" data-step="4" id="churchStep4">
+                  <h2 class="gold-metallic mb-md">Review & Submit</h2>
+                  
+                  <div class="info-box gold-border mb-lg">
+                    <p><strong>Your Name:</strong> <span id="churchReviewRepName">-</span></p>
+                    <p><strong>Email:</strong> <span id="churchReviewEmail">-</span></p>
+                    <p><strong>Church Name:</strong> <span id="churchReviewChurchName">-</span></p>
+                    <p><strong>Phone:</strong> <span id="churchReviewPhone">-</span></p>
+                    <p><strong>Address:</strong> <span id="churchReviewAddress">-</span></p>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="toggle-label">
+                      <input type="checkbox" id="church_terms_agreement" required>
+                      <span class="toggle-switch"></span>
+                      <span class="toggle-text-inline">I agree to the <a href="/terms" target="_blank">Terms of Service</a> and <a href="/privacy" target="_blank">Privacy Policy</a></span>
+                    </label>
+                  </div>
+
+                  <div class="button-row mt-lg wizard-nav">
+                    <button type="button" class="wizard-prev" data-wizard="church" data-action="prev">Back</button>
+                    <button type="submit" class="wizard-next">Submit Church</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            
+            <div id="statusMessage" class="p-md hidden"></div>
+          </form>
+            </article>
+          </div><!-- end directory-right -->
+        </div><!-- end directory-split -->
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="/js/demo-mode.js" type="module"></script>
+  <script src="js/logout-utils.js" type="module"></script>
+  <script src="js/maintenance-check.js" type="module"></script>
+  <script src="/js/header.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script src="js/password-toggle.js" type="module"></script>
+  <script src="js/add-to-directory.js?v=17" type="module"></script>
+  <script src="js/breadcrumbs.js" defer></script>
+  <script src="js/card-tooltips.js"></script>
+</body>
+</html>

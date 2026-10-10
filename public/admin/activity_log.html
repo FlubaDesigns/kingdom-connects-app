@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Activity Log - Kingdom Connects Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+  <link rel="stylesheet" href="/styles/loading-skeletons.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h2 class="gold-metallic text-center">Activity Log</h2>
+      <p class="text-center text-muted mb-md">System-wide audit trail of important platform actions.</p>
+
+      <div class="split-40-60">
+        <div class="split-left">
+          <article class="card mb-md">
+            <h3 class="gold">Stats</h3>
+            <div class="stat-grid-2">
+              <div class="stat-card">
+                <div class="stat-value" id="totalActivities">0</div>
+                <div class="stat-label">Total</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="todayActivities">0</div>
+                <div class="stat-label">Today</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="weekActivities">0</div>
+                <div class="stat-label">This Week</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="card mb-md">
+            <h3 class="gold">Filters</h3>
+            <div class="form-group">
+              <label for="filterType">Activity Type</label>
+              <select id="filterType" class="input-dark">
+                <option value="">All Types</option>
+                <option value="create_listing">Create Listing</option>
+                <option value="edit_listing">Edit Listing</option>
+                <option value="delete_listing">Delete Listing</option>
+                <option value="create_review">Create Review</option>
+                <option value="upgrade_pro">Upgrade to Pro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="filterTarget">Target Type</label>
+              <select id="filterTarget" class="input-dark">
+                <option value="">All Targets</option>
+                <option value="business">Business</option>
+                <option value="church">Church</option>
+                <option value="review">Review</option>
+                <option value="user">User</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="filterDate">Date</label>
+              <input type="date" id="filterDate" class="input-dark">
+            </div>
+          </article>
+        </div>
+
+        <div class="split-right">
+          <div id="loadingMessage" class="text-center">
+            <p>Loading activity log...</p>
+          </div>
+
+          <div id="contentArea" class="hidden">
+            <div id="activitiesList"></div>
+          </div>
+
+          <div id="emptyState" class="hidden text-center">
+            <p>No activities found.</p>
+          </div>
+
+          <div id="errorMessage" class="hidden text-center">
+            <p class="text-error">Error loading activity log.</p>
+          </div>
+        </div>
+      </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="/admin/js/header.js?v=20241220" defer></script>
+  <script src="/admin/js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+
+  <script type="module" src="/admin/js/activity-log.js"></script>
+  </div>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

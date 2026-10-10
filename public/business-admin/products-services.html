@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Products & Services - Kingdom Connects Business Portal</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=7">
+  <link rel="stylesheet" href="/styles/theme.css?v=7">
+  <link rel="stylesheet" href="/styles/buttons.css?v=7">
+  <link rel="stylesheet" href="/styles/forms.css?v=7">
+  <link rel="stylesheet" href="/styles/overrides.css?v=7">
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h1 class="gold-metallic text-center">Products & Services <span class="pro-badge">PRO</span></h1>
+      <p class="text-center text-muted mb-md">Showcase your offerings on your public business page.</p>
+
+      <div class="split-40-60">
+        <div class="split-left">
+          <div id="proGate" class="card mb-md hidden">
+            <h3 class="gold">Unlock Products & Services</h3>
+            <p>This is a Pro feature. Upgrade to display offerings with descriptions and pricing.</p>
+            <a href="/business-admin/upgrade.html" class="btn btn-gold">Upgrade to Pro</a>
+          </div>
+          <button class="btn btn-gold mb-md" id="addItemBtn">+ Add Item</button>
+        </div>
+
+        <div class="split-right">
+          <div id="itemsList">
+            <p class="status-message">Loading products & services...</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <div id="itemModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">Add Product/Service</h2>
+        <button class="close-btn" id="closeModal">&times;</button>
+      </div>
+
+      <form id="itemForm">
+        <input type="hidden" id="itemId">
+
+        <div class="form-group">
+          <label for="name">Name *</label>
+          <input type="text" id="name" class="input-dark" required placeholder="e.g., Website Design Package">
+        </div>
+
+        <div class="form-group">
+          <label for="itemType">Type</label>
+          <select id="itemType" class="input-dark">
+            <option value="service">Service</option>
+            <option value="product">Product</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description *</label>
+          <textarea id="description" class="input-dark" rows="3" required placeholder="Describe this product or service..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="price">Price</label>
+            <input type="text" id="price" class="input-dark" placeholder="e.g., $99 or Starting at $50">
+          </div>
+          <div class="form-group">
+            <label for="duration">Duration/Size</label>
+            <input type="text" id="duration" class="input-dark" placeholder="e.g., 1 hour, per project">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="isFeatured">
+            Feature this item (shows first)
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="isActive" checked>
+            Active (visible on public page)
+          </label>
+        </div>
+
+        <div class="button-row">
+          <button type="submit" class="btn btn-gold">Save Item</button>
+          <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="js/business-auth-guard.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="js/products-services.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

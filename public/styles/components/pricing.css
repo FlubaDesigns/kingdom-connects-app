@@ -1,0 +1,261 @@
+/* ============================================================
+   Kingdom Connects — PRICING & CHECKOUT COMPONENTS
+   Scope: pricing.html, business-admin/pro_checkout.html
+   Purpose: Pricing cards, checkout forms, and subscription UI
+   ============================================================ */
+
+/* Pricing grid layout for pricing.html */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  max-width: 900px;
+  margin: 32px auto;
+}
+
+@media (min-width: 768px) {
+  .pricing-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Pricing card styling */
+.pricing-card {
+  background: var(--card-bg);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 32px 24px;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pricing-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+}
+
+.pricing-card.featured {
+  border-color: var(--gold);
+  box-shadow: 0 8px 24px rgba(255,215,0,0.15);
+}
+
+.pricing-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gold);
+  color: var(--dark-blue);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pricing-tier {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: var(--gold);
+}
+
+.pricing-price {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 0 0 4px;
+  line-height: 1;
+}
+
+.pricing-price small {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.pricing-period {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin: 0 0 24px;
+}
+
+.pricing-features {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0;
+}
+
+.pricing-features li {
+  padding: 10px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.pricing-features li:last-child {
+  border-bottom: none;
+}
+
+.pricing-features .check {
+  color: var(--gold);
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.pricing-cta {
+  margin-top: 24px;
+}
+
+.guarantee {
+  text-align: center;
+  max-width: 700px;
+  margin: 40px auto;
+}
+
+/* Checkout pricing options (pro_checkout.html) */
+.pricing-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.pricing-option {
+  position: relative;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pricing-option:hover {
+  border-color: rgba(255, 215, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+.pricing-option.selected {
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.pricing-option.recommended {
+  border-color: rgba(255, 215, 0, 0.4);
+}
+
+.pricing-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+}
+
+.pricing-option label {
+  cursor: pointer;
+  display: block;
+}
+
+.pricing-option h4 {
+  margin: 0 0 0.5rem 0;
+  color: #ffd700;
+}
+
+.pricing-option .price {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #fff;
+  margin: 0.5rem 0;
+}
+
+.pricing-option .equivalent {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0.25rem 0;
+}
+
+.pricing-option .savings {
+  font-size: 0.95rem;
+  color: #4ade80;
+  font-weight: 600;
+  margin: 0.25rem 0;
+}
+
+.pricing-option .trial-info {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0.5rem 0 0 0;
+}
+
+.pricing-option .badge {
+  position: absolute;
+  top: -12px;
+  right: 15px;
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #000;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 768px) {
+  .pricing-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Donation Grid - 2x2 on all screens */
+.donation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.donation-grid .pricing-option {
+  padding: 1rem;
+  text-align: center;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.donation-grid .pricing-option h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.5rem;
+}
+
+.donation-grid .pricing-option p {
+  margin: 0;
+  font-size: 0.75rem;
+}
+
+/* Custom tile spans full width on odd count */
+.donation-grid .custom-tile {
+  grid-column: span 2;
+}
+
+.donation-grid .custom-tile.expanded {
+  padding: 1.25rem;
+}
+
+.donation-grid .custom-input {
+  width: 100%;
+  max-width: 150px;
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  font-size: 1.25rem;
+  text-align: center;
+  background: rgba(0,0,0,0.3);
+  border: 2px solid var(--gold);
+  border-radius: 8px;
+  color: #fff;
+}
+
+.donation-grid .custom-input:focus {
+  outline: none;
+  border-color: #fff;
+}

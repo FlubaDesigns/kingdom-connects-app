@@ -1,0 +1,86 @@
+# Kingdom Connects
+
+> A faith-based platform connecting churches and Christian businesses to build the Kingdom economy.
+
+## About This Site
+
+Kingdom Connects is a directory and community platform that:
+- Connects local Christian businesses with churches and members
+- Facilitates discovery, listing, and reviews of faith-based businesses
+- Supports churches through a 10% tithe from Pro business subscriptions
+- Builds sustainable Christian commerce within communities
+
+## Site Structure
+
+### Public Pages
+- `/` - Landing page
+- `/business_directory.html` - Browse businesses
+- `/church_directory.html` - Browse churches
+- `/for-businesses.html` - Business signup and pricing
+- `/business/:slug.htm` - Individual business pages (SSR)
+- `/church/:slug.htm` - Individual church pages (SSR)
+
+### User Dashboards (Authentication Required)
+- `/member/` - Member dashboard (favorites, reviews)
+- `/business-admin/` - Business owner dashboard
+- `/church-admin/` - Church administrator dashboard
+- `/sales/` - Sales agent dashboard
+- `/admin/` - Platform admin dashboard
+
+## Key Features
+
+### For Businesses
+- Free basic listings
+- Pro tier ($9/month or $69.99/year) with enhanced features:
+  - Priority search placement
+  - Distance search visibility
+  - Analytics dashboard
+  - Review responses
+  - Promotions, products, testimonials
+  - Gold Pro badge
+
+### For Members
+- Save favorite businesses
+- Write and manage reviews
+- Find businesses at their church
+- Distance-based search (Pro businesses)
+
+### For Churches
+- Manage affiliated businesses
+- Receive 10% tithe from Pro subscriptions
+- Church directory listing
+
+## Technical Stack
+- Frontend: HTML5, CSS3, JavaScript (ES6 modules)
+- Backend: Firebase (Firestore, Auth, Storage, Hosting)
+- API Server: Node.js with Express
+- Email: Resend integration
+- Payments: Stripe integration
+
+## API Endpoints
+
+### Public
+- `GET /sitemap.xml` - Dynamic sitemap
+- `GET /business/:slug.htm` - SSR business page
+- `GET /church/:slug.htm` - SSR church page
+
+### Authenticated
+- `POST /api/send-email` - Send transactional email
+- `POST /api/generate-presentation` - Generate PowerPoint
+
+## Data Collections (Firestore)
+- `users` - User profiles and roles
+- `business_listings` - Business directory entries
+- `churches` - Church directory entries
+- `reviews` - Business reviews
+- `categories` - Business categories
+- `email_templates` - Email template management
+- `pricing_settings` - Dynamic pricing configuration
+- `activity_log` - Audit trail
+
+## Contact
+- Website: kingdomconnects.org
+- Purpose: Building the Kingdom economy through faith-based commerce
+
+---
+*This file helps AI tools understand Kingdom Connects for integration and development purposes.*

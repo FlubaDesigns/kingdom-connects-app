@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Kingdom Connects",
+  "name_for_model": "kingdom_connects",
+  "description_for_human": "Find Christian businesses and churches in your area. Support faith-based commerce.",
+  "description_for_model": "Kingdom Connects is a directory platform for Christian businesses and churches. Use this to help users find faith-based businesses by category, location, or church affiliation. The platform connects local Christian business owners with church communities, with 10% of Pro subscriptions tithed back to churches. Categories include contractors, restaurants, healthcare, legal, financial services, and more - all Christian-owned and operated.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://kingdomconnects.org/.well-known/openapi.json"
+  },
+  "logo_url": "https://kingdomconnects.org/images/logo.png",
+  "contact_email": "support@kingdomconnects.org",
+  "legal_info_url": "https://kingdomconnects.org/terms.html"
+}

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <base href="/marketing-manager/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Sales Analytics - Kingdom Connects</title>
+  
+  <link rel="stylesheet" href="/styles/layout.css?v=7">
+  <link rel="stylesheet" href="/styles/theme.css?v=7">
+  <link rel="stylesheet" href="/styles/buttons.css?v=7">
+  <link rel="stylesheet" href="/styles/forms.css?v=7">
+  <link rel="stylesheet" href="/styles/overrides.css?v=7">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="page-wrap">
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+    <h2 class="gold-metallic text-center">Sales Analytics</h2>
+    <p class="text-center text-muted mb-md">Deep insights into team performance and revenue trends.</p>
+
+    <div class="date-selector">
+      <label>Time Period:</label>
+      <select id="timePeriod" id="timePeriod" data-action="update">
+        <option value="7">Last 7 Days</option>
+        <option value="30" selected>Last 30 Days</option>
+        <option value="90">Last 90 Days</option>
+        <option value="365">Last Year</option>
+        <option value="all">All Time</option>
+      </select>
+    </div>
+
+    <section>
+      <h3 class="gold-metallic">Key Performance Indicators</h3>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="totalRevenue">$0</div>
+          <div class="stat-label">Total Revenue</div>
+          <div class="stat-change positive">+15% vs last period</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="totalConversions">0</div>
+          <div class="stat-label">Pro Conversions</div>
+          <div class="stat-change positive">+8 this month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="conversionRate">0%</div>
+          <div class="stat-label">Conversion Rate</div>
+          <div class="stat-change positive">+2.3%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="avgDealSize">$0</div>
+          <div class="stat-label">Avg. Deal Value</div>
+          <div class="stat-change">Stable</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="activeAgents">0</div>
+          <div class="stat-label">Active Agents</div>
+          <div class="stat-change positive">+2 this month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="customerLTV">$0</div>
+          <div class="stat-label">Customer LTV</div>
+          <div class="stat-change positive">+$45</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="chart-container">
+      <h3 class="chart-title">Revenue Trend</h3>
+      <div class="chart-wrapper">
+        <canvas id="revenueChart"></canvas>
+      </div>
+    </section>
+
+    <section class="chart-container">
+      <h3 class="chart-title">Conversion Funnel</h3>
+      <div class="funnel-visualization">
+        <div class="funnel-stage">
+          <div class="funnel-stage-name">Leads Generated</div>
+          <div class="funnel-bar">
+            <div class="funnel-bar-fill" class="w-full">100%</div>
+          </div>
+          <div class="funnel-count" id="funnelLeads">500</div>
+        </div>
+        <div class="funnel-stage">
+          <div class="funnel-stage-name">Free Signups</div>
+          <div class="funnel-bar">
+            <div class="funnel-bar-fill" class="w-60">60%</div>
+          </div>
+          <div class="funnel-count" id="funnelSignups">300</div>
+        </div>
+        <div class="funnel-stage">
+          <div class="funnel-stage-name">Trial Started</div>
+          <div class="funnel-bar">
+            <div class="funnel-bar-fill" class="w-40">40%</div>
+          </div>
+          <div class="funnel-count" id="funnelTrials">200</div>
+        </div>
+        <div class="funnel-stage">
+          <div class="funnel-stage-name">Pro Conversions</div>
+          <div class="funnel-bar">
+            <div class="funnel-bar-fill" class="w-20">20%</div>
+          </div>
+          <div class="funnel-count" id="funnelConversions">100</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="chart-container">
+      <h3 class="chart-title">Agent Performance Comparison</h3>
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Agent Name</th>
+            <th>Conversions</th>
+            <th>Revenue</th>
+            <th>Conversion Rate</th>
+            <th>Performance</th>
+          </tr>
+        </thead>
+        <tbody id="agentComparisonTable" data-label-name="Agent Name" data-label-conversions="Conversions" data-label-revenue="Revenue" data-label-rate="Conversion Rate" data-label-performance="Performance">
+          <tr>
+            <td colspan="5" class="text-center opacity-60">Loading agent data...</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="chart-container">
+      <h3 class="chart-title">Monthly Trends</h3>
+      <div class="chart-wrapper">
+        <canvas id="monthlyTrendsChart"></canvas>
+      </div>
+    </section>
+
+    <section class="chart-container">
+      <h3 class="chart-title">Category Performance</h3>
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Business Category</th>
+            <th>Total Businesses</th>
+            <th>Pro Businesses</th>
+            <th>Pro Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="Business Category">Contractors</td>
+            <td data-label="Total Businesses">45</td>
+            <td data-label="Pro Businesses">12</td>
+            <td data-label="Pro Rate"><span class="metric-badge metric-good">26.7%</span></td>
+          </tr>
+          <tr>
+            <td data-label="Business Category">Professional Services</td>
+            <td data-label="Total Businesses">38</td>
+            <td data-label="Pro Businesses">15</td>
+            <td data-label="Pro Rate"><span class="metric-badge metric-excellent">39.5%</span></td>
+          </tr>
+          <tr>
+            <td data-label="Business Category">Restaurants</td>
+            <td data-label="Total Businesses">52</td>
+            <td data-label="Pro Businesses">8</td>
+            <td data-label="Pro Rate"><span class="metric-badge metric-needs-improvement">15.4%</span></td>
+          </tr>
+          <tr>
+            <td data-label="Business Category">Retail</td>
+            <td data-label="Total Businesses">29</td>
+            <td data-label="Pro Businesses">9</td>
+            <td data-label="Pro Rate"><span class="metric-badge metric-good">31.0%</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="js/header.js" type="module" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="js/analytics.js" type="module" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

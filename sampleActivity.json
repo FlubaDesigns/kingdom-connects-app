@@ -1,5 +1,0 @@
-{
-  "activity_type":"create_listing","target_type":"business",
-  "target_id":"sampleBusiness","details":"User created sample listing",
-  "user_id":"sampleUser","timestamp":{"_seconds":1731100000,"_nanoseconds":0}
-}

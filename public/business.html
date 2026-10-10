@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Business Details - Kingdom Connects</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <meta name="description" content="View business details, reviews, hours, and contact information on Kingdom Connects">
+  <meta name="robots" content="index, follow">
+  
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+  
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+  
+  <link rel="stylesheet" href="styles/layout.css?v=8">
+  <link rel="stylesheet" href="styles/theme.css?v=8">
+  <link rel="stylesheet" href="styles/buttons.css?v=8">
+  <link rel="stylesheet" href="styles/forms.css?v=8">
+  <link rel="stylesheet" href="styles/components/business-cards.css?v=8">
+  <link rel="stylesheet" href="styles/overrides.css?v=8">
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+        <div id="loadingMessage" class="text-center p-lg">
+          <p class="text-lg">Loading business details...</p>
+        </div>
+
+        <div id="errorMessage" class="hidden text-center p-lg">
+          <article class="card">
+            <h2 class="gold-metallic">Business Not Found</h2>
+            <p class="text-lg">Sorry, we couldn't find this business listing.</p>
+            <div class="button-container mt-md">
+              <a href="business_directory.html" class="btn btn-gold">← Back to Business Directory</a>
+            </div>
+          </article>
+        </div>
+
+        <div id="businessContent" class="hidden">
+          <div class="m-block">
+            <a href="business_directory.html" class="btn btn-small">← Back to Directory</a>
+          </div>
+
+          <article class="card">
+            <div id="proBadge" class="hidden mb-sm">
+              <span class="badge badge-gold">PRO BUSINESS</span>
+            </div>
+            
+            <h1 id="businessName" class="gold-metallic mb-sm"></h1>
+            
+            <div id="businessCategory" class="business-meta"></div>
+            
+            <div id="ratingDisplay" class="mb-md"></div>
+            
+            <div id="businessDescription" class="mb-md"></div>
+
+            <div id="churchAffiliation" class="mb-md hidden">
+              <h3 class="gold">Church Affiliation</h3>
+              <p id="churchName"></p>
+            </div>
+          </article>
+
+          <article id="mediaSection" class="card hidden">
+            <h2 class="gold">Photos & Videos</h2>
+            <div id="photoGallery" class="grid-3 gap-md mb-md"></div>
+            <div id="videoGallery"></div>
+          </article>
+
+          <article class="card">
+            <h2 class="gold">Contact Information</h2>
+            <div class="grid-2 gap-md">
+              <div>
+                <h3 class="text-md mb-sm">Address</h3>
+                <p id="businessAddress"></p>
+              </div>
+              <div>
+                <h3 class="text-md mb-sm">Contact</h3>
+                <p id="businessPhone" class="mb-sm"></p>
+                <p id="businessEmail" class="mb-sm"></p>
+                <p id="businessWebsite" class="mb-sm"></p>
+              </div>
+            </div>
+          </article>
+
+          <article id="hoursSection" class="card hidden">
+            <h2 class="gold">Hours of Operation</h2>
+            <div id="businessHours"></div>
+          </article>
+
+          <div id="favoriteContainer" class="text-right mt-md hidden">
+            <button id="favoriteBtn" class="favorite-star" title="Save to favorites">
+              <svg id="starOutline" class="star-icon" viewBox="0 0 24 24" width="32" height="32">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="#d4af37" stroke-width="2"/>
+              </svg>
+              <svg id="starFilled" class="star-icon hidden" viewBox="0 0 24 24" width="32" height="32">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#d4af37" stroke="#d4af37" stroke-width="2"/>
+              </svg>
+            </button>
+          </div>
+
+          <article id="promotionsSection" class="card hidden">
+            <h2 class="gold">Current Promotions</h2>
+            <div id="promotionsList"></div>
+          </article>
+
+          <article id="productsServicesSection" class="card hidden">
+            <h2 class="gold">Products & Services</h2>
+            <div id="productsServicesList"></div>
+          </article>
+
+          <article id="testimonialsSection" class="card hidden">
+            <h2 class="gold">What Our Customers Say</h2>
+            <div id="testimonialsList"></div>
+          </article>
+
+          <article id="socialMediaSection" class="card hidden">
+            <h2 class="gold">Connect With Us</h2>
+            <div id="socialMediaLinks" class="social-icons-row"></div>
+          </article>
+
+          <article id="shareSection" class="card hidden">
+            <div id="socialShareButtons"></div>
+          </article>
+
+          <article class="card">
+            <h2 class="gold">Customer Reviews</h2>
+            
+            <div id="reviewsStats" class="mb-md"></div>
+            
+            <div id="noReviews" class="text-center p-md text-muted hidden">
+              No reviews yet. Be the first to review this business!
+            </div>
+            
+            <div id="reviewsList"></div>
+            
+            <div id="submitReviewContainer" class="mt-md text-center">
+              <a id="submitReviewBtn" href="#" class="btn btn-gold">Write a Review</a>
+            </div>
+          </article>
+        </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="js/maintenance-check.js" type="module"></script>
+  <script src="/js/header.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script src="js/maintenance-check.js" type="module"></script>
+  <script src="js/button-effects.js" defer></script>
+  <script src="js/maintenance-check.js" type="module"></script>
+  <script src="js/breadcrumbs.js" defer></script>
+  <script src="js/maintenance-check.js" type="module"></script>
+  <script type="module" src="js/business.js"></script>
+</body>
+</html>

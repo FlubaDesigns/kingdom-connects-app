@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Church Tithings - Kingdom Connects</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=7">
+  <link rel="stylesheet" href="/styles/theme.css?v=7">
+  <link rel="stylesheet" href="/styles/buttons.css?v=7">
+  <link rel="stylesheet" href="/styles/forms.css?v=7">
+  <link rel="stylesheet" href="/styles/overrides.css?v=7">
+  
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h1 class="gold-metallic text-center">Church Tithe Earnings</h1>
+      <p class="text-center text-muted mb-md">Your church receives 10% of every Pro subscription from member businesses.</p>
+
+      <div class="split-40-60">
+        <div class="split-left">
+          <article class="card mb-md">
+            <h3 class="gold">Earnings Summary</h3>
+            <div class="stat-grid-2">
+              <div class="stat-card">
+                <div class="stat-value" id="monthlyEarnings">$0.00</div>
+                <div class="stat-label">This Month</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="ytdEarnings">$0.00</div>
+                <div class="stat-label">Year-to-Date</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="lifetimeEarnings">$0.00</div>
+                <div class="stat-label">Lifetime</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="unpaidBalance">$0.00</div>
+                <div class="stat-label">Pending</div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="split-right">
+          <div class="card mb-md">
+            <h3 class="gold">Tithe History</h3>
+            <div id="loading">
+              <p class="status-message">Loading tithe history...</p>
+            </div>
+
+            <div id="emptyState" class="hidden">
+              <p class="status-message empty">No tithe earnings yet.</p>
+            </div>
+
+            <div id="tableWrapper" class="hidden">
+              <table class="tithe-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Business</th>
+                    <th>Pro Payment</th>
+                    <th>Your 10%</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="tithesBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card mb-md tithe-explainer">
+            <h3 class="gold">How Tithes Work</h3>
+            <ul class="line-height-relaxed text-sm">
+              <li><strong>10% Share</strong> of every Pro subscription</li>
+              <li><strong>Recurring Monthly</strong> as long as member stays Pro</li>
+              <li><strong>Member Businesses</strong> linked to your church</li>
+            </ul>
+          </div>
+
+          <button class="btn btn-gold" id="exportBtn">Export CSV</button>
+        </div>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="js/tithings.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

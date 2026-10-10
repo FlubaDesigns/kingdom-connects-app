@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Sales Dashboard - Kingdom Connects</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="/styles/layout.css">
+  <link rel="stylesheet" href="/styles/theme.css">
+  <link rel="stylesheet" href="/styles/buttons.css">
+  <link rel="stylesheet" href="/styles/forms.css">
+  <link rel="stylesheet" href="/styles/overrides.css">
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+
+  <div id="header"></div>
+
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h2 class="gold-metallic text-center">Sales Agent Dashboard</h2>
+      <p class="text-center text-muted mb-md">Track your commissions, Pro conversions, and recurring revenue.</p>
+
+      <div id="loading" class="text-center p-md">
+        <p>Loading your sales data...</p>
+      </div>
+
+      <div id="content" class="hidden">
+        <div class="split-40-60">
+          <div class="split-left">
+            <div class="stat-grid-2 mb-md">
+              <div class="stat-card">
+                <div class="stat-value" id="totalEarned">$0.00</div>
+                <div class="stat-label">Total Earned</div>
+                <div class="stat-sublabel" id="paidStatus">$0 paid | $0 pending</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="monthlyRevenue">0</div>
+                <div class="stat-label">Referrals</div>
+                <div class="stat-sublabel">Businesses referred</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="activeClients">0</div>
+                <div class="stat-label">Pro Clients</div>
+                <div class="stat-sublabel">Active subscriptions</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="newConversions">0</div>
+                <div class="stat-label">This Month</div>
+                <div class="stat-sublabel">New referrals</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="split-right">
+            <h4 class="gold mb-sm">Quick Actions</h4>
+            <div class="action-cards-row mb-md">
+              <a href="/sales/commissions.html" class="action-card">
+                <div class="action-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                </div>
+                <span class="action-card-title">Commissions</span>
+                <span class="action-card-desc">Track your earnings</span>
+              </a>
+              <a href="/sales/conversions.html" class="action-card">
+                <div class="action-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                </div>
+                <span class="action-card-title">Conversions</span>
+                <span class="action-card-desc">Pro upgrades</span>
+              </a>
+              <a href="/sales/referrals.html" class="action-card">
+                <div class="action-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </div>
+                <span class="action-card-title">Referrals</span>
+                <span class="action-card-desc">Businesses you referred</span>
+              </a>
+              <a href="/sales/director-commissions.html" class="action-card hidden" id="director-tile">
+                <div class="action-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20V10"></path><path d="M18 20V4"></path><path d="M6 20v-4"></path></svg>
+                </div>
+                <span class="action-card-title">Director</span>
+                <span class="action-card-desc">Team performance</span>
+              </a>
+              <a href="/sales/agents.html" class="action-card">
+                <div class="action-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </div>
+                <span class="action-card-title">Sales Team</span>
+                <span class="action-card-desc">View your team</span>
+              </a>
+              <a href="/sales/user-manual.html" class="action-card">
+                <div class="action-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                </div>
+                <span class="action-card-title">User Manual</span>
+                <span class="action-card-desc">How-to guides</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="error" class="hidden text-center mt-lg">
+        <p class="text-muted">Unable to load sales data. Please refresh the page.</p>
+      </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="js/dashboard.js"></script>
+  </div>
+  <script src="js/sales-auth-guard.js" defer></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

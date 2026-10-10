@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Manage Churches - Kingdom Connects Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+  <link rel="stylesheet" href="/styles/loading-skeletons.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+  
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h2 class="gold-metallic text-center">Church Directory</h2>
+      <p class="text-center text-muted mb-md">View, approve, and manage all church listings.</p>
+
+      <div class="text-center mb-md">
+        <button id="btnAddChurch" class="btn btn-gold">+ Add Church</button>
+      </div>
+
+      <div class="split-40-60">
+        <div class="split-left">
+          <article class="card mb-md">
+            <h3 class="gold">Stats</h3>
+            <div class="stat-grid-2">
+              <div class="stat-card">
+                <div class="stat-value" id="totalCount">0</div>
+                <div class="stat-label">Total</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="activeCount">0</div>
+                <div class="stat-label">Active</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="pendingCount">0</div>
+                <div class="stat-label">Pending</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="businessCount">0</div>
+                <div class="stat-label">Businesses</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="card mb-md">
+            <h3 class="gold">Filters</h3>
+            <div class="form-group">
+              <input type="text" id="searchInput" placeholder="Search..." class="input-dark">
+            </div>
+            <div class="form-group">
+              <select id="statusFilter" class="input-dark">
+                <option value="">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="pending">Pending</option>
+                <option value="suspended">Suspended</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <select id="denominationFilter" class="input-dark">
+                <option value="">All Denominations</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <select id="sortFilter" class="input-dark">
+                <option value="">Sort By...</option>
+                <option value="church_name-asc">Name (A-Z)</option>
+                <option value="church_name-desc">Name (Z-A)</option>
+                <option value="submission_date-desc">Newest First</option>
+                <option value="submission_date-asc">Oldest First</option>
+              </select>
+            </div>
+            <button id="clearFilters" class="btn btn-small btn-secondary">Clear Filters</button>
+          </article>
+        </div>
+
+        <div class="split-right">
+          <div id="loadingMessage" class="text-center">Loading churches...</div>
+
+          <div id="emptyState" class="hidden text-center">
+            <p>No churches found.</p>
+          </div>
+          
+          <div id="errorMessage" class="hidden text-center">
+            <p class="text-error">Error loading churches.</p>
+          </div>
+
+          <div id="contentArea" class="hidden">
+            <div class="table-wrapper">
+              <table class="church-table">
+                <thead>
+                  <tr>
+                    <th data-sort="church_name">Church Name</th>
+                    <th data-sort="denomination">Denomination</th>
+                    <th data-sort="city">Location</th>
+                    <th data-sort="zip_code">ZIP</th>
+                    <th>Contact</th>
+                    <th data-sort="website">Website</th>
+                    <th data-sort="listing_status">Status</th>
+                    <th data-sort="submission_date">Submitted</th>
+                    <th>Businesses</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="churchTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script type="module" src="/js/utils.js"></script>
+  <script src="/admin/js/header.js?v=20241220" defer></script>
+  <script src="/admin/js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+
+  <script type="module" src="/admin/js/churches.js"></script>
+  </div>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

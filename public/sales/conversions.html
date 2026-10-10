@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Pro Conversions - Kingdom Connects Sales</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="/styles/layout.css">
+  <link rel="stylesheet" href="/styles/theme.css">
+  <link rel="stylesheet" href="/styles/buttons.css">
+  <link rel="stylesheet" href="/styles/forms.css">
+  <link rel="stylesheet" href="/styles/overrides.css">
+  
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h2 class="gold-metallic text-center">Pro Conversion Tracking</h2>
+      <p class="text-center text-muted mb-md">Monitor Pro upgrade conversions and subscription performance.</p>
+
+      <div class="split-40-60">
+        <div class="split-left">
+          <article class="card mb-md">
+            <h3 class="gold">Metrics</h3>
+            <div class="stat-grid-2">
+              <div class="stat-card">
+                <div class="stat-value" id="conversionRate">0%</div>
+                <div class="stat-label">Conversion Rate</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="activeProCount">0</div>
+                <div class="stat-label">Active Pro</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="avgLength">0</div>
+                <div class="stat-label">Avg Months</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="totalConversions">0</div>
+                <div class="stat-label">Total</div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="split-right">
+          <h4 class="gold mb-sm">Recent Conversions</h4>
+          
+          <div id="loading" class="text-center">
+            <p>Loading conversion data...</p>
+          </div>
+
+          <div id="content" class="hidden">
+            <div class="conversion-list" id="conversionsList"></div>
+          </div>
+
+          <div id="empty" class="hidden text-center">
+            <p>No Pro conversions yet.</p>
+          </div>
+
+          <div id="error" class="hidden text-center">
+            <p class="text-muted">Unable to load conversion data.</p>
+          </div>
+        </div>
+      </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+  
+  </div>
+  <script type="module" src="js/conversions.js"></script>
+  <script src="js/sales-auth-guard.js" defer></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

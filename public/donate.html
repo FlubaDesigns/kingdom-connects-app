@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Support Kingdom Connects - Donate</title>
+  <meta name="description" content="Support the mission of Kingdom Connects. Your donation helps connect churches and Christian businesses while funding outreach and ministry programs.">
+  <link rel="canonical" href="https://kingdomconnects.org/donate.html">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+  
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#081529" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+  
+  <link rel="stylesheet" href="styles/layout.css?v=7">
+  <link rel="stylesheet" href="styles/theme.css?v=7">
+  <link rel="stylesheet" href="styles/buttons.css?v=7">
+  <link rel="stylesheet" href="styles/forms.css?v=7">
+  <link rel="stylesheet" href="styles/components/pricing.css">
+  <link rel="stylesheet" href="styles/overrides.css?v=7">
+</head>
+<body>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <!-- HERO -->
+        <article class="card text-center">
+          <h1 class="gold-metallic hero-title">💰 Support the Kingdom</h1>
+          <p class="mx-auto-content-lg text-lg line-height-relaxed">
+            Your donation helps Kingdom Connects connect churches and Christian businesses nationwide. 
+            100% of donations go toward platform development, server costs, and expanding our reach to more communities across the United States.
+          </p>
+        </article>
+
+      <!-- DONATION FORM -->
+        <div class="card">
+          <h2 class="gold-metallic text-center mb-lg">Choose Your Support Level</h2>
+          
+          <!-- Donor Information - at top -->
+          <div class="form-group">
+            <label for="donorName" class="gold">Your Name <span class="text-muted">(optional)</span></label>
+            <input type="text" id="donorName" class="input-dark" placeholder="John Smith">
+          </div>
+
+          <div class="form-group mb-lg">
+            <label for="donorEmail" class="gold">Your Email <span class="text-muted">(for receipt)</span></label>
+            <input type="email" id="donorEmail" class="input-dark" placeholder="[email protected]">
+          </div>
+
+          <!-- One-Time vs Recurring Toggle -->
+          <div class="card info-card-gold text-center mb-lg">
+            <p class="gold-metallic mb-sm">Want to make an ongoing impact?</p>
+            <label class="toggle-label">
+              <input type="checkbox" id="recurringToggle">
+              <span class="toggle-switch"></span>
+              <span class="toggle-text gold">Set up Monthly Giving</span>
+            </label>
+            <p class="text-muted text-sm mt-sm">Your card will be charged automatically each month. Cancel anytime via email link.</p>
+          </div>
+
+          <!-- Donation Tiers 2x2 Grid + Custom -->
+          <div id="donationTiers" class="donation-grid mb-lg">
+            <div class="pricing-option" data-amount="10">
+              <h3 class="gold-metallic">$10</h3>
+              <p class="text-muted text-sm">Hosting costs</p>
+            </div>
+            <div class="pricing-option" data-amount="25">
+              <h3 class="gold-metallic">$25</h3>
+              <p class="text-muted text-sm">Platform features</p>
+            </div>
+            <div class="pricing-option" data-amount="50">
+              <h3 class="gold-metallic">$50</h3>
+              <p class="text-muted text-sm">Outreach campaigns</p>
+            </div>
+            <div class="pricing-option" data-amount="100">
+              <h3 class="gold-metallic">$100</h3>
+              <p class="text-muted text-sm">Major development</p>
+            </div>
+            <div class="pricing-option custom-tile" id="customTile">
+              <h3 class="gold-metallic">Custom</h3>
+              <p class="text-muted text-sm">Your choice</p>
+              <input type="text" id="customAmount" class="custom-input hidden" placeholder="$" inputmode="decimal">
+              <button type="button" id="customDonateBtn" class="btn btn-gold btn-sm hidden mt-sm">Donate</button>
+              <p class="text-muted text-xs hidden mt-sm" id="customHint">$5 minimum - every dollar makes a difference</p>
+            </div>
+          </div>
+
+          <p class="text-muted text-center">
+            <small>💳 Secure payment processing by Stripe. Your information is always protected.</small>
+          </p>
+        </div>
+
+      <!-- Why Donate? -->
+        <div class="card">
+          <h2 class="gold">Why Your Support Matters</h2>
+          <ul class="list-spaced">
+            <li><strong>Connect Communities:</strong> Help churches find and support local Christian businesses</li>
+            <li><strong>Fund Ministries:</strong> 10% of Pro subscription revenue goes back to churches and outreach</li>
+            <li><strong>Expand Reach:</strong> Bring Kingdom Connects to new cities and states</li>
+            <li><strong>Free for All:</strong> Keep the core directory free for church members forever</li>
+            <li><strong>Kingdom Impact:</strong> Build sustainable Christian commerce and community</li>
+          </ul>
+        </div>
+
+      <!-- Tax Info -->
+        <div class="card text-center">
+          <p class="text-muted">
+            Kingdom Connects is operated by Fluba Designs LLC. Donations are not tax-deductible as charitable contributions.
+            Please consult your tax advisor for specific tax information.
+          </p>
+        </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="js/maintenance-check.js" type="module"></script>
+  <script type="module" src="js/firebase-config.js"></script>
+  <script src="/js/header.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script src="js/breadcrumbs.js" defer></script>
+  <script type="module" src="js/donate.js"></script>
+</body>
+</html>

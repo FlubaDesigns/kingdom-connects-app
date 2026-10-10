@@ -1,14 +1,161 @@
 {
-  "hosting": {
-    "public": ".",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "cleanUrls": true,
-    "headers": [
-      { "source": "**/*.html", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] },
-      { "source": "**/*.{js,css}", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000" }] },
-      { "source": "index.html", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] }
-    ]
-  },
-  "firestore": { "rules": "firestore.rules" },
-  "storage":   { "rules": "storage.rules" }
+    "firestore": {
+        "rules": "firestore.rules"
+    },
+    "storage": {
+        "rules": "storage.rules"
+    },
+    "functions": {
+        "source": "functions"
+    },
+    "hosting": {
+        "public": "public",
+        "ignore": [
+            "firebase.json",
+            "**/.*",
+            "**/node_modules/**",
+            "functions/**",
+            "admin-tools/**",
+            "admin/tools/**",
+            "gitops/**",
+            "tools/**",
+            "demo/tools/**",
+            "index_test.html",
+            "store.html",
+            "*.md",
+            "*.py",
+            "*.sh",
+            "*.zip",
+            "pyproject.toml",
+            "cors.json",
+            "firebase-service-account.json",
+            "email-server.js",
+            "seed/**",
+            "scripts/**",
+            "MASTER-EXPORT/**",
+            ".cache/**",
+            "docs/**",
+            "downloads/**",
+            "attached_assets/**"
+        ],
+        "cleanUrls": true,
+        "trailingSlash": false,
+        "rewrites": [
+            {
+                "source": "/api/hierarchy",
+                "function": "hierarchyAction"
+            },
+            {
+                "source": "/sitemap.xml",
+                "function": "sitemapXml"
+            },
+            {
+                "source": "/api/slug/**",
+                "function": "slugLookup"
+            },
+            {
+                "source": "/api/ping-sitemap",
+                "function": "pingSitemap"
+            },
+            {
+                "source": "/api/qr-widget-token",
+                "function": "generateQrGearToken"
+            },
+            {
+                "source": "/api/notify-admin-new-submission",
+                "function": "notifyAdminNewSubmission"
+            },
+            {
+                "source": "/api/send-business-submission-confirmation",
+                "function": "sendBusinessSubmissionConfirmation"
+            },
+            {
+                "source": "/api/getProducts",
+                "function": "getProducts"
+            },
+            {
+                "source": "/api/updateProductPrice",
+                "function": "updateProductPrice"
+            },
+            {
+                "source": "/api/brain/health",
+                "function": "brainHealth"
+            },
+            {
+                "source": "/api/brain/submit",
+                "function": "brainProxy"
+            },
+            {
+                "source": "/api/brain/status/**",
+                "function": "brainStatus"
+            },
+            {
+                "source": "/business/*.htm",
+                "function": "businessProfile"
+            },
+            {
+                "source": "/church/*.htm",
+                "function": "churchProfile"
+            },
+            {
+                "source": "/api/createCheckoutSession",
+                "function": "createCheckoutSession"
+            },
+            {
+                "source": "/api/createPortalSession",
+                "function": "createPortalSession"
+            },
+            {
+                "source": "/api/stripeWebhook",
+                "function": "stripeWebhook"
+            },
+            {
+                "source": "/api/send-template",
+                "function": "sendTemplate"
+            },
+            {
+                "source": "/api/send-email",
+                "function": "sendEmail"
+            },
+            {
+                "source": "/api/presentations/send",
+                "function": "sendPresentation"
+            },
+            {
+                "source": "/api/presentations/preview/**",
+                "function": "presentationPreview"
+            },
+            {
+                "source": "/api/health",
+                "function": "health"
+            },
+            {
+                "source": "/api/donate",
+                "function": "createDonationSession"
+            },
+            {
+                "source": "/api/sendVerificationEmail",
+                "function": "sendVerificationEmail"
+            },
+            {
+                "source": "/api/sendProWelcomeEmail",
+                "function": "sendProWelcomeEmail"
+            },
+            {
+                "source": "/api/deleteUser/**",
+                "function": "deleteUser"
+            }
+        ],
+        "headers": [
+            {
+                "source": "**/*.@(html|css|js)",
+                "headers": [
+                    {
+                        "key": "Cache-Control",
+                        "value": "no-store, no-cache, must-revalidate, max-age=0"
+                    }
+                ]
+            }
+        ]
+    }
 }

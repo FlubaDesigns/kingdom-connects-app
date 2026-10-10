@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Questionnaire Manager - Kingdom Connects Admin</title>
+  
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+  <link rel="stylesheet" href="/styles/loading-skeletons.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+
+</head>
+<body>
+  <div class="page-wrap">
+    <div id="header"></div>
+
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+      <div class="page-header">
+        <h2>Questionnaire Manager</h2>
+        <p class="opacity-80">Create and manage questions for churches and businesses. Questions appear in order on their respective dashboards.</p>
+      </div>
+
+      <div class="audience-tabs">
+        <button class="audience-tab active" data-audience="church">Church Questions</button>
+        <button class="audience-tab" data-audience="business">Business Questions</button>
+      </div>
+
+      <div class="add-form">
+        <h3 class="gold mt-0">Add New Question</h3>
+        <form id="addQuestionForm">
+          <div class="form-field">
+            <label class="" for="questionText">Question Text<span class="req">*</span></label>
+            <textarea 
+              class="" 
+              id="questionText" 
+              name="questionText" 
+              rows="2"
+              placeholder="Enter your question..."
+              required></textarea>
+          </div>
+
+          <div class="form-field">
+            <label class="">Question Type<span class="req">*</span></label>
+            <div class="radio-group">
+              <label>
+                <input type="radio" name="questionType" value="text" checked>
+                <span>Text</span>
+              </label>
+              <label>
+                <input type="radio" name="questionType" value="number">
+                <span>Number</span>
+              </label>
+              <label>
+                <input type="radio" name="questionType" value="select">
+                <span>Dropdown</span>
+              </label>
+              <label>
+                <input type="radio" name="questionType" value="multiselect">
+                <span>Multi-Select</span>
+              </label>
+              <label>
+                <input type="radio" name="questionType" value="textarea">
+                <span>Long Text</span>
+              </label>
+              <label>
+                <input type="radio" name="questionType" value="yesno">
+                <span>Yes/No</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-field hidden" id="optionsField">
+            <label class="" for="questionOptions">Options (one per line)<span class="req">*</span></label>
+            <textarea 
+              class="" 
+              id="questionOptions" 
+              name="questionOptions" 
+              rows="4"
+              placeholder="Option 1&#10;Option 2&#10;Option 3"></textarea>
+            <small class="opacity-70">For dropdown and multi-select questions</small>
+          </div>
+
+          <div class="form-field">
+            <label class="" for="questionPlaceholder">Placeholder Text (optional)</label>
+            <input 
+              type="text" 
+              class="" 
+              id="questionPlaceholder" 
+              name="questionPlaceholder" 
+              placeholder="e.g., Enter your answer here...">
+          </div>
+
+          <div class="form-field">
+            <label class="flex-align-center cursor-pointer">
+              <input type="checkbox" id="isRequired" name="isRequired" checked>
+              <span>Required question</span>
+            </label>
+          </div>
+
+          <div class="form-field">
+            <label class="flex-align-center cursor-pointer">
+              <input type="checkbox" id="isActive" name="isActive" checked>
+              <span>Active (visible to users)</span>
+            </label>
+          </div>
+
+          <input type="hidden" id="currentAudience" name="audience" value="church">
+
+          <button type="submit" class="btn btn-gold">Add Question</button>
+        </form>
+      </div>
+
+      <div class="page-header">
+        <h3>Questions (<span id="questionCount">0</span>)</h3>
+      </div>
+
+      <div id="questionList">
+        <p class="status-message empty">Loading questions...</p>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="/admin/js/header.js?v=20241220" defer></script>
+  <script src="/admin/js/footer.js" defer></script>
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+  <script type="module" src="/admin/js/questionnaire-manager.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

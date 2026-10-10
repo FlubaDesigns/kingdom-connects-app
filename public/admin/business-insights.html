@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Business Questionnaire Insights - Kingdom Connects Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+  <link rel="stylesheet" href="/styles/loading-skeletons.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+  
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <div class="page-header">
+        <h1 class="gold-metallic">Business Questionnaire Insights</h1>
+        <div class="flex-gap">
+          <button class="btn btn-gold" id="exportCSV">Export CSV</button>
+          <button class="btn btn-secondary" id="refreshData">Refresh Data</button>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="totalResponses">0</div>
+          <div class="stat-label">Total Responses</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="completedResponses">0</div>
+          <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="draftResponses">0</div>
+          <div class="stat-label">Drafts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="completionRate">0%</div>
+          <div class="stat-label">Completion Rate</div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <div class="search-box">
+          <input type="text" id="searchInput" class="input-dark" placeholder="Search by business name or ID...">
+        </div>
+        <select id="statusFilter" class="input-dark">
+          <option value="">All Status</option>
+          <option value="complete">Completed</option>
+          <option value="draft">Drafts</option>
+        </select>
+      </div>
+
+      <div id="responsesList">
+        <p class="status-message">Loading responses...</p>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="/admin/js/header.js?v=20241220" defer></script>
+  <script src="/admin/js/footer.js" defer></script>
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+  <script type="module" src="/admin/js/business-insights.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

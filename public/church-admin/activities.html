@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Manage Activities - Kingdom Connects</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=7">
+  <link rel="stylesheet" href="/styles/theme.css?v=7">
+  <link rel="stylesheet" href="/styles/buttons.css?v=7">
+  <link rel="stylesheet" href="/styles/forms.css?v=7">
+  <link rel="stylesheet" href="/styles/file-uploader.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=7">
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h1 class="gold-metallic text-center">Manage Activities</h1>
+      <p class="text-center text-muted mb-md">Create activities, Bible studies, and more for your church page.</p>
+
+      <div class="split-40-60">
+        <div class="split-left">
+          <button class="btn btn-gold mb-md" id="addActivityBtn">+ Add Activity</button>
+        </div>
+
+        <div class="split-right">
+          <div id="activitiesList">
+            <p class="status-message">Loading activities...</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <!-- Activity Modal -->
+  <div id="activityModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">Add Activity</h2>
+        <button class="close-btn" id="closeModal">&times;</button>
+      </div>
+
+      <form id="activityForm">
+        <input type="hidden" id="activityId">
+
+        <div class="form-group">
+          <label for="title">Activity Title *</label>
+          <input type="text" id="title" class="input-dark" required placeholder="e.g., Women's Bible Study">
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description *</label>
+          <textarea id="description" class="input-dark" rows="4" required placeholder="Describe your activity..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="date">Date *</label>
+            <input type="date" id="date" class="input-dark" required>
+          </div>
+          <div class="form-group">
+            <label for="time">Time *</label>
+            <input type="time" id="time" class="input-dark" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="location">Location *</label>
+          <input type="text" id="location" class="input-dark" required placeholder="At our church, online, or specific address">
+        </div>
+
+        <div class="form-group">
+          <label for="contactInfo">Contact Info</label>
+          <input type="text" id="contactInfo" class="input-dark" placeholder="Email or phone for questions">
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="isRecurring">
+            This is a recurring activity
+          </label>
+        </div>
+
+        <div id="recurringOptions" class="recurring-options">
+          <div class="form-group">
+            <label for="recurringPattern">Recurring Pattern</label>
+            <select id="recurringPattern" class="input-dark">
+              <option value="weekly">Weekly</option>
+              <option value="biweekly">Every 2 Weeks</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="recurringDescription">Pattern Description</label>
+            <input type="text" id="recurringDescription" class="input-dark" placeholder="e.g., Every Wednesday at 7pm">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="activityImage">Activity Image</label>
+          <input type="file" id="activityImage" class="input-dark" accept="image/*">
+          <div id="uploadProgressBar" class="upload-progress hidden">
+            <div class="progress-bar"><div class="progress-fill" id="uploadProgressFill"></div></div>
+            <p class="text-sm text-muted" id="uploadProgressText">0%</p>
+          </div>
+          <img id="imagePreview" class="image-preview hidden">
+        </div>
+
+        <div class="form-group">
+          <label for="activityVideo">Activity Video (optional)</label>
+          <input type="file" id="activityVideo" class="input-dark" accept="video/mp4,video/webm">
+          <p class="text-sm text-muted">MP4, WebM (max 50MB)</p>
+          <div id="videoProgressBar" class="upload-progress hidden">
+            <div class="progress-bar"><div class="progress-fill" id="videoProgressFill"></div></div>
+            <p class="text-sm text-muted" id="videoProgressText">0%</p>
+          </div>
+          <div id="videoPreviewContainer" class="hidden">
+            <img id="videoPreview" class="image-preview" alt="Video thumbnail">
+            <p class="text-sm text-muted">Video ready to save</p>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button type="submit" class="btn btn-gold">Save Activity</button>
+          <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="js/activities.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

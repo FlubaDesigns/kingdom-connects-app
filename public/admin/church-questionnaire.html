@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Church Questionnaire - Kingdom Connects Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+  <link rel="stylesheet" href="/styles/loading-skeletons.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+  
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <div class="page-header">
+        <h1 class="gold-metallic">Church Questionnaire</h1>
+      </div>
+
+      <div class="tab-nav">
+        <button class="tab-button active" data-tab="questions">Manage Questions</button>
+        <button class="tab-button" data-tab="responses">View Responses</button>
+      </div>
+
+      <div id="tab-questions" class="tab-content active">
+        <div class="page-header">
+          <h2>Question Manager</h2>
+          <button class="btn btn-gold" id="addQuestionBtn">Add Question</button>
+        </div>
+
+        <div class="info-box">
+          <p><strong>Manage questions</strong> that churches answer during signup. Use up/down arrows to reorder.</p>
+        </div>
+
+        <div id="questionsLoading" class="status-message">Loading questions...</div>
+        <div id="questionsError" class="status-message error hidden">Error loading questions</div>
+        <div id="questionsEmpty" class="empty-state hidden">
+          <p>No questions created yet. Click "Add Question" to create your first question.</p>
+        </div>
+
+        <div id="questionsList" class="hidden"></div>
+      </div>
+
+      <div id="tab-responses" class="tab-content">
+        <div class="page-header">
+          <h2>Church Responses</h2>
+          <div class="flex-gap">
+            <button class="btn btn-gold" id="exportCSV">Export CSV</button>
+            <button class="btn btn-secondary" id="refreshData">Refresh</button>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="totalResponses">0</div>
+            <div class="stat-label">Total Responses</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="completedResponses">0</div>
+            <div class="stat-label">Completed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="draftResponses">0</div>
+            <div class="stat-label">Drafts</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="completionRate">0%</div>
+            <div class="stat-label">Completion Rate</div>
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <div class="search-box">
+            <input type="text" id="searchInput" class="input-dark" placeholder="Search by church name or ID...">
+          </div>
+          <select id="statusFilter" class="input-dark">
+            <option value="">All Status</option>
+            <option value="complete">Completed</option>
+            <option value="draft">Drafts</option>
+          </select>
+        </div>
+
+        <div id="responsesLoading" class="status-message">Loading responses...</div>
+        <div id="responsesError" class="status-message error hidden">Error loading responses</div>
+        <div id="responsesEmpty" class="empty-state hidden">
+          <p>No church responses found.</p>
+        </div>
+        
+        <div id="responsesList" class="hidden"></div>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <div id="questionModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add Question</h2>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+      
+      <form id="questionForm">
+        <div class="form-group">
+          <label for="questionText">Question Text <span class="required">*</span></label>
+          <textarea id="questionText" class="input-dark" rows="3" required placeholder="Enter your question here..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="questionType">Question Type <span class="required">*</span></label>
+          <select id="questionType" class="input-dark" required>
+            <option value="text">Short Text</option>
+            <option value="textarea">Long Text (Paragraph)</option>
+            <option value="number">Number</option>
+            <option value="yes_no">Yes/No</option>
+            <option value="multiple_choice">Multiple Choice</option>
+            <option value="checkboxes">Checkboxes (Multiple Select)</option>
+          </select>
+        </div>
+
+        <div id="optionsContainer" class="form-group hidden">
+          <label>Answer Options</label>
+          <div id="optionsList"></div>
+          <button type="button" class="btn btn-secondary btn-small" id="addOptionBtn">Add Option</button>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="isRequired">
+            <span>Required Question</span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label for="helpText">Help Text (Optional)</label>
+          <input type="text" id="helpText" class="input-dark" placeholder="Additional guidance for this question">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+          <button type="submit" class="btn btn-gold">Save Question</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/admin/js/header.js?v=20241220" defer></script>
+  <script src="/admin/js/footer.js" defer></script>
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+  <script type="module" src="/admin/js/church-questionnaire.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

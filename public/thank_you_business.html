@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Business Submitted - Kingdom Connects</title>
+  <meta name="description" content="Your business listing has been submitted successfully!">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+
+  <link rel="stylesheet" href="styles/layout.css?v=66">
+  <link rel="stylesheet" href="styles/theme.css?v=8">
+  <link rel="stylesheet" href="styles/buttons.css?v=8">
+  <link rel="stylesheet" href="styles/forms.css?v=7">
+  <link rel="stylesheet" href="styles/overrides.css?v=7">
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <div class="split-40-60">
+        <div class="split-40-60-left">
+          <div class="action-cards-row">
+            <a href="login" class="action-card">
+              <div class="action-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                </svg>
+              </div>
+              <span class="action-card-title">Log In</span>
+              <span class="action-card-desc">Access your dashboard</span>
+            </a>
+            <a href="pricing" class="action-card action-card-gold">
+              <div class="action-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                </svg>
+              </div>
+              <span class="action-card-title">Go Pro</span>
+              <span class="action-card-desc">Unlock premium features</span>
+            </a>
+            <a href="index" class="action-card">
+              <div class="action-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                  <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+              </div>
+              <span class="action-card-title">Home</span>
+              <span class="action-card-desc">Back to Kingdom Connects</span>
+            </a>
+            <a href="businesses" class="action-card">
+              <div class="action-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+              </div>
+              <span class="action-card-title">Directory</span>
+              <span class="action-card-desc">Browse businesses</span>
+            </a>
+          </div>
+          <div class="directory-cinema">
+            <img src="/assets/images/cinema/business.png" alt="Kingdom Connects Business">
+          </div>
+        </div>
+
+        <div class="split-40-60-right">
+          <article class="card thank-you-hero-card">
+            <div class="text-huge">✓</div>
+            <h1 class="gold-metallic">Business Submitted!</h1>
+            <p class="text-lg">Your business listing has been submitted and your account has been created.</p>
+            <p class="text-muted">Use the email and password you just created to access your Business Dashboard.</p>
+            
+            <div id="churchApprovalNeeded" class="approval-notice hidden">
+              <strong class="gold">Waiting for Church Approval</strong>
+              <p id="churchApprovalMessage">Your selected church needs to approve your affiliation before your listing can go live.</p>
+            </div>
+
+            <div id="platformReviewOnly" class="approval-notice hidden">
+              <strong class="gold">Platform Review (24-48 hours)</strong>
+              <p>Our team ensures all listings meet our community guidelines. You'll receive an email when approved.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div id="benefitsContainer"></div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="/js/header.js" type="module"></script>
+  <script src="/js/pages/thank-you-business.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+</body>
+</html>

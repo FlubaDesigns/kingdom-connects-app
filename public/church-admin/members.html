@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Church Members - Church Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=60">
+  <link rel="stylesheet" href="/styles/theme.css?v=8">
+  <link rel="stylesheet" href="/styles/buttons.css?v=8">
+  <link rel="stylesheet" href="/styles/forms.css?v=8">
+  <link rel="stylesheet" href="/styles/overrides.css?v=8">
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h1 class="gold-metallic text-center">Church Members</h1>
+      <p class="text-center text-muted mb-md">Manage member requests and approved congregation.</p>
+
+      <div id="loadingMessage" class="text-center p-md">Loading members...</div>
+
+      <div id="contentArea" class="hidden">
+        <div class="tabs mb-md text-center">
+          <button class="tab-btn active" data-tab="pending">Pending <span id="pendingCount" class="badge">0</span></button>
+          <button class="tab-btn" data-tab="approved">Approved <span id="approvedCount" class="badge">0</span></button>
+          <button class="tab-btn" data-tab="rejected">Rejected <span id="rejectedCount" class="badge">0</span></button>
+        </div>
+
+        <div id="tab-pending" class="tab-content active">
+          <article class="card">
+            <h2 class="gold mb-md">Pending Member Requests</h2>
+            <p class="text-muted mb-md">These users have requested to join your church. Review and approve or reject their membership.</p>
+            <div id="pendingList" class="member-list">
+              <p class="text-muted text-center">No pending requests</p>
+            </div>
+          </article>
+        </div>
+
+        <div id="tab-approved" class="tab-content hidden">
+          <article class="card">
+            <h2 class="gold mb-md">Approved Members</h2>
+            <p class="text-muted mb-md">Members who are part of your church community.</p>
+            <div id="approvedList" class="member-list">
+              <p class="text-muted text-center">No approved members yet</p>
+            </div>
+          </article>
+        </div>
+
+        <div id="tab-rejected" class="tab-content hidden">
+          <article class="card">
+            <h2 class="gold mb-md">Rejected Requests</h2>
+            <p class="text-muted mb-md">Requests that were declined. You can re-approve if needed.</p>
+            <div id="rejectedList" class="member-list">
+              <p class="text-muted text-center">No rejected requests</p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div id="errorMessage" class="text-center p-md hidden">
+        <p class="error-text">Error loading members. Please try again.</p>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="js/members.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Login - Kingdom Connects</title>
+  <meta name="description" content="Login to your Kingdom Connects account to manage your business listings and dashboard.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="styles/layout.css?v=23">
+  <link rel="stylesheet" href="styles/theme.css?v=7">
+  <link rel="stylesheet" href="styles/buttons.css?v=7">
+  <link rel="stylesheet" href="styles/forms.css?v=9">
+  <link rel="stylesheet" href="styles/overrides.css?v=7">
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <div class="login-split">
+        <div class="login-left">
+          <div class="card">
+            <h1 class="gold-metallic text-center">Login to Kingdom Connects</h1>
+            <p class="text-center text-muted m-block">Access your dashboard to manage listings, reviews, and more.</p>
+
+            <div id="statusMessage" class="status-message"></div>
+
+            <form id="loginForm" class="form-wrapper">
+              <div class="form-field">
+                <label for="email" class="required">Email Address</label>
+                <input 
+                  type="email" 
+                  id="email" 
+                  name="email" 
+                  class="input-dark" 
+                  required 
+                  autocomplete="email"
+                  placeholder="you@example.com"
+                >
+              </div>
+
+              <div class="form-field">
+                <label for="password" class="required">Password</label>
+                <input 
+                  type="password" 
+                  id="password" 
+                  name="password" 
+                  class="input-dark" 
+                  required 
+                  autocomplete="current-password"
+                  placeholder="Enter your password"
+                >
+              </div>
+
+              <div class="form-options">
+                <label class="checkbox-inline"><input type="checkbox" id="rememberMe"> Remember me</label>
+                <a href="forgot-password.html" class="gold">Forgot password?</a>
+              </div>
+
+              <button type="submit" id="loginBtn" class="btn btn-gold full-width">
+                Login
+              </button>
+            </form>
+
+            <div id="logoutSection" class="text-center m-block hidden">
+              <button type="button" id="logoutBtn" class="btn btn-secondary full-width">Log Out</button>
+            </div>
+
+            <div class="text-center m-block">
+              <p class="text-muted">Don't have an account?</p>
+              <a href="add_to_directory.html" class="btn btn-outline full-width">Create an Account</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="login-right">
+          <img src="/assets/images/kc-network-diagram.svg" alt="Kingdom Connects Network" class="login-diagram">
+          
+          <div class="card card-highlight" id="roleSpecificBenefits">
+            <h3 class="gold">What You Can Do:</h3>
+            <ul class="m-block-sm" id="benefitsList">
+              <li><strong>Business Owners:</strong> Manage listings, respond to reviews, upgrade to Pro</li>
+              <li><strong>Church Admins:</strong> Update church info, feature member businesses</li>
+              <li><strong>Sales Agents:</strong> Track commissions and referrals</li>
+              <li><strong>Platform Admins:</strong> Full platform management</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="js/maintenance-check.js" type="module"></script>
+  <script src="/js/header.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script src="js/breadcrumbs.js" defer></script>
+  <script src="js/password-toggle.js" type="module"></script>
+  <script src="js/role-specific-login.js" defer></script>
+  <script type="module" src="js/login-form.js"></script>
+</body>
+</html>

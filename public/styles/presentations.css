@@ -1,0 +1,247 @@
+/* Presentation Manager Styles */
+
+/* Preview pane - white background for document view */
+.preview-pane {
+  background: white;
+  color: #0a1b2f;
+  padding: 2rem;
+  border-radius: 8px;
+  min-height: 400px;
+  overflow-y: auto;
+}
+
+/* Recent sends list - card items */
+.send-item {
+  padding: 1rem;
+  background: rgba(255,215,0,0.05);
+  border-left: 4px solid #ffd700;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+}
+
+.send-item:last-child {
+  margin-bottom: 0;
+}
+
+.send-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.send-role {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.send-recipients {
+  font-size: 0.9rem;
+  color: #ccc;
+  margin-bottom: 0.25rem;
+}
+
+.send-time {
+  font-size: 0.85rem;
+}
+
+/* Form actions spacing */
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Responsive form actions */
+@media (min-width: 769px) {
+  .form-actions {
+    flex-direction: row;
+    gap: 1rem;
+  }
+  
+  .form-actions .btn {
+    flex: 1;
+  }
+}
+
+/* Card list grid */
+.card-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+/* Template Editor Styles */
+.slide-edit-block {
+  background: rgba(255,215,0,0.05);
+  border-left: 4px solid #ffd700;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.slide-edit-block h4 {
+  color: #ffd700;
+  margin-top: 0;
+}
+
+.slide-edit-block:last-child {
+  margin-bottom: 0;
+}
+
+#editor-container textarea {
+  min-height: 80px;
+}
+
+#template-editor h3 {
+  border-bottom: 2px solid rgba(255,215,0,0.3);
+  padding-bottom: 0.5rem;
+}
+
+/* Voice input styles */
+.input-with-mic {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.input-with-mic input,
+.input-with-mic textarea {
+  flex: 1;
+}
+
+.mic-btn {
+  background: rgba(255,215,0,0.2);
+  border: 2px solid #ffd700;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mic-btn:hover {
+  background: rgba(255,215,0,0.4);
+  transform: scale(1.05);
+}
+
+.mic-btn.listening {
+  background: #c9302c;
+  border-color: #fff;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 48, 44, 0.7); }
+  50% { box-shadow: 0 0 0 12px rgba(201, 48, 44, 0); }
+}
+
+.speech-status {
+  background: rgba(201, 162, 39, 0.2);
+  border: 1px solid #c9a227;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.speech-status.hidden {
+  display: none;
+}
+
+/* Email Templates - Template Grid */
+.template-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 600px) {
+  .template-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .template-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.template-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,215,0,0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  transition: all 0.2s ease;
+}
+
+.template-card:hover {
+  border-color: #ffd700;
+  background: rgba(255,215,0,0.08);
+}
+
+.template-card.inactive {
+  opacity: 0.6;
+  border-color: rgba(255,255,255,0.2);
+}
+
+.template-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  gap: 0.5rem;
+}
+
+.template-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.badge-success {
+  background: rgba(76,175,80,0.3);
+  color: #4CAF50;
+}
+
+.badge-muted {
+  background: rgba(150,150,150,0.3);
+  color: #999;
+}
+
+/* Activity items */
+.activity-item {
+  padding: 0.75rem;
+  background: rgba(255,215,0,0.05);
+  border-left: 3px solid #ffd700;
+  border-radius: 4px;
+}
+
+/* Preview subject line */
+.preview-subject {
+  background: rgba(0,0,0,0.3);
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+/* Email preview frame */
+.email-preview-frame {
+  background: white;
+  color: #333;
+  border-radius: 8px;
+  overflow: hidden;
+}

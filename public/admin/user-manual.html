@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>User Manual - Platform Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=7">
+  <link rel="stylesheet" href="/styles/theme.css?v=7">
+  <link rel="stylesheet" href="/styles/buttons.css?v=7">
+  <link rel="stylesheet" href="/styles/forms.css?v=7">
+  <link rel="stylesheet" href="/styles/help.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=7">
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content help-page" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h1 class="gold-metallic text-center mb-md">Platform Admin Manual</h1>
+      <div class="help-actions text-center mb-md">
+        <button id="printBtn" class="btn btn-secondary btn-small">Print / Save PDF</button>
+        <a href="/admin/" class="btn btn-gold btn-small">Back to Dashboard</a>
+      </div>
+
+      <p class="text-muted">Version 1.0 | January 2025 | For Platform Administrators</p>
+
+      <div class="help-highlight">
+        <h2 class="gold-metallic" id="heroTitle">Manage the Kingdom Connects Platform</h2>
+        <p id="heroDescription">Approve listings, manage users, configure settings, and monitor platform health.</p>
+      </div>
+
+      <nav class="help-toc">
+        <h2>Table of Contents</h2>
+        <ol>
+          <li><a href="#chapter-1">Dashboard Overview</a></li>
+          <li><a href="#chapter-2">Managing Businesses</a></li>
+          <li><a href="#chapter-3">Managing Churches</a></li>
+          <li><a href="#chapter-4">Managing Members</a></li>
+          <li><a href="#chapter-5">Categories</a></li>
+          <li><a href="#chapter-6">Email Templates</a></li>
+          <li><a href="#chapter-7">Presentations</a></li>
+          <li><a href="#chapter-8">Pricing & Payments</a></li>
+          <li><a href="#chapter-9">Sales Team</a></li>
+          <li><a href="#chapter-10">Analytics & Reports</a></li>
+        </ol>
+      </nav>
+
+      <article class="help-chapter" id="chapter-1">
+        <h2>Chapter 1: Dashboard Overview</h2>
+
+        <h3>Admin Dashboard</h3>
+        <p>The admin dashboard shows key platform metrics:</p>
+        <ul>
+          <li><strong>Pending Approvals</strong> - Businesses and churches waiting for review</li>
+          <li><strong>Total Listings</strong> - Active businesses and churches</li>
+          <li><strong>Pro Subscriptions</strong> - Paid business accounts</li>
+          <li><strong>Total Users</strong> - Registered members</li>
+        </ul>
+
+        <h3>Navigation</h3>
+        <p>The admin menu provides access to all management areas:</p>
+        <ul>
+          <li><strong>Businesses</strong> - View, approve, reject, edit business listings</li>
+          <li><strong>Churches</strong> - View, approve, reject, edit church listings</li>
+          <li><strong>Members</strong> - View and manage member accounts</li>
+          <li><strong>Categories</strong> - Manage business categories</li>
+          <li><strong>Email Templates</strong> - Edit transactional email content</li>
+          <li><strong>Presentations</strong> - Send PowerPoint presentations to prospects</li>
+          <li><strong>Pricing</strong> - Configure Pro tier pricing</li>
+          <li><strong>Payments</strong> - View Stripe transactions</li>
+          <li><strong>Analytics</strong> - Platform statistics</li>
+        </ul>
+
+        <a href="#top" class="back-to-top">Back to Top</a>
+      </article>
+
+      <article class="help-chapter" id="chapter-2">
+        <h2>Chapter 2: Managing Businesses</h2>
+
+        <h3>Approval Workflow</h3>
+        <p>Businesses go through a two-step approval process:</p>
+        <ol>
+          <li><strong>Church Approval</strong> - The affiliated church must approve first</li>
+          <li><strong>Platform Approval</strong> - You approve after church approval</li>
+        </ol>
+
+        <h3>Reviewing a Business</h3>
+        <ol>
+          <li>Go to <strong>Admin → Businesses</strong></li>
+          <li>Filter by <strong>Pending Review</strong></li>
+          <li>Click on a business to view details</li>
+          <li>Review: business name, category, contact info, church affiliation</li>
+          <li>Click <strong>Approve</strong> or <strong>Reject</strong></li>
+        </ol>
+
+        <h3>Approval Criteria</h3>
+        <ul>
+          <li>Business name is appropriate and professional</li>
+          <li>Category matches the business type</li>
+          <li>Contact information is valid</li>
+          <li>Church affiliation is verified</li>
+          <li>No inappropriate content in description</li>
+        </ul>
+
+        <div class="help-warning">
+          <strong>Important:</strong> Rejected businesses receive an email explaining the decision. Be thoughtful in rejections.
+        </div>
+
+        <a href="#top" class="back-to-top">Back to Top</a>
+      </article>
+
+      <article class="help-chapter" id="chapter-3">
+        <h2>Chapter 3: Managing Churches</h2>
+
+        <h3>Reviewing a Church</h3>
+        <ol>
+          <li>Go to <strong>Admin → Churches</strong></li>
+          <li>Filter by <strong>Pending</strong></li>
+          <li>Click on a church to view details</li>
+          <li>Verify: church name, denomination, address, contact</li>
+          <li>Click <strong>Approve</strong> or <strong>Reject</strong></li>
+        </ol>
+
+        <h3>Approval Criteria</h3>
+        <ul>
+          <li>Church name is legitimate</li>
+          <li>Denomination is appropriate for the platform</li>
+          <li>Address is a real church location</li>
+          <li>Contact information is valid</li>
+        </ul>
+
+        <div class="help-info">
+          <strong>Note:</strong> Once a church is approved, it appears in the church directory and can be selected for business affiliations.
+        </div>
+
+        <a href="#top" class="back-to-top">Back to Top</a>
+      </article>
+
+      <article class="help-chapter" id="chapter-4">
+        <h2>Chapter 4: Managing Members</h2>
+
+        <h3>Viewing Members</h3>
+        <ol>
+          <li>Go to <strong>Admin → Members</strong></li>
+          <li>Use filters to search by name, email, or status</li>
+          <li>Click on a member to view details</li>
+        </ol>
+
+        <h3>Member Statuses</h3>
+        <ul>
+          <li><strong>Pending</strong> - Awaiting church approval (if affiliated)</li>
+          <li><strong>Active</strong> - Full access to platform</li>
+          <li><strong>Suspended</strong> - Temporarily disabled</li>
+        </ul>
+
+        <h3>Approving Members</h3>
+        <p>Members affiliated with a church need church admin approval first. You can override this if needed.</p>
+
+        <a href="#top" class="back-to-top">Back to Top</a>
+      </article>
+
+      <article class="help-chapter" id="chapter-5">
+        <h2>Chapter 5: Categories</h2>
+
+        <h3>Managing Categories</h3>
+        <ol>
+          <li>Go to <strong>Admin → Categories</strong></li>
+          <li>View existing categories and their structure</li>
+          <li>Add new categories as needed</li>
+          <li>Edit category names, slugs, and display order</li>
+        </ol>
+
+        <h3>Category Structure</h3>
+        <ul>
+          <li><strong>Primary Categories</strong> - Main business types (e.g., Food & Dining, Services)</li>
+          <li><strong>Subcategories</strong> - Specific types under each primary (e.g., Restaurants, Catering)</li>
+        </ul>
+
+        <div class="help-tip">
+          <strong>Tip:</strong> Keep categories broad enough to be useful but specific enough to help users find what they need.
+        </div>
+
+        <a href="#top" class="back-to-top">Back to Top</a>
+      </article>
+
+      <article class="help-chapter" id="chapter-6">
+        <h2>Chapter 6: Email Templates</h2>
+
+        <h3>Template Categories</h3>
+        <ul>
+          <li><strong>Confirmations</strong> - Submission received emails</li>
+          <li><strong>Welcome</strong> - Approval welcome emails</li>
+          <li><strong>Approvals</strong> - Account/listing approved</li>
+          <li><strong>Rejections</strong> - Account/listing declined</li>
+          <li><strong>Notifications</strong> - Activity notifications</li>
+          <li><strong>Sales & Marketing</strong> - Outreach templates</li>
+        </ul>
+
+        <h3>Editing Templates</h3>
+        <ol>
+          <li>Go to <strong>Admin → Email Templates</strong></li>
+          <li>Select a template category</li>
+          <li>Choose the specific template</li>
+          <li>Edit subject, headline, intro, highlights, and CTA</li>
+          <li>Preview the email</li>
+          <li>Save changes</li>
+        </ol>
+
+        <h3>Template Variables</h3>
+        <p>Use these variables in your templates:</p>
+        <ul>
+          <li><code>{{user_name}}</code> - Member name</li>
+          <li><code>{{owner_name}}</code> - Business owner name</li>
+          <li><code>{{business_name}}</code> - Business name</li>
+          <li><code>{{church_name}}</code> - Church name</li>
+          <li><code>{{recipient_name}}</code> - Generic recipient</li>
+          <li><code>{{dashboard_url}}</code> - Link to dashboard</li>
+        </ul>
+
+        <a href="#top" class="back-to-top">Back to Top</a>
+      </article>
+
+      <article class="help-chapter" id="chapter-7">
+        <h2>Chapter 7: Presentations</h2>
+
+        <h3>Sending Presentations</h3>
+        <p>Send PowerPoint presentations to prospects:</p>
+        <ol>
+          <li>Go to <strong>Admin → Presentations</strong></li>
+          <li>Select the recipient type (church, business, sales agent, member)</li>
+          <li>Enter recipient email</li>
+          <li>Choose whether to include PowerPoint attachment</li>
+          <li>Preview and send</li>
+        </ol>
+
+        <h3>Presentation Types</h3>
+        <ul>
+          <li><strong>Church Presentations</strong> - Benefits of listing their church</li>
+          <li><strong>Business Presentations</strong> - Pro tier benefits and features</li>
+          <li><strong>Sales Agent Presentations</strong> - Commission structure and opportunity</li>
+          <li><strong>Member Presentations</strong> - Platform benefits</li>
+        </ul>
+
+        <a href="#top" class="back-to-top">Back to Top</a>
+      </article>
+
+      <article class="help-chapter" id="chapter-8">
+        <h2>Chapter 8: Pricing & Payments</h2>
+
+        <h3>Pricing Settings</h3>
+        <ol>
+          <li>Go to <strong>Admin → Pricing Settings</strong></li>
+          <li>Configure Pro tier monthly and yearly prices</li>
+          <li>Set trial period duration</li>
+          <li>Configure tithe percentage (default 10%)</li>
+        </ol>
+
+        <h3>Viewing Payments</h3>
+        <ol>
+          <li>Go to <strong>Admin → Payments</strong></li>
+          <li>View all Stripe transactions</li>
+          <li>Filter by date, status, or amount</li>
+          <li>Click on a payment to see details</li>
+        </ol>
+
+        <div class="help-info">
+          <strong>Note:</strong> Stripe handles all payment processing. You can access the full Stripe dashboard for refunds and detailed transaction data.
+        </div>
+
+        <a href="#top" class="back-to-top">Back to Top</a>
+      </article>
+
+      <article class="help-chapter" id="chapter-9">
+        <h2>Chapter 9: Sales Team</h2>
+
+        <h3>Sales Applications</h3>
+        <ol>
+          <li>Go to <strong>Admin → Sales Directors</strong></li>
+          <li>Review pending sales agent applications</li>
+          <li>View applicant details: experience, motivation, church connection</li>
+          <li>Approve or reject applications</li>
+        </ol>
+
+        <h3>Commission Settings</h3>
+        <ol>
+          <li>Go to <strong>Admin → Commission Settings</strong></li>
+          <li>Configure commission rates for sales agents</li>
+          <li>Set bonus thresholds and tiers</li>
+        </ol>
+
+        <a href="#top" class="back-to-top">Back to Top</a>
+      </article>
+
+      <article class="help-chapter" id="chapter-10">
+        <h2>Chapter 10: Analytics & Reports</h2>
+
+        <h3>Platform Analytics</h3>
+        <ol>
+          <li>Go to <strong>Admin → Analytics</strong></li>
+          <li>View total businesses, Pro subscriptions, churches, users</li>
+          <li>Track growth over time</li>
+        </ol>
+
+        <h3>Activity Log</h3>
+        <ol>
+          <li>Go to <strong>Admin → Activity Log</strong></li>
+          <li>View all platform activity</li>
+          <li>Filter by action type, user, or date</li>
+        </ol>
+
+        <h3>Contact Submissions</h3>
+        <ol>
+          <li>Go to <strong>Admin → Contact Submissions</strong></li>
+          <li>View and respond to contact form submissions</li>
+          <li>Mark as resolved when handled</li>
+        </ol>
+
+        <a href="#top" class="back-to-top">Back to Top</a>
+      </article>
+
+  </main>
+
+  <div id="footer"></div>
+  </div>
+
+  <script src="/admin/js/header.js" defer></script>
+  <script src="/admin/js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script src="/js/print-button.js" defer></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

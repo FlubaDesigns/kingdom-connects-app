@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Kingdom Connects</title>
+  <meta name="description" content="Find trusted Christian businesses and churches in your community. Kingdom Connects helps the Body of Christ support each other.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="index, follow">
+
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="styles/layout.css?v=66">
+  <link rel="stylesheet" href="styles/theme.css?v=8">
+  <link rel="stylesheet" href="styles/buttons.css?v=8">
+  <link rel="stylesheet" href="styles/forms.css?v=7">
+  <link rel="stylesheet" href="styles/overrides.css?v=7">
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+
+    <main class="page-content" id="main" style="padding: 0;">
+
+      <section class="hero-fullwidth">
+        <div class="hero-image-container">
+          <img src="img/hero-community-v1.png" alt="Community gathering in charming downtown" class="hero-bg-image">
+          <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content">
+          <h1 class="hero-headline gold-metallic">Support Faith-Aligned Businesses</h1>
+          <p class="hero-subline">Discover trusted Christian businesses and churches in your community</p>
+          
+          <form action="business_directory.html" method="GET" class="hero-search-form">
+            <input 
+              type="search" 
+              name="q" 
+              placeholder="Search businesses, categories, or cities..." 
+              class="hero-search-input"
+              aria-label="Search for businesses"
+            >
+            <button type="submit" class="btn btn-gold hero-search-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              Search
+            </button>
+          </form>
+
+          <div class="hero-buttons">
+            <a href="business_directory.html" class="btn btn-gold btn-lg">Browse Businesses</a>
+            <a href="church_directory.html" class="btn btn-secondary btn-lg">Find Churches</a>
+          </div>
+        </div>
+        <div class="hero-scripture hide-mobile">
+          <p class="scripture-text">"For as the body is one, and hath many members… that the members should have the same care one for another."</p>
+          <p class="scripture-ref">— 1 Corinthians 12:12, 25–26 (KJV)</p>
+        </div>
+      </section>
+
+      <div class="scripture-mobile show-mobile-only">
+        <p class="scripture-text">"For as the body is one, and hath many members… that the members should have the same care one for another."</p>
+        <p class="scripture-ref">— 1 Corinthians 12:12, 25–26 (KJV)</p>
+      </div>
+
+      <!-- UNIFIED ROLE DASHBOARDS (Only visible when logged in) -->
+      <section class="container py-md hidden" id="roleDashboardsSection" style="position: relative; z-index: 10;">
+        <article class="card">
+          <h2 class="gold-metallic text-center">Your Dashboards</h2>
+          <div id="roleDashboardsList" class="role-dashboard-grid"></div>
+        </article>
+      </section>
+
+      <section class="container py-xl">
+        <h2 class="gold-metallic text-center mb-lg">How It Works</h2>
+        <div class="grid-3 gap-lg">
+          <div class="card text-center">
+            <div class="icon-circle gold-bg mb-md">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+            <h3 class="gold">Find</h3>
+            <p>Search our directory of faith-aligned businesses vetted by local churches</p>
+          </div>
+          <div class="card text-center">
+            <div class="icon-circle gold-bg mb-md">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <h3 class="gold">Connect</h3>
+            <p>Reach out directly to business owners who share your values</p>
+          </div>
+          <div class="card text-center">
+            <div class="icon-circle gold-bg mb-md">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            </div>
+            <h3 class="gold">Support</h3>
+            <p>Help fellow believers thrive while getting quality service</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="bg-dark-alt py-xl">
+        <div class="container">
+          <h2 class="gold-metallic text-center mb-lg">Why Kingdom Connects?</h2>
+          <div class="grid-2 gap-lg">
+            <div class="card">
+              <h3 class="gold">Always Free for Members, Churches & Businesses</h3>
+              <p>Listing your business or church is completely free. Businesses can upgrade to Pro for enhanced visibility, but the free option is always available.</p>
+            </div>
+            <div class="card">
+              <h3 class="gold">10% Tithed Back</h3>
+              <p>We tithe 10% of all revenue back to churches and ministries. When you upgrade to Pro, you're directly supporting Kingdom work.</p>
+            </div>
+            <div class="card">
+              <h3 class="gold">Maximize Your Visibility</h3>
+              <p>Every member, business, and church gets their own dedicated page. More pages mean more ways to be discovered online.</p>
+            </div>
+            <div class="card">
+              <h3 class="gold">Local Community Focus</h3>
+              <p>Find businesses in your neighborhood. Support the believers right where you live.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="container py-xl text-center">
+        <h2 class="gold-metallic mb-md">Ready to Get Started?</h2>
+        <p class="text-lg mb-lg">Join thousands of believers building Kingdom commerce together</p>
+        <div class="flex-center gap-md flex-wrap">
+          <a href="for-businesses.html" class="btn btn-gold btn-lg">For Businesses</a>
+          <a href="for-churches.html" class="btn btn-secondary btn-lg">For Churches</a>
+          <a href="for-members.html" class="btn btn-outline btn-lg">For Members</a>
+        </div>
+      </section>
+
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script type="module" src="js/header.js?v=4"></script>
+  <script type="module" src="js/homepage-enhancements.js"></script>
+  <script src="js/footer.js?v=2" defer></script>
+</body>
+</html>

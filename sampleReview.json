@@ -1,6 +1,0 @@
-{
-  "business_id":"sampleBusiness","user_id":"sampleUser",
-  "rating":5,"comment":"Excellent service!","verified":true,
-  "review_type":"public","visibility":"visible",
-  "timestamp":{"_seconds":1731100000,"_nanoseconds":0}
-}

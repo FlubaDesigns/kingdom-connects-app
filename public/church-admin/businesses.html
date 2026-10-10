@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Member Businesses - Kingdom Connects Church Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=7">
+  <link rel="stylesheet" href="/styles/theme.css?v=7">
+  <link rel="stylesheet" href="/styles/buttons.css?v=7">
+  <link rel="stylesheet" href="/styles/forms.css?v=7">
+  <link rel="stylesheet" href="/styles/overrides.css?v=7">
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h2 class="gold-metallic text-center">Member Businesses</h2>
+      <p class="text-center text-muted mb-md">Manage and feature up to 5 member businesses.</p>
+      
+      <div id="loadingMessage" class="text-center p-md">Loading member businesses...</div>
+      
+      <div id="contentArea" class="hidden">
+        <div class="split-40-60">
+          <div class="split-left">
+            <article class="card mb-md">
+              <h3 class="gold">Share with Your Congregation</h3>
+              <p class="text-sm">Invite business owners to join Kingdom Connects:</p>
+              <p class="gold text-sm"><strong id="shareLink">kingdomconnects.org/add_to_directory</strong></p>
+            </article>
+          </div>
+
+          <div class="split-right">
+            <div id="businessList" class="business-grid"></div>
+
+            <div id="emptyState" class="text-center p-md hidden">
+              <p>Your church doesn't have any affiliated businesses yet.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+  </main>
+
+  <div id="footer"></div>
+  </div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="js/businesses.js"></script>
+
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

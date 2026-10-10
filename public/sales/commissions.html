@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Commissions - Kingdom Connects Sales</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="/styles/layout.css">
+  <link rel="stylesheet" href="/styles/theme.css">
+  <link rel="stylesheet" href="/styles/buttons.css">
+  <link rel="stylesheet" href="/styles/forms.css">
+  <link rel="stylesheet" href="/styles/overrides.css">
+  
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h2 class="gold-metallic text-center">Commission History</h2>
+      <p class="text-center text-muted mb-md">Detailed view of all commissions earned from Pro subscriptions.</p>
+
+      <div class="split-40-60">
+        <div class="split-left">
+          <article class="card mb-md">
+            <h3 class="gold">Summary</h3>
+            <div class="stat-grid-2">
+              <div class="stat-card">
+                <div class="stat-value" id="totalEarned">$0.00</div>
+                <div class="stat-label">Total Earned</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="totalPaid">$0.00</div>
+                <div class="stat-label">Total Paid</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="totalPending">$0.00</div>
+                <div class="stat-label">Pending</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="commissionCount">0</div>
+                <div class="stat-label">Count</div>
+              </div>
+            </div>
+          </article>
+
+          <div class="card mb-md">
+            <h4 class="gold">Filters</h4>
+            <div class="form-group">
+              <label>Status:</label>
+              <select id="filterStatus" class="input-dark">
+                <option value="all">All Commissions</option>
+                <option value="paid">Paid Only</option>
+                <option value="pending">Pending Only</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Sort By:</label>
+              <select id="sortBy" class="input-dark">
+                <option value="date-desc">Newest First</option>
+                <option value="date-asc">Oldest First</option>
+                <option value="amount-desc">Highest Amount</option>
+                <option value="amount-asc">Lowest Amount</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="split-right">
+          <div id="loading" class="text-center">
+            <p>Loading commissions...</p>
+          </div>
+
+          <div id="content" class="hidden">
+            <div class="table-wrapper">
+              <table class="commission-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Business</th>
+                    <th>Pro Payment</th>
+                    <th>Commission</th>
+                    <th>Status</th>
+                    <th>Paid Date</th>
+                  </tr>
+                </thead>
+                <tbody id="commissionsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div id="empty" class="hidden text-center">
+            <p>No commissions found.</p>
+          </div>
+
+          <div id="error" class="hidden text-center">
+            <p class="text-muted">Unable to load commissions.</p>
+          </div>
+
+          <button id="exportCSV" class="btn btn-gold mt-md">Export CSV</button>
+        </div>
+      </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="js/commissions.js"></script>
+  </div>
+  <script src="js/sales-auth-guard.js" defer></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

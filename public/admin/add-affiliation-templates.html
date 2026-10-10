@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Add Affiliation Email Templates - Kingdom Connects</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+    <h2 class="gold-metallic">Add Church-Business Affiliation Email Templates</h2>
+    <p>This utility adds 5 email templates for church-business affiliation events.</p>
+    
+    <div id="status" class="mt-lg"></div>
+    
+    <button id="addTemplatesBtn" class="btn btn-gold mt-md">Add Templates to Firestore</button>
+    <a href="/admin/email-templates.html" class="btn mt-md">View Email Templates</a>
+  </main>
+
+  <div id="footer"></div>
+  </div>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+
+  <script type="module">
+    import { db, auth } from "../js/firebase-config.js";
+    import { collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const templates = [
+      {
+        template_id: 'business_unchurched_by_church',
+        name: 'Business Removed by Church',
+        subject: 'Church Affiliation Update - {{church_name}}',
+        body: `Dear {{business_name}},
+
+We wanted to let you know that {{church_name}} has ended their affiliation with your business.
+
+What this means:
+• You are no longer affiliated with {{church_name}}
+• Your 10% tithing will now go to our charitable fund supporting Christian ministries
+• You remain an active business in the Kingdom Connects directory
+• You can request to join another church at any time from your dashboard
+
+If you have questions about this change, please contact {{church_name}} directly or reach out to our support team.
+
+Blessings,
+Kingdom Connects Team`,
+        variables: ['business_name', 'church_name'],
+        is_active: true,
+        created_at: new Date(),
+        updated_at: new Date()
+      },
+      {
+        template_id: 'business_left_church',
+        name: 'Business Left Church',
+        subject: 'You Have Left {{church_name}}',
+        body: `Dear {{business_name}},
+
+This confirms that you have successfully left your affiliation with {{church_name}}.
+
+What happens now:
+• You are no longer affiliated with any church
+• Your 10% tithing will go to our charitable fund supporting Christian ministries
+• You remain an active business in the Kingdom Connects directory
+• You can search for and request to join another church anytime from your dashboard
+
+Thank you for being part of the Kingdom Connects network.
+
+Blessings,
+Kingdom Connects Team`,
+        variables: ['business_name', 'church_name'],
+        is_active: true,
+        created_at: new Date(),
+        updated_at: new Date()
+      },
+      {
+        template_id: 'business_requests_church',
+        name: 'Business Requests Church (to Church Admin)',
+        subject: 'New Business Affiliation Request',
+        body: `Dear {{church_name}},
+
+{{business_name}} has requested to join your church in the Kingdom Connects network.
+
+Business Details:
+• Business: {{business_name}}
+• Category: {{business_category}}
+• Message: {{request_notes}}
+
+What happens if you approve:
+• They will be affiliated with your church
+• You'll receive 10% tithing from their Pro subscription earnings
+• They'll appear in your church's business directory
+• You can feature them on your church page
+
+Log in to your church admin dashboard to review and approve or reject this request.
+
+{{dashboard_link}}
+
+Blessings,
+Kingdom Connects Team`,
+        variables: ['church_name', 'business_name', 'business_category', 'request_notes', 'dashboard_link'],
+        is_active: true,
+        created_at: new Date(),
+        updated_at: new Date()
+      },
+      {
+        template_id: 'church_approved_business',
+        name: 'Church Approved Business Request',
+        subject: 'Welcome to {{church_name}}!',
+        body: `Dear {{business_name}},
+
+Great news! {{church_name}} has approved your affiliation request.
+
+You are now officially affiliated with {{church_name}} in the Kingdom Connects network.
+
+Benefits:
+• Your business appears in {{church_name}}'s directory
+• 10% of your Pro subscription earnings support {{church_name}}
+• Increased visibility within the church community
+• Opportunity to be featured on the church page
+
+Visit your dashboard to see your updated church affiliation.
+
+{{dashboard_link}}
+
+Blessings,
+Kingdom Connects Team`,
+        variables: ['business_name', 'church_name', 'dashboard_link'],
+        is_active: true,
+        created_at: new Date(),
+        updated_at: new Date()
+      },
+      {
+        template_id: 'church_rejected_business',
+        name: 'Church Rejected Business Request',
+        subject: 'Affiliation Request Update - {{church_name}}',
+        body: `Dear {{business_name}},
+
+Thank you for your interest in affiliating with {{church_name}}.
+
+After reviewing your request, they have decided not to move forward with the affiliation at this time.
+
+{{rejection_reason}}
+
+You remain an active member of the Kingdom Connects directory and can:
+• Search for other churches in your area
+• Request to join a different church
+• Continue serving your community
+
+Your 10% tithing currently supports our charitable fund for Christian ministries.
+
+If you have questions, please contact support@kingdomconnects.org.
+
+Blessings,
+Kingdom Connects Team`,
+        variables: ['business_name', 'church_name', 'rejection_reason'],
+        is_active: true,
+        created_at: new Date(),
+        updated_at: new Date()
+      }
+    ];
+
+    document.getElementById('addTemplatesBtn').addEventListener('click', async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        updateStatus('❌ You must be logged in as admin.', 'error');
+        return;
+      }
+
+      updateStatus('⏳ Adding templates...', 'info');
+      
+      let added = 0;
+      let skipped = 0;
+
+      for (const template of templates) {
+        try {
+          const existingQuery = query(
+            collection(db, 'email_templates'),
+            where('template_id', '==', template.template_id)
+          );
+          const existingSnap = await getDocs(existingQuery);
+
+          if (!existingSnap.empty) {
+            console.log(`Template ${template.template_id} already exists, skipping`);
+            skipped++;
+            continue;
+          }
+
+          await addDoc(collection(db, 'email_templates'), template);
+          added++;
+          console.log(`✅ Added template: ${template.template_id}`);
+          
+        } catch (error) {
+          console.error(`Error adding template ${template.template_id}:`, error);
+          updateStatus(`❌ Error adding ${template.template_id}: ${error.message}`, 'error');
+          return;
+        }
+      }
+
+      updateStatus(
+        `✅ Complete! Added ${added} new templates, skipped ${skipped} existing templates.`,
+        'success'
+      );
+    });
+
+    function updateStatus(message, type) {
+      const statusDiv = document.getElementById('status');
+      statusDiv.textContent = message;
+      statusDiv.className = `mt-lg ${type === 'error' ? 'text-error' : type === 'success' ? 'text-success' : ''}`;
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = '/login.html';
+      }
+    });
+  </script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

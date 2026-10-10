@@ -1,0 +1,156 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Kingdom Connects API",
+    "description": "API for discovering Christian businesses and churches",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Kingdom Connects",
+      "url": "https://kingdomconnects.org"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://kingdomconnects.org",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/business_directory.html": {
+      "get": {
+        "summary": "Browse Christian businesses",
+        "description": "View the full directory of Christian-owned businesses. Filter by category, location, or search by name.",
+        "operationId": "browseBusinesses",
+        "responses": {
+          "200": {
+            "description": "Business directory page"
+          }
+        }
+      }
+    },
+    "/church_directory.html": {
+      "get": {
+        "summary": "Browse churches",
+        "description": "View the directory of churches in the Kingdom Connects network.",
+        "operationId": "browseChurches",
+        "responses": {
+          "200": {
+            "description": "Church directory page"
+          }
+        }
+      }
+    },
+    "/business/{slug}.htm": {
+      "get": {
+        "summary": "View business details",
+        "description": "Get full details about a specific Christian business including description, contact info, hours, photos, and reviews.",
+        "operationId": "getBusinessBySlug",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "description": "The URL-friendly business identifier",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Business detail page with full information"
+          }
+        }
+      }
+    },
+    "/church/{slug}.htm": {
+      "get": {
+        "summary": "View church details",
+        "description": "Get full details about a specific church including description, service times, and affiliated businesses.",
+        "operationId": "getChurchBySlug",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "description": "The URL-friendly church identifier",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Church detail page with full information"
+          }
+        }
+      }
+    },
+    "/for-businesses.html": {
+      "get": {
+        "summary": "Business signup information",
+        "description": "Information for business owners who want to list their Christian business. Includes pricing: Free tier and Pro tier ($9/month or $69.99/year).",
+        "operationId": "businessSignup",
+        "responses": {
+          "200": {
+            "description": "Business signup and pricing page"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Business": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Business name"
+          },
+          "category": {
+            "type": "string",
+            "description": "Primary business category"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "is_pro": {
+            "type": "boolean",
+            "description": "Whether this is a Pro subscriber with enhanced features"
+          },
+          "church_affiliation": {
+            "type": "string",
+            "description": "Affiliated church name, if any"
+          }
+        }
+      },
+      "Church": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "denomination": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "service_times": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

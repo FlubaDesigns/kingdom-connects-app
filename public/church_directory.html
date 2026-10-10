@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Church Directory - Kingdom Connects</title>
+  <meta name="description" content="Browse local churches on Kingdom Connects. Find congregations in your area and discover faith-aligned communities.">
+  <link rel="canonical" href="https://kingdomconnects.org/church_directory.html">
+
+  <meta property="og:title" content="Church Directory - Kingdom Connects">
+  <meta property="og:description" content="Find local churches and faith communities in your area.">
+  <meta property="og:url" content="https://kingdomconnects.org/church_directory.html">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+  <link rel="dns-prefetch" href="//www.gstatic.com">
+  <link rel="dns-prefetch" href="//firestore.googleapis.com">
+
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#081529" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+
+  <link rel="stylesheet" href="styles/layout.css?v=7">
+  <link rel="stylesheet" href="styles/theme.css?v=7">
+  <link rel="stylesheet" href="styles/buttons.css?v=7">
+  <link rel="stylesheet" href="styles/forms.css?v=7">
+  <link rel="stylesheet" href="styles/overrides.css?v=7">
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+        <h1 class="gold-metallic text-center mb-md">Church Directory</h1>
+
+        <!-- ACTION CARDS - Mobile only -->
+        <div class="action-cards-row mb-md">
+          <a href="#searchFilters" class="action-card">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+            </div>
+            <span class="action-card-title">Find a Church</span>
+            <span class="action-card-desc">Search by denomination or location</span>
+          </a>
+          <a href="add_to_directory.html?role=church" class="action-card">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 5v14M5 12h14"></path>
+              </svg>
+            </div>
+            <span class="action-card-title">Nominate a Church</span>
+            <span class="action-card-desc">Add a church to our directory</span>
+          </a>
+        </div>
+
+        <!-- INTRO + CTAs - Desktop/Tablet -->
+        <article class="card directory-hero">
+          <p class="text-lg line-height-relaxed mb-md">
+            Find local churches and connect with faith communities in your area. Click on any church to view details and member businesses.
+          </p>
+          <div class="directory-hero-ctas">
+            <a href="#searchFilters" class="btn btn-gold">Search Churches</a>
+            <a href="add_to_directory.html?role=church" class="btn btn-gold">+ Nominate a Church</a>
+          </div>
+        </article>
+
+        <article class="card info-card hide-mobile">
+          <h2 class="gold-metallic">Nominate a Church for Our Directory</h2>
+          <p class="line-height-relaxed">
+            Know a church that should be listed? You can nominate them, or if you're a pastor/church leader, register your church directly. We'll review and add it to the directory.
+          </p>
+          <div class="button-container">
+            <a href="add_to_directory.html?role=church" class="btn btn-gold">Nominate Church</a>
+          </div>
+        </article>
+
+        <!-- HOW TO USE THIS PAGE - Desktop only -->
+        <article class="card info-card hide-mobile">
+          <h3 class="gold">💡 How to Find Churches</h3>
+          <div class="info-card-content">
+            <p><strong>1. Use Search Filters Below</strong> - Pick your denomination (Baptist, Methodist, Non-Denominational, etc.), state, or city</p>
+            <p><strong>2. Search by Name</strong> - Know the church name? Type it in the "Church Name" field to find it quickly</p>
+            <p><strong>3. View Details</strong> - Click any church card to see service times, address, contact info, and businesses from their members</p>
+            <p class="info-card-footer"><strong>⛪ Church leader?</strong>             <a href="add_to_directory.html?role=church" class="gold text-underline">Register your church</a> to help members find you and feature your congregation's businesses</p>
+          </div>
+        </article>
+
+        <!-- SEARCH FILTERS -->
+        <article class="card" id="searchFilters">
+          <button type="button" class="collapsible-header" id="filterToggle" aria-expanded="false">
+            <h2 class="gold text-2xl m-0">Search Filters</h2>
+            <svg class="collapse-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="collapsible-content" id="filterContent">
+          
+          <!-- Primary Filter: Denomination -->
+          <div class="form-group">
+            <label class="block font-semibold opacity-90">Denomination</label>
+            <select id="filterDenomination" class="input-rounded">
+              <option value="">All Denominations</option>
+              <option value="Baptist">Baptist</option>
+              <option value="Methodist">Methodist</option>
+              <option value="Non-Denominational">Non-Denominational</option>
+              <option value="Pentecostal">Pentecostal</option>
+              <option value="Presbyterian">Presbyterian</option>
+              <option value="Lutheran">Lutheran</option>
+              <option value="Catholic">Catholic</option>
+              <option value="Episcopal">Episcopal</option>
+              <option value="Assembly of God">Assembly of God</option>
+              <option value="Church of Christ">Church of Christ</option>
+              <option value="Evangelical">Evangelical</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="grid-2 gap-md">
+            <!-- State Filter -->
+            <div class="form-group">
+              <label class="block font-semibold opacity-90">State</label>
+              <select id="filterState" class="input-rounded">
+                <option value="">All States</option>
+                <option value="FL">Florida</option>
+                <option value="AL">Alabama</option>
+                <option value="GA">Georgia</option>
+                <option value="SC">South Carolina</option>
+                <option value="NC">North Carolina</option>
+                <option value="TN">Tennessee</option>
+                <option value="MS">Mississippi</option>
+                <option value="LA">Louisiana</option>
+              </select>
+            </div>
+
+            <!-- City Filter -->
+            <div class="form-group">
+              <label class="block font-semibold opacity-90">City</label>
+              <input type="text" id="filterCity" placeholder="Enter city name" class="input-rounded">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="block font-semibold opacity-90">Church Name</label>
+            <input type="text" id="filterName" placeholder="Search by church name" class="input-rounded">
+          </div>
+
+          <div class="button-row">
+            <button id="searchButton" class="btn btn-gold">🔍 Search Churches</button>
+            <button id="clearFilters" class="btn">Clear Filters</button>
+          </div>
+          
+          <div id="resultCount" class="text-center font-semibold opacity-80 p-sm"></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div id="statusMessage" class="p-md text-center"></div>
+          <div id="churchList" class="grid-auto"></div>
+        </article>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="js/maintenance-check.js" type="module"></script>
+  <script src="/js/header.js" type="module"></script>
+  <script src="js/maintenance-check.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script src="js/maintenance-check.js" type="module"></script>
+  <script src="js/church-directory.js" type="module"></script>
+  <script src="js/maintenance-check.js" type="module"></script>
+  <script src="js/breadcrumbs.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>My Favorites - Kingdom Connects</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=8">
+  <link rel="stylesheet" href="/styles/theme.css?v=8">
+  <link rel="stylesheet" href="/styles/buttons.css?v=8">
+  <link rel="stylesheet" href="/styles/forms.css?v=8">
+  <link rel="stylesheet" href="/styles/overrides.css?v=8">
+  <link rel="stylesheet" href="/styles/components/business-cards.css">
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+  <div id="header"></div>
+
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h2 class="gold-metallic text-center mb-md">My Favorites</h2>
+
+      <div id="loadingMessage" class="text-center p-md">Loading your favorites...</div>
+
+      <div id="contentArea" class="hidden">
+        <div class="split-50-50">
+          <div class="split-left">
+            <article class="card mt-0">
+              <h3 class="gold">Saved Businesses</h3>
+              <div id="businessFavorites">
+                <p class="text-muted">No businesses saved yet.</p>
+              </div>
+            </article>
+          </div>
+
+          <div class="split-right">
+            <article class="card mt-0">
+              <h3 class="gold">Saved Churches</h3>
+              <div id="churchFavorites">
+                <p class="text-muted">No churches saved yet.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <div id="emptyState" class="text-center p-md hidden">
+        <article class="card">
+          <h3 class="gold">No Favorites Yet</h3>
+          <p>Start exploring and save your favorite businesses and churches!</p>
+          <div class="btn-row">
+            <a href="/business_directory" class="btn btn-gold">Browse Businesses</a>
+            <a href="/church_directory" class="btn btn-gold">Browse Churches</a>
+          </div>
+        </article>
+      </div>
+
+      <div id="errorMessage" class="text-center p-md hidden">
+        <p class="error-text">Unable to load favorites. Please refresh the page.</p>
+      </div>
+  </main>
+
+  <div id="footer"></div>
+  </div>
+
+  <script src="/js/header.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js?v=8" defer></script>
+  <script type="module" src="js/favorites.js?v=2"></script>
+  <script src="js/member-auth-guard.js" defer></script>
+  <script src="/js/feedback-widget.js?v=2" type="module"></script>
+</body>
+</html>

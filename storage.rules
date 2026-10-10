@@ -1,9 +1,61 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
+    function userData() {
+      return firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data;
+    }
+    function enabled() {
+      return request.auth != null && !(userData().get('account_status', 'pending') in ['suspended', 'disabled', 'rejected']);
+    }
+    function admin() {
+      return enabled() && (userData().get('role', '') in ['admin', 'platform_admin'] ||
+        userData().get('roles', []).hasAny(['admin', 'platform_admin']));
+    }
+    function churchEnabled(churchId) {
+      return churchId == null || firestore.get(/databases/(default)/documents/churches/$(churchId)).data.listing_status == 'active';
+    }
+    function businessOwner(businessId) {
+      let business = firestore.get(/databases/(default)/documents/business_listings_public/$(businessId)).data;
+      return enabled() && firestore.get(/databases/(default)/documents/business_listings_private/$(businessId)).data.owner_uid == request.auth.uid &&
+        !(business.listing_status in ['suspended', 'rejected']) && churchEnabled(business.get('church_id', null));
+    }
+    function churchOwner(churchId) {
+      let church = firestore.get(/databases/(default)/documents/churches/$(churchId)).data;
+      return enabled() && church.admin_uid == request.auth.uid && !(church.listing_status in ['suspended', 'rejected']);
+    }
+    // Business photos, logos, videos
+    match /businesses/{businessId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if admin() || businessOwner(businessId);
+    }
+    
+    // Church media
+    match /churches/{churchId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if admin() || churchOwner(churchId);
+    }
+    
+    // User profile images
+    match /users/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if enabled() && request.auth.uid == userId;
+    }
+    
+    // Test uploads (for debugging)
+    match /test/{allPaths=**} {
+      allow read: if true;
+      allow write: if admin();
+    }
+    
+    // Health check uploads (Nexus utilities)
+    match /_kc_healthchecks/{allPaths=**} {
+      allow read: if true;
+      allow write: if admin();
+    }
+    
+    // Deny everything else
     match /{allPaths=**} {
-      allow read: if true;             // relax for dev
-      allow write: if request.auth != null;
+      allow read, write: if false;
     }
   }
 }

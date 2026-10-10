@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Find a Church - Kingdom Connects</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=7">
+  <link rel="stylesheet" href="/styles/theme.css?v=7">
+  <link rel="stylesheet" href="/styles/buttons.css?v=7">
+  <link rel="stylesheet" href="/styles/forms.css?v=7">
+  <link rel="stylesheet" href="/styles/overrides.css?v=7">
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h2 class="gold-metallic text-center">Find a Church to Join</h2>
+      <p class="text-center text-muted mb-md">Search for churches and request to affiliate your business.</p>
+
+      <div class="split-40-60">
+        <div class="split-left">
+          <div class="card mb-md">
+            <h3 class="gold">Search Churches</h3>
+            <div class="form-group">
+              <input type="text" id="searchInput" class="input-dark" placeholder="Church name, city, or state...">
+            </div>
+            <div class="btn-stack">
+              <button id="searchBtn" class="btn btn-gold">Search</button>
+              <button id="showAllBtn" class="btn btn-secondary">Show All</button>
+            </div>
+          </div>
+
+          <div id="pendingMessage" class="card hidden">
+            <h3 class="gold">Pending Request</h3>
+            <p>Pending request for <strong id="pendingChurchName"></strong>.</p>
+            <p class="text-sm text-muted">Waiting for church admin review.</p>
+            <button id="cancelRequestBtn" class="btn btn-secondary mt-sm">Cancel Request</button>
+          </div>
+        </div>
+
+        <div class="split-right">
+          <div id="loadingMessage" class="text-center p-md hidden">
+            <p>Loading churches...</p>
+          </div>
+
+          <div id="errorMessage" class="card hidden">
+            <p class="text-error" id="errorText"></p>
+          </div>
+
+          <div id="emptyState" class="card text-center hidden">
+            <p>No churches found matching your search.</p>
+          </div>
+
+          <div id="churchesList" class="card-list"></div>
+        </div>
+      </div>
+  </main>
+
+  <div id="footer"></div>
+  </div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+  <script type="module" src="js/find-church.js"></script>
+
+  <script src="js/business-auth-guard.js" defer></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

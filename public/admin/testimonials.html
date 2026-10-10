@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Testimonials Manager - Kingdom Connects Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+  <link rel="stylesheet" href="/styles/loading-skeletons.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <div class="page-header">
+        <h1 class="gold-metallic">Testimonials Manager</h1>
+</div>
+
+      <div id="loadingMessage" class="text-center p-md">Loading testimonials...</div>
+
+      <div id="contentArea" class="hidden">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="pending">Pending (<span id="pendingCount">0</span>)</button>
+          <button class="tab-btn" data-tab="approved">Approved (<span id="approvedCount">0</span>)</button>
+          <button class="tab-btn" data-tab="rejected">Rejected (<span id="rejectedCount">0</span>)</button>
+        </div>
+
+        <div class="tab-content active" id="pending-tab">
+          <div id="pendingList"></div>
+        </div>
+
+        <div class="tab-content" id="approved-tab">
+          <div id="approvedList"></div>
+        </div>
+
+        <div class="tab-content" id="rejected-tab">
+          <div id="rejectedList"></div>
+        </div>
+      </div>
+
+      <div id="errorMessage" class="text-center p-md hidden">
+        <p class="error-text">Error loading testimonials. Please try again.</p>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="/js/header.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script type="module" src="/admin/js/testimonials.js"></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

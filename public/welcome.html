@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Welcome - Kingdom Connects</title>
+  <meta name="description" content="Welcome to Kingdom Connects - Choose your next step">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="styles/layout.css?v=7">
+  <link rel="stylesheet" href="styles/theme.css?v=7">
+  <link rel="stylesheet" href="styles/buttons.css?v=7">
+  <link rel="stylesheet" href="styles/forms.css?v=7">
+  <link rel="stylesheet" href="styles/components/welcome.css">
+  <link rel="stylesheet" href="styles/overrides.css?v=7">
+</head>
+<body>
+  <div class="page-wrap">
+    <div id="header"></div>
+
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+      <div class="max-w-md mx-auto-content">
+        <section class="text-center mb-lg">
+          <h1 class="gold-metallic" id="welcomeTitle">Welcome to Kingdom Connects!</h1>
+          <p class="text-muted">Your account has been created successfully. What would you like to do next?</p>
+        </section>
+
+        <form id="roleSelectionForm" class="card-highlight m-block">
+          <h2 class="gold text-center">I am a...</h2>
+          
+          <div class="flex-column welcome-actions">
+            <label class="role-option">
+              <input type="radio" name="userRole" value="business_owner" required>
+              <div class="role-card">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="welcome-icon">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                </svg>
+                <h3>Business Owner</h3>
+                <p>Manage your Christian business listing and connect with church communities</p>
+              </div>
+            </label>
+
+            <label class="role-option">
+              <input type="radio" name="userRole" value="church_admin" required>
+              <div class="role-card">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="welcome-icon">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <h3>Church Leader</h3>
+                <p>Manage your church profile and feature member businesses in your congregation</p>
+              </div>
+            </label>
+
+            <label class="role-option">
+              <input type="radio" name="userRole" value="sales_agent" required>
+              <div class="role-card">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="welcome-icon">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="1" x2="12" y2="23"></line>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                <h3>Sales Agent</h3>
+                <p>Earn commissions by helping Christian businesses join Kingdom Connects</p>
+              </div>
+            </label>
+
+            <label class="role-option">
+              <input type="radio" name="userRole" value="member" required>
+              <div class="role-card">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="welcome-icon">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <h3>Just Browsing</h3>
+                <p>Explore the directory and support Christian businesses in your area</p>
+              </div>
+            </label>
+          </div>
+
+          <button type="submit" id="continueBtn" class="btn btn-gold btn-lg full-width">
+            Continue to Dashboard
+          </button>
+        </form>
+
+        <div class="card-highlight m-block-sm welcome-tip">
+          <p>
+            <strong>💡 Quick Tip:</strong> Don't worry, you can change this later or add multiple roles to your account!
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="js/maintenance-check.js" type="module"></script>
+  <script src="/js/header.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script type="module" src="js/welcome.js"></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+</body>
+</html>

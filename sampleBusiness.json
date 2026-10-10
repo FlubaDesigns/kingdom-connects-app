@@ -1,7 +1,0 @@
-{
-  "business_name":"Example Roofing Co",
-  "email":"example@email.com","phone":"555-1234",
-  "city":"Venice","state":"FL",
-  "listing_status":"active",
-  "created_at":{"_seconds":1731100000,"_nanoseconds":0}
-}

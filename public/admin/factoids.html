@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Manage Factoids - Kingdom Connects Admin</title>
+  
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+  <link rel="stylesheet" href="/styles/loading-skeletons.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+<body>
+  <div class="page-wrap">
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+    <div class="page-header">
+<h2>Manage "Did You Know?" Factoids</h2>
+      <p class="opacity-80">Create and manage factoids that appear on the homepage. Each visitor sees a random active factoid.</p>
+    </div>
+
+    <div class="admin-card">
+      <h3 class="gold mt-0">Add New Factoid</h3>
+      <form id="addFactoidForm">
+        <div class="form-row">
+          <div class="form-field">
+            <label for="factoidQuestion">Question<span class="req">*</span></label>
+            <input 
+              type="text"
+              id="factoidQuestion" 
+              name="factoidQuestion" 
+              maxlength="150"
+              placeholder="Did you know..."
+              required>
+            <div class="char-counter">
+              <span id="questionCharCount">0</span> / 150
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="factoidAnswer">Answer<span class="req">*</span></label>
+            <input 
+              type="text"
+              id="factoidAnswer" 
+              name="factoidAnswer" 
+              maxlength="250"
+              placeholder="The answer to the question..."
+              required>
+            <div class="char-counter">
+              <span id="answerCharCount">0</span> / 250
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-gold">Add Factoid</button>
+      </form>
+    </div>
+
+    <div class="page-header">
+      <h3>All Factoids (<span id="factoidCount">0</span>)</h3>
+      <div class="toggle-wrapper">
+        <label class="toggle-switch">
+          <input type="checkbox" id="masterToggle" checked>
+          <span class="toggle-slider"></span>
+        </label>
+        <div class="toggle-label">
+          Toggle All Active/Inactive
+          <span class="toggle-description">Turn all factoids on or off at once</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="factoidList">
+      <p class="status-message empty">Loading factoids...</p>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+
+  <script type="module" src="/admin/js/factoids.js"></script>
+  <script src="/admin/js/header.js?v=20241220" defer></script>
+  <script src="/admin/js/footer.js?v=20241220" defer></script>
+  </div>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

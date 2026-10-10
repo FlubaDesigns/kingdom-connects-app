@@ -1,7 +1,0 @@
-{
-  "user_id":"sampleUser","business_id":"sampleBusiness",
-  "amount":99.00,"currency":"USD","status":"paid",
-  "payment_method":"stripe","transaction_id":"txn_demo_123",
-  "date":{"_seconds":1731100000,"_nanoseconds":0},
-  "created_at":{"_seconds":1731100000,"_nanoseconds":0}
-}

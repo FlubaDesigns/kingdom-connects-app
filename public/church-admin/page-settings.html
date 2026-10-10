@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Church Settings - Church Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=59">
+  <link rel="stylesheet" href="/styles/theme.css?v=8">
+  <link rel="stylesheet" href="/styles/buttons.css?v=8">
+  <link rel="stylesheet" href="/styles/forms.css?v=8">
+  <link rel="stylesheet" href="/styles/overrides.css?v=8">
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h1 class="gold-metallic text-center">Church Settings</h1>
+      <p class="text-center text-muted mb-md">Control your public church page visibility</p>
+      <div class="text-center mb-md">
+        <button id="previewPageBtn" class="btn btn-gold">Preview Public Page</button>
+      </div>
+
+      <div id="loadingMessage" class="text-center p-md">Loading settings...</div>
+
+      <div id="contentArea" class="hidden">
+        <article class="card mb-lg">
+          <h2 class="gold mb-md">Section Visibility</h2>
+          <p class="text-muted mb-md">Control which sections appear on your public church page. Visitors will only see sections you enable here.</p>
+          
+          <h3 class="mb-sm">Content Sections</h3>
+          <div class="checkbox-group mb-md">
+            <label class="checkbox-label">
+              <input type="checkbox" id="showAnnouncements" checked>
+              <span>Show Announcements</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="showEvents" checked>
+              <span>Show Events</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="showActivities" checked>
+              <span>Show Activities</span>
+            </label>
+          </div>
+
+          <h3 class="mb-sm">Church Details</h3>
+          <p class="text-muted text-sm mb-sm">Choose which information visitors can see</p>
+          <div class="checkbox-group mb-md">
+            <label class="checkbox-label">
+              <input type="checkbox" id="showDenomination" checked>
+              <span>Show Denomination</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="showServiceTimes" checked>
+              <span>Show Service Times</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="showWelcomeMessage" checked>
+              <span>Show Welcome Message</span>
+            </label>
+          </div>
+
+          <h3 class="mb-sm">Contact Information</h3>
+          <p class="text-muted text-sm mb-sm">Choose which contact details visitors can see</p>
+          <div class="checkbox-group mb-md">
+            <label class="checkbox-label">
+              <input type="checkbox" id="showAddress" checked>
+              <span>Show Address</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="showPhone" checked>
+              <span>Show Phone Number</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="showEmail" checked>
+              <span>Show Email</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="showWebsite" checked>
+              <span>Show Website</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="showSocialMedia" checked>
+              <span>Show Social Media Links</span>
+            </label>
+          </div>
+
+          <h3 class="mb-sm">Member & Business Features</h3>
+          <p class="text-muted text-sm mb-sm">Control additional features available to your members and affiliated businesses</p>
+          <div class="checkbox-group mb-md">
+            <label class="checkbox-label">
+              <input type="checkbox" id="autoApproveMembers">
+              <span>Auto-Approve New Members</span>
+            </label>
+            <p class="text-muted text-xs mt-xs">When enabled, members who select your church during signup are approved instantly. When disabled, you'll need to manually approve each member in your Pending Members list.</p>
+            
+            <label class="checkbox-label mt-md">
+              <input type="checkbox" id="autoApproveBusinesses" checked>
+              <span>Auto-Approve Affiliated Businesses</span>
+            </label>
+            <p class="text-muted text-xs mt-xs">When enabled, Pro businesses affiliated with your church go live immediately after payment. When disabled, you'll need to manually approve each business in your dashboard.</p>
+            
+            <label class="checkbox-label mt-md">
+              <input type="checkbox" id="allowQrGear" checked>
+              <span>Allow QR Gear Store Access</span>
+            </label>
+            <p class="text-muted text-xs mt-xs">Sets permission for your church’s future QR Gear stores, including affiliated businesses and members. Stores are still in development; this setting does not launch them.</p>
+          </div>
+
+          <div class="btn-row mt-lg">
+            <button id="saveSettingsBtn" class="btn btn-gold">Save Settings</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2 class="gold mb-md">Quick Links</h2>
+          <p class="text-muted mb-md">Manage your content in dedicated areas:</p>
+          
+          <div class="button-row">
+            <a href="/church-admin/announcements.html" class="btn btn-secondary">Manage Announcements</a>
+            <a href="/church-admin/events.html" class="btn btn-secondary">Manage Events</a>
+            <a href="/church-admin/activities.html" class="btn btn-secondary">Manage Activities</a>
+            <a href="/church-admin/profile.html" class="btn btn-secondary">Edit Church Profile</a>
+          </div>
+        </article>
+      </div>
+
+      <div id="errorMessage" class="text-center p-md hidden">
+        <p class="error-text">Error loading settings. Please try again.</p>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="js/page-settings.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

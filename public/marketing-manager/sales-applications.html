@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <base href="/marketing-manager/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Sales Applications - Kingdom Connects</title>
+  
+  <link rel="stylesheet" href="/styles/layout.css">
+  <link rel="stylesheet" href="/styles/theme.css">
+  <link rel="stylesheet" href="/styles/buttons.css">
+  <link rel="stylesheet" href="/styles/forms.css">
+  <link rel="stylesheet" href="/styles/overrides.css">
+</head>
+<body>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h2 class="gold-metallic text-center">Sales Agent Applications</h2>
+      <p class="text-center text-muted mb-md">Review and approve applications from potential sales team members.</p>
+
+      <div class="split-40-60">
+        <div class="split-40-60-left">
+          <button id="btnSendInvite" class="btn btn-gold mb-md">Send Invite Email</button>
+          <article class="card mb-md">
+            <h3 class="gold">Stats (30 days)</h3>
+            <div class="stat-grid-2">
+              <div class="stat-card">
+                <div class="stat-value" id="pendingCount">0</div>
+                <div class="stat-label">Pending</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="approvedCount">0</div>
+                <div class="stat-label">Approved</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="rejectedCount">0</div>
+                <div class="stat-label">Rejected</div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="split-40-60-right">
+          <div class="filter-tabs mb-md">
+            <button class="filter-tab active" data-filter="pending">Pending</button>
+            <button class="filter-tab" data-filter="approved">Approved</button>
+            <button class="filter-tab" data-filter="rejected">Rejected</button>
+          </div>
+
+          <div id="loadingMessage" class="text-center">
+            <p>Loading applications...</p>
+          </div>
+
+          <div id="applicationsList" class="card-list hidden"></div>
+
+          <div id="emptyState" class="hidden text-center">
+            <p>No applications found.</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <div id="applicationModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="gold-metallic m-0">Application Details</h3>
+        <button class="modal-close" data-action="closeModal">&times;</button>
+      </div>
+      <div id="applicationDetails"></div>
+      <div class="flex-gap-end mt-lg" id="modalActions"></div>
+    </div>
+  </div>
+
+  <div id="inviteModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="gold-metallic m-0">Send Recruitment Invite</h3>
+        <button class="modal-close" data-action="closeInviteModal">&times;</button>
+      </div>
+      <form id="inviteForm">
+        <div class="form-field">
+          <label>Recipient Email <span class="req">*</span></label>
+          <input type="email" id="inviteEmail" class="input-dark" required placeholder="recruit@example.com">
+        </div>
+        <div class="form-field">
+          <label>Personal Message (optional)</label>
+          <textarea id="inviteMessage" class="input-dark" rows="3" placeholder="Add a personal note to the invitation..."></textarea>
+        </div>
+        <div class="flex-gap-end mt-md">
+          <button type="button" class="btn" data-action="closeInviteModal">Cancel</button>
+          <button type="submit" class="btn btn-gold">Send Invite</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/header.js" type="module" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="js/sales-applications.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

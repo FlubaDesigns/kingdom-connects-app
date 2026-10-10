@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <base href="/marketing-manager/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Reports & Exports - Kingdom Connects</title>
+  
+  <link rel="stylesheet" href="/styles/layout.css?v=7">
+  <link rel="stylesheet" href="/styles/theme.css?v=7">
+  <link rel="stylesheet" href="/styles/buttons.css?v=7">
+  <link rel="stylesheet" href="/styles/forms.css?v=7">
+  <link rel="stylesheet" href="/styles/overrides.css?v=7">
+
+</head>
+<body>
+  <div class="page-wrap">
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+    <h2 class="gold-metallic text-center">Reports & Exports</h2>
+    <p class="text-center text-muted mb-md">Generate commission statements, performance reports, and export data.</p>
+
+    <section>
+      <h3 class="gold-metallic">Quick Reports</h3>
+      <div class="report-grid">
+        <div class="report-card">
+          <div class="report-icon">💰</div>
+          <h3 class="report-title">Commission Statement</h3>
+          <p class="report-description">
+            Generate monthly commission reports for individual agents or the entire team.
+          </p>
+          <button class="btn btn-gold btn-block" id="generateCommissionReport">Generate Report</button>
+          <div class="export-format">
+            <button class="btn" data-action="exportPDF">PDF</button>
+            <button class="btn" data-action="exportCSV">CSV</button>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-icon">📊</div>
+          <h3 class="report-title">Performance Report</h3>
+          <p class="report-description">
+            Detailed analysis of team performance, conversion rates, and goal achievement.
+          </p>
+          <button class="btn btn-gold btn-block" id="generatePerformanceReport">Generate Report</button>
+          <div class="export-format">
+            <button class="btn" data-action="exportPDF">PDF</button>
+            <button class="btn" data-action="exportCSV">CSV</button>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-icon">📈</div>
+          <h3 class="report-title">Revenue Forecast</h3>
+          <p class="report-description">
+            Projected revenue based on current pipeline and historical conversion rates.
+          </p>
+          <button class="btn btn-gold btn-block" id="generateForecast">Generate Forecast</button>
+          <div class="export-format">
+            <button class="btn" data-action="exportPDF">PDF</button>
+            <button class="btn" data-action="exportCSV">CSV</button>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-icon">👥</div>
+          <h3 class="report-title">Team Activity Log</h3>
+          <p class="report-description">
+            Complete log of all agent activities, signups, and conversions.
+          </p>
+          <button class="btn btn-gold btn-block" id="generateActivityLog">Generate Log</button>
+          <div class="export-format">
+            <button class="btn" data-action="exportPDF">PDF</button>
+            <button class="btn" data-action="exportCSV">CSV</button>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-icon">📧</div>
+          <h3 class="report-title">Email Campaign Results</h3>
+          <p class="report-description">
+            Analyze email campaign performance, open rates, and conversion impact.
+          </p>
+          <button class="btn btn-gold btn-block" data-href="/admin/email-campaigns.html">View Campaigns</button>
+        </div>
+
+        <div class="report-card">
+          <div class="report-icon">🎯</div>
+          <h3 class="report-title">Goal Tracking</h3>
+          <p class="report-description">
+            Track progress toward monthly, quarterly, and annual sales goals.
+          </p>
+          <button class="btn btn-gold btn-block" id="generateGoalReport">Generate Report</button>
+          <div class="export-format">
+            <button class="btn" data-action="exportPDF">PDF</button>
+            <button class="btn" data-action="exportCSV">CSV</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="commission-table">
+      <h3 class="gold-metallic">Commission Payments</h3>
+      
+      <div class="filter-section">
+        <div class="filter-row">
+          <div class="filter-group">
+            <label>Agent</label>
+            <select id="agentFilter">
+              <option value="all">All Agents</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Month</label>
+            <select id="monthFilter">
+              <option value="current">Current Month</option>
+              <option value="last">Last Month</option>
+              <option value="all">All Time</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Status</label>
+            <select id="statusFilter">
+              <option value="all">All</option>
+              <option value="paid">Paid</option>
+              <option value="pending">Pending</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>&nbsp;</label>
+            <button class="btn btn-gold" id="filterCommissions">Apply Filters</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="commission-summary">
+        <div class="summary-card">
+          <div class="summary-value" id="totalCommissionsPaid">$0</div>
+          <div class="summary-label">Total Paid</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-value" id="totalCommissionsPending">$0</div>
+          <div class="summary-label">Pending Payment</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-value" id="avgCommissionPerAgent">$0</div>
+          <div class="summary-label">Avg per Agent</div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Agent</th>
+            <th>Period</th>
+            <th>Conversions</th>
+            <th>Commission Amount</th>
+            <th>Status</th>
+            <th>Payment Date</th>
+          </tr>
+        </thead>
+        <tbody id="commissionsTableBody">
+          <tr>
+            <td colspan="6" class="text-center opacity-60">Loading commission data...</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h3 class="gold-metallic">Custom Report Builder</h3>
+      <div class="filter-section">
+        <p class="opacity-80 mb-md">Build a custom report by selecting metrics and date ranges.</p>
+        <div class="filter-row">
+          <div class="filter-group">
+            <label>Date Range</label>
+            <input type="date" id="customStartDate">
+          </div>
+          <div class="filter-group">
+            <label>&nbsp;</label>
+            <input type="date" id="customEndDate">
+          </div>
+          <div class="filter-group">
+            <label>Metrics</label>
+            <select id="customMetrics" multiple class="select-tall">
+              <option value="revenue">Revenue</option>
+              <option value="conversions">Conversions</option>
+              <option value="leads">Leads</option>
+              <option value="agents">Agent Activity</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>&nbsp;</label>
+            <button class="btn btn-gold" id="generateCustomReport">Build Report</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="js/header.js" type="module" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="js/reports.js" type="module" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

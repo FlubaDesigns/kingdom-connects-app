@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Member Admin - Kingdom Connects</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=7">
+  <link rel="stylesheet" href="/styles/theme.css?v=7">
+  <link rel="stylesheet" href="/styles/buttons.css?v=7">
+  <link rel="stylesheet" href="/styles/forms.css?v=7">
+  <link rel="stylesheet" href="/styles/overrides.css?v=7">
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+  <div id="header"></div>
+
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h1 class="gold-metallic text-center mb-lg">Member Admin</h1>
+      <div id="loadingMessage" class="text-center p-md">Loading your dashboard...</div>
+
+      <div id="dashboardContent" class="hidden">
+        <p class="text-center mb-md">Welcome back, <span id="userName" class="gold"></span>!</p>
+
+        <article class="card mb-md" id="yourDashboardsCard">
+          <h3 class="gold">Your Dashboards</h3>
+          <div id="dashboardLinks" class="action-cards-row"></div>
+        </article>
+
+        <div class="split-40-60 mb-md">
+          <div class="split-left">
+            <div class="stat-grid-2 mt-0 mb-md">
+              <div class="stat-card">
+                <div class="stat-value" id="totalFavorites">0</div>
+                <div class="stat-label">Saved Favorites</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="totalReviews">0</div>
+                <div class="stat-label">Reviews Written</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="accountStatus">Free</div>
+                <div class="stat-label">Account Status</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="memberSince">-</div>
+                <div class="stat-label">Member Since</div>
+              </div>
+            </div>
+
+            <h3 class="gold mt-0 mb-sm">Quick Actions</h3>
+            <div class="action-cards-row">
+              <a href="/member/settings" class="action-card">
+                <div class="action-card-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                </div>
+                <span class="action-card-title">Settings</span>
+                <span class="action-card-desc">Profile, church, privacy</span>
+              </a>
+              <a href="/member/favorites" class="action-card">
+                <div class="action-card-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                </div>
+                <span class="action-card-title">My Favorites</span>
+                <span class="action-card-desc">View saved businesses</span>
+              </a>
+              <a href="/member/reviews" class="action-card">
+                <div class="action-card-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                </div>
+                <span class="action-card-title">My Reviews</span>
+                <span class="action-card-desc">Manage your reviews</span>
+              </a>
+              <a href="/business_directory" class="action-card">
+                <div class="action-card-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                </div>
+                <span class="action-card-title">Businesses</span>
+                <span class="action-card-desc">Discover Christian businesses</span>
+              </a>
+              <a href="/church_directory" class="action-card">
+                <div class="action-card-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Z"></path><path d="m9 16 3-8 3 8"></path><path d="M12 10v2"></path></svg>
+                </div>
+                <span class="action-card-title">Churches</span>
+                <span class="action-card-desc">Find a church community</span>
+              </a>
+              <a href="/member/user-manual" class="action-card">
+                <div class="action-card-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                </div>
+                <span class="action-card-title">User Manual</span>
+                <span class="action-card-desc">Complete guide</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="split-right">
+            <article id="memberProfileCompletion" class="card mt-0 hidden">
+              <div class="flex-between mb-sm">
+                <h3 class="gold m-0">Profile Boosts</h3>
+                <span class="help-icon" data-tooltip="These are optional ways to enhance your experience. Not required, but they help personalize your recommendations!">?</span>
+              </div>
+              <div class="completion-bar-container">
+                <div class="completion-bar">
+                  <div class="completion-fill" id="memberCompletionFill"></div>
+                </div>
+                <span class="completion-percent" id="memberCompletionPercent">0%</span>
+                <span id="memberCompletionStar" class="completion-star hidden">&#9733;</span>
+              </div>
+              <p class="help-text mt-sm" id="memberCompletionTip">Optional ways to personalize:</p>
+              <ul id="memberCompletionTasks" class="completion-tasks"></ul>
+            </article>
+
+            <article id="forYouCard" class="card mt-md">
+              <div class="flex-between mb-sm">
+                <h3 class="gold m-0">For You</h3>
+                <select id="forYouFilter" class="input-dark select-inline">
+                  <option value="all">Show All</option>
+                  <option value="favorites">My Favorites First</option>
+                  <option value="church">Church Businesses First</option>
+                  <option value="pro">Pro Businesses First</option>
+                </select>
+              </div>
+              <p class="text-sm text-muted mb-sm" id="forYouLegend">
+                <span class="mr-md">⭐ = Saved</span>
+                <span class="mr-md">🏠 = Your Church</span>
+                <span class="badge badge-gold text-xs">PRO</span> = Featured Business
+              </p>
+              <div id="forYouLoading" class="text-center p-md">Loading recommendations...</div>
+              <div id="forYouList" class="card-list hidden"></div>
+              <p id="forYouEmpty" class="text-muted hidden">No recommendations yet. Save favorites or select a home church to see personalized suggestions!</p>
+            </article>
+
+            <article class="card mt-md">
+              <h3 class="gold">Recent Favorites</h3>
+              <div id="recentFavorites">
+                <p class="text-muted">No favorites saved yet. Start browsing businesses and churches to save your favorites!</p>
+              </div>
+            </article>
+
+            <article class="card mt-md">
+              <h3 class="gold">Recent Reviews</h3>
+              <div id="recentReviews">
+                <p class="text-muted">You haven't written any reviews yet. Share your experiences to help others!</p>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <article id="churchBusinessesCard" class="card mt-md hidden">
+          <h3 class="gold">Businesses at Your Church</h3>
+          <p class="text-sm text-muted mb-sm" id="churchBusinessCount">Your church has <span id="churchBizCount">0</span> member businesses</p>
+          <div id="recommendedBusinesses" class="card-list"></div>
+        </article>
+
+      </div>
+
+      <div id="errorMessage" class="text-center p-md hidden">
+        <p class="error-text">Unable to load dashboard. Please refresh the page.</p>
+      </div>
+  </main>
+
+  <div id="footer"></div>
+  </div>
+
+  <script src="/js/header.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js?v=7" defer></script>
+  <script type="module" src="/member/js/member-dashboard.js?v=104"></script>
+  <script type="module" src="js/member-auth-guard.js"></script>
+  <script src="/js/feedback-widget.js?v=2" type="module"></script>
+</body>
+</html>

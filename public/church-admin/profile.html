@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Church Profile - Kingdom Connects Church Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=7">
+  <link rel="stylesheet" href="/styles/theme.css?v=7">
+  <link rel="stylesheet" href="/styles/buttons.css?v=7">
+  <link rel="stylesheet" href="/styles/forms.css?v=7">
+  <link rel="stylesheet" href="/styles/file-uploader.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=7">
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h2 class="gold-metallic text-center">Church Profile</h2>
+      <p class="text-center text-muted mb-md">Manage your church's public information</p>
+      
+      <div id="loadingMessage" class="text-center p-md">Loading your church profile...</div>
+      
+      <div id="noChurchMessage" class="text-center p-md hidden">
+        <p>No church found for your account.</p>
+      </div>
+
+      <form id="churchForm" class="hidden">
+        <article class="card">
+          <h3 class="gold">Basic Information</h3>
+          <div>
+            <label for="church_name">Church Name *</label>
+            <input type="text" id="church_name" required class="input-dark">
+          </div>
+
+          <div>
+            <label for="denomination">Denomination</label>
+            <select id="denomination" class="input-dark">
+              <option value="">Select...</option>
+              <option value="Baptist">Baptist</option>
+              <option value="Methodist">Methodist</option>
+              <option value="Non-Denominational">Non-Denominational</option>
+              <option value="Pentecostal">Pentecostal</option>
+              <option value="Presbyterian">Presbyterian</option>
+              <option value="Lutheran">Lutheran</option>
+              <option value="Catholic">Catholic</option>
+              <option value="Episcopal">Episcopal</option>
+              <option value="Assembly of God">Assembly of God</option>
+              <option value="Church of Christ">Church of Christ</option>
+              <option value="Evangelical">Evangelical</option>
+              <option value="Other">Other</option>
+            </select>
+            <p class="help-text">Need a denomination added? <a href="/contact.html" class="gold">Contact us</a></p>
+          </div>
+
+          <div>
+            <label for="description">Church Description</label>
+            <textarea id="description" rows="5" maxlength="500" placeholder="Tell people about your church, mission, and values..." class="input-dark"></textarea>
+            <p class="help-text"><span id="descriptionCounter">0/500</span> characters</p>
+          </div>
+
+          <div>
+            <label>Church Photo</label>
+            <div id="profileImageContainer"></div>
+            <div id="currentProfileImage" class="hidden mt-sm">
+              <img id="profileImagePreview" src="" alt="Church photo" class="img-preview">
+              <button type="button" id="removeProfileImageBtn" class="btn-link text-danger">Remove photo</button>
+            </div>
+            <p class="help-text">Upload a photo of your church building or logo</p>
+          </div>
+
+          <div>
+            <label for="welcome_message">Welcome Message</label>
+            <textarea id="welcome_message" rows="3" maxlength="500" placeholder="Welcome to our church! We're glad you're here..." class="input-dark"></textarea>
+            <p class="help-text"><span id="welcomeCounter">0</span>/500 characters - Displayed on your public church page</p>
+          </div>
+
+          <div>
+            <label for="hero_media_url">Hero/Banner Image URL</label>
+            <input type="url" id="hero_media_url" placeholder="https://..." class="input-dark">
+            <p class="help-text">Main banner image for your public church page</p>
+          </div>
+
+          <div>
+            <label for="livestream_url">Live Stream URL</label>
+            <input type="url" id="livestream_url" placeholder="https://youtube.com/..." class="input-dark">
+            <p class="help-text">YouTube, Vimeo, or other live stream link for your services</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3 class="gold">Location</h3>
+          <div>
+            <label for="address_line1">Street Address</label>
+            <input type="text" id="address_line1" class="input-dark">
+          </div>
+
+          <div>
+            <label for="address_line2">Suite/Building (optional)</label>
+            <input type="text" id="address_line2" class="input-dark">
+          </div>
+
+          <div class="grid-col-3">
+            <div>
+              <label for="city">City *</label>
+              <input type="text" id="city" required class="input-dark">
+            </div>
+            <div>
+              <label for="state">State *</label>
+              <select id="state" required class="input-dark">
+                <option value="">Select...</option>
+                <option value="AL">AL - Alabama</option>
+                <option value="FL">FL - Florida</option>
+                <option value="GA">GA - Georgia</option>
+                <option value="LA">LA - Louisiana</option>
+                <option value="MS">MS - Mississippi</option>
+                <option value="NC">NC - North Carolina</option>
+                <option value="SC">SC - South Carolina</option>
+                <option value="TN">TN - Tennessee</option>
+              </select>
+            </div>
+            <div>
+              <label for="zip_code">ZIP Code *</label>
+              <input type="text" id="zip_code" pattern="[0-9]{5}" required class="input-dark">
+            </div>
+          </div>
+
+          <div>
+            <label for="country">Country</label>
+            <input type="text" id="country" value="USA" class="input-dark">
+          </div>
+        </article>
+
+        <article class="card">
+          <h3 class="gold">Contact Information</h3>
+          <div>
+            <label for="contact_phone">Phone Number</label>
+            <input type="tel" id="contact_phone" class="input-dark">
+          </div>
+
+          <div>
+            <label for="contact_email">Email Address *</label>
+            <input type="email" id="contact_email" required class="input-dark">
+            <p class="help-text">This email is used for church admin login</p>
+          </div>
+
+          <div>
+            <label for="website">Website URL</label>
+            <input type="url" id="website" placeholder="https://yourchurch.com" class="input-dark">
+          </div>
+        </article>
+
+        <article class="card">
+          <h3 class="gold">Service Times</h3>
+          <p class="help-text">Add your worship services, Bible studies, and events. Church leaders can customize service names and times.</p>
+          
+          <div id="serviceTimesContainer"></div>
+          
+          <button type="button" id="addServiceTime" class="btn btn-small mt-sm">+ Add Service</button>
+          
+          <p class="help-text mt-md"><strong>Examples:</strong> "Sunday Worship", "Bible Study", "Youth Group", "Prayer Meeting", "Men's Ministry"</p>
+        </article>
+
+        <article class="card">
+          <h3 class="gold">Parishioner Information</h3>
+          <div>
+            <label for="parishioner_count">Estimated Parishioner Count</label>
+            <input type="number" id="parishioner_count" min="0" placeholder="e.g., 250" class="input-dark">
+            <p class="help-text">Approximate number of active church members (used for reach metrics)</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3 class="gold">Digital Directory</h3>
+          <div>
+            <label for="directory_link">Church Page URL</label>
+            <input type="url" id="directory_link" readonly class="input-dark">
+            <p class="help-text">Auto-generated link to your public church page</p>
+          </div>
+          
+          <div class="mt-md">
+            <label>QR Code</label>
+            <div id="qrCodeContainer" class="mt-sm">
+              <div id="qrCanvas"></div>
+            </div>
+            <div class="mt-sm">
+              <button type="button" id="downloadQRBtn" class="btn btn-gold btn-small hidden">Download QR Code</button>
+            </div>
+            <p class="help-text mt-sm">Use this QR code on bulletins, flyers, and posters</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3 class="gold">Social Media Links</h3>
+          
+          <div class="card-highlight p-md mb-md">
+            <label class="toggle-label">
+              <input type="checkbox" id="show_social_media">
+              <span class="toggle-switch"></span>
+              <span><strong>Enable Social Media Links</strong></span>
+            </label>
+            <p class="help-text mt-sm">Turn this on to display your social media links on your public church profile. Only filled-in platforms will appear.</p>
+          </div>
+
+          <div id="socialMediaFields" class="hidden">
+            <div>
+              <label for="facebook_url">Facebook Page</label>
+              <input type="text" id="facebook_url" placeholder="facebook.com/yourchurch or https://facebook.com/yourchurch" class="input-dark">
+            </div>
+
+            <div>
+              <label for="instagram_url">Instagram Profile</label>
+              <input type="text" id="instagram_url" placeholder="instagram.com/yourchurch or https://instagram.com/yourchurch" class="input-dark">
+            </div>
+
+            <div>
+              <label for="twitter_url">X (Twitter) Profile</label>
+              <input type="text" id="twitter_url" placeholder="x.com/yourchurch or https://x.com/yourchurch" class="input-dark">
+            </div>
+
+            <div>
+              <label for="youtube_url">YouTube Channel</label>
+              <input type="text" id="youtube_url" placeholder="youtube.com/@yourchurch or https://youtube.com/@yourchurch" class="input-dark">
+            </div>
+
+            <div>
+              <label for="linkedin_url">LinkedIn Page (optional)</label>
+              <input type="text" id="linkedin_url" placeholder="linkedin.com/company/yourchurch or https://linkedin.com/company/yourchurch" class="input-dark">
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3 class="gold">Listing Settings</h3>
+          
+          <div class="card-highlight p-md">
+            <div class="mb-md">
+              <label class="toggle-label">
+                <input type="checkbox" id="allow_reviews_for_church">
+                <span class="toggle-switch"></span>
+                <span><strong>Allow Church Reviews</strong></span>
+              </label>
+              <p class="help-text mt-sm">Let members leave reviews for your church</p>
+            </div>
+            
+            <div class="mb-md">
+              <label class="toggle-label">
+                <input type="checkbox" id="allow_social_sharing">
+                <span class="toggle-switch"></span>
+                <span><strong>Allow Social Sharing</strong></span>
+              </label>
+              <p class="help-text mt-sm">Enable social media sharing buttons on your church profile</p>
+            </div>
+
+            <div>
+              <label class="toggle-label">
+                <input type="checkbox" id="allow_review_sharing">
+                <span class="toggle-switch"></span>
+                <span><strong>Allow Review Social Sharing</strong></span>
+              </label>
+              <p class="help-text mt-sm">Allow members to share reviews of your affiliated businesses to Facebook/Twitter/LinkedIn (requires platform admin, business, and user permission as well)</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3 class="gold">Tithe Payout Settings</h3>
+          <p class="help-text mb-md">Choose how you'd like to receive your 10% tithe from affiliated Pro business subscriptions.</p>
+          
+          <div class="radio-group mb-md">
+            <label class="radio-label">
+              <input type="radio" name="payout_method" id="payout_electronic" value="electronic" checked>
+              <span><strong>Electronic (Recommended)</strong></span>
+            </label>
+            <p class="help-text ml-lg">Fast, secure direct deposit to your bank account via Stripe. Typically arrives within 2-3 business days.</p>
+            
+            <label class="radio-label mt-md">
+              <input type="radio" name="payout_method" id="payout_check" value="check">
+              <span><strong>Check by Mail</strong></span>
+            </label>
+            <p class="help-text ml-lg">Paper check mailed to your church address. May take 7-14 business days.</p>
+          </div>
+
+          <div id="electronicPayoutSection">
+            <div id="stripeConnectStatus" class="card-highlight p-md">
+              <div id="stripeNotConnected">
+                <p class="mb-sm"><strong>Bank Account Not Connected</strong></p>
+                <p class="help-text mb-md">Complete a quick secure setup to receive electronic payments directly to your church bank account.</p>
+                <button type="button" id="setupStripeBtn" class="btn btn-gold">Set Up Electronic Payments</button>
+              </div>
+              <div id="stripeConnected" class="hidden">
+                <p class="text-success mb-sm"><strong>Bank Account Connected</strong></p>
+                <p class="help-text">Your church is set up to receive electronic tithe payments.</p>
+                <button type="button" id="manageStripeBtn" class="btn btn-secondary mt-sm">Manage Payout Settings</button>
+              </div>
+              <div id="stripePending" class="hidden">
+                <p class="text-warning mb-sm"><strong>Setup In Progress</strong></p>
+                <p class="help-text">Please complete the verification process to start receiving payments.</p>
+                <button type="button" id="continueStripeBtn" class="btn btn-gold mt-sm">Continue Setup</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="checkPayoutSection" class="hidden">
+            <div class="card-highlight p-md">
+              <p class="mb-sm"><strong>Checks will be mailed to:</strong></p>
+              <p id="checkMailingAddress" class="help-text">Your church address will be used for check payments.</p>
+              <p class="help-text mt-sm text-muted">Make sure your address above is correct and complete.</p>
+            </div>
+          </div>
+        </article>
+
+        <div class="flex-gap-center mt-md">
+          <button type="submit" class="btn btn-gold">Save Changes</button>
+          <button type="button" id="previewButton" class="btn">Preview Profile</button>
+          <a href="/church-admin/index.html" class="btn">Cancel</a>
+        </div>
+      </form>
+
+      <!-- Preview Modal -->
+      <div id="previewModal" class="modal-overlay hidden">
+        <div class="max-w-lg mx-auto-content-lg card">
+          <button id="closePreview" class="modal-close-btn">×</button>
+          <h2 class="gold-metallic text-center">Preview Your Public Church Profile</h2>
+          <p class="text-center help-text mb-md">This is how visitors will see your church</p>
+          <div id="previewContent"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="js/profile.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

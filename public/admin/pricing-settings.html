@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Pricing Settings - Kingdom Connects Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+  <link rel="stylesheet" href="/styles/loading-skeletons.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+  
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <div class="page-header">
+        <h1 class="gold-metallic">Pricing Settings</h1>
+      </div>
+
+      <p class="text-muted">Configure Pro subscription pricing. Changes update immediately on pricing.html and throughout the platform.</p>
+
+      <div class="card">
+        <h2 class="gold">Pro Subscription Pricing</h2>
+        
+        <form id="pricingForm" class="form-wrapper">
+          <div class="form-field grid-2">
+            <div>
+              <label for="monthlyPrice" class="required">Monthly Price ($)</label>
+              <input type="number" id="monthlyPrice" name="monthlyPrice" required min="0" step="0.01" value="8.99">
+              <p class="help-text">Price per month</p>
+            </div>
+            <div>
+              <label for="annualPrice" class="required">Annual Price ($)</label>
+              <input type="number" id="annualPrice" name="annualPrice" required min="0" step="0.01" value="74.99">
+              <p class="help-text">Price for full year (shows savings vs monthly)</p>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="freeTrialDays" class="required">Free Trial Period (Days)</label>
+            <input type="number" id="freeTrialDays" name="freeTrialDays" required min="0" step="1" value="30">
+            <p class="help-text">Number of days for free trial (applies to both monthly & annual)</p>
+          </div>
+        </form>
+
+        <div class="card info-card">
+          <h3 class="gold">Live Preview</h3>
+          <div class="pricing-preview">
+            <div class="preview-card">
+              <div class="preview-price" id="previewMonthly">$8.99</div>
+              <div class="preview-label">per month</div>
+              <div class="preview-label"><strong id="previewTrial">30-day</strong> free trial</div>
+            </div>
+            <div class="preview-card">
+              <div class="preview-price" id="previewAnnual">$74.99</div>
+              <div class="preview-label">per year</div>
+              <div class="savings-badge" id="savingsBadge">Save $33.89 (31%)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card warning-yellow-card">
+        <h3>💡 Pricing Benefits</h3>
+        <ul class="list-spaced-lg">
+          <li><strong>Monthly Subscribers:</strong> Receive email reminder 3 days before charge</li>
+          <li><strong>Annual Subscribers:</strong> Receive Kingdom Connects swag (t-shirt, baseball cap, etc.)</li>
+          <li><strong>Both Plans:</strong> Get the full <span id="trialDaysInfo">30</span>-day free trial period</li>
+        </ul>
+      </div>
+
+      <div id="message" class="message"></div>
+
+      <div class="form-actions">
+        <button class="btn btn-gold" id="savePricingBtn">Save Pricing</button>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="/admin/js/header.js?v=20241220" defer></script>
+  <script src="/admin/js/footer.js" defer></script>
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+  <script type="module" src="/admin/js/pricing-settings.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

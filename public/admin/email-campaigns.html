@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Email Campaigns - Kingdom Connects Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+  <link rel="stylesheet" href="/styles/loading-skeletons.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+  
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <div class="page-header">
+        <h1 class="gold-metallic">Email Campaigns</h1>
+        <button class="btn btn-gold" id="newCampaignBtn">+ New Campaign</button>
+      </div>
+
+      <div class="card info-card m-block">
+        <p>Emails are sent via Resend. Select your audience, compose your message, and click Send.</p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="campaigns">Campaigns</button>
+        <button class="tab-btn" data-tab="templates">Templates</button>
+        <button class="tab-btn" data-tab="analytics">Analytics</button>
+      </div>
+
+      <div class="tab-content active" id="campaigns-tab">
+        <div class="filters">
+          <input type="text" id="searchCampaigns" class="input-dark" placeholder="Search campaigns...">
+          <select id="filterStatus" class="input-dark">
+            <option value="">All Statuses</option>
+            <option value="draft">Draft</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="sent">Sent</option>
+          </select>
+        </div>
+
+        <div class="campaign-grid" id="campaignList">
+          <p class="text-muted">No campaigns yet. Create your first one!</p>
+        </div>
+      </div>
+
+      <div class="tab-content" id="templates-tab">
+        <button class="btn btn-gold m-block" id="newTemplateBtn">+ New Template</button>
+        <div id="templateList"></div>
+      </div>
+
+      <div class="tab-content" id="analytics-tab">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="totalSent">0</div>
+            <div class="stat-label">Total Sent</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="totalOpened">0%</div>
+            <div class="stat-label">Open Rate</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="totalClicked">0%</div>
+            <div class="stat-label">Click Rate</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="avgEngagement">0%</div>
+            <div class="stat-label">Engagement</div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <div id="newCampaignModal" class="modal">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h2 class="gold-metallic">Create Email Campaign</h2>
+        <button class="modal-close" id="closeCampaignModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="campaignForm">
+          <div class="form-field">
+            <label for="campaignName">Campaign Name *</label>
+            <input type="text" id="campaignName" class="input-dark" required placeholder="e.g., Pro Winback - November 2025">
+          </div>
+
+          <div class="form-field">
+            <label>Target Audience *</label>
+            <div class="segment-selector">
+              <label class="segment-option">
+                <input type="checkbox" name="segment" value="pro_lapsed">
+                <div>
+                  <strong>Pro Lapsed</strong>
+                  <span class="segment-count" id="count-pro-lapsed">Loading...</span>
+                </div>
+              </label>
+              <label class="segment-option">
+                <input type="checkbox" name="segment" value="new_signups">
+                <div>
+                  <strong>New Signups</strong>
+                  <span class="segment-count" id="count-new-signups">Loading...</span>
+                </div>
+              </label>
+              <label class="segment-option">
+                <input type="checkbox" name="segment" value="active_businesses">
+                <div>
+                  <strong>Active Businesses</strong>
+                  <span class="segment-count" id="count-active-businesses">Loading...</span>
+                </div>
+              </label>
+              <label class="segment-option">
+                <input type="checkbox" name="segment" value="churches">
+                <div>
+                  <strong>Churches</strong>
+                  <span class="segment-count" id="count-churches">Loading...</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="emailSubject">Subject Line *</label>
+            <input type="text" id="emailSubject" class="input-dark" required placeholder="Your Kingdom Connects benefits are waiting...">
+          </div>
+
+          <div class="form-field">
+            <label for="emailTemplate">Template</label>
+            <select id="emailTemplate" class="input-dark">
+              <option value="">Custom (write below)</option>
+              <option value="welcome">Welcome Email</option>
+              <option value="qr_code_delivery">Business QR Code (sent after profile completion)</option>
+              <option value="pro_winback">Pro Winback</option>
+              <option value="church_partnership">Church Partnership</option>
+            </select>
+          </div>
+
+          <div class="form-field template-editor">
+            <label for="emailBody">Email Content *</label>
+            <textarea id="emailBody" class="input-dark" rows="12" required placeholder="Write your email content here..."></textarea>
+            <p class="text-sm text-muted">Available variables: {{name}}, {{business_name}}, {{church_name}}, {{email}}, {{monthly_price}}, {{annual_price}}, {{agent_commission}}, {{director_commission}}, {{church_tithe}}, {{manual_link}} (auto-selects based on recipient type), {{sales_manual_link}}, {{business_manual_link}}, {{church_manual_link}}, {{member_manual_link}}, {{marketing_manual_link}}</p>
+          </div>
+
+          <div class="button-row">
+            <button type="submit" class="btn btn-gold" id="sendNowBtn">Send Now</button>
+            <button type="button" class="btn btn-secondary" id="saveDraftBtn">Save as Draft</button>
+            <button type="button" class="btn btn-secondary" id="cancelCampaign">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/admin/js/header.js?v=20241220" defer></script>
+  <script src="/admin/js/footer.js" defer></script>
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+  <script type="module" src="/admin/js/email-campaigns.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

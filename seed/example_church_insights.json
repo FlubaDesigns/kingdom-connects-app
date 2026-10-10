@@ -1,0 +1,21 @@
+{
+  "collection": "church_insights",
+  "docs": [
+    {
+      "id": "sample-church-001",
+      "data": {
+        "church_name": "First Community Church",
+        "website": "https://firstcommunity.example",
+        "email": "admin@firstcommunity.example",
+        "estimated_attendance": 220,
+        "years_established": "10+",
+        "weekly_services": 2,
+        "ministries": ["youth", "men", "women"],
+        "promotes_local_business": true,
+        "will_feature_KC": true,
+        "estimated_audience_reach": 220,
+        "created_at": "2025-11-08T00:00:00Z"
+      }
+    }
+  ]
+}

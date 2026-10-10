@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Referrals - Kingdom Connects Sales</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="/styles/layout.css">
+  <link rel="stylesheet" href="/styles/theme.css">
+  <link rel="stylesheet" href="/styles/buttons.css">
+  <link rel="stylesheet" href="/styles/forms.css">
+  <link rel="stylesheet" href="/styles/overrides.css">
+  
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h2 class="gold-metallic text-center">Referral Management</h2>
+      <p class="text-center text-muted mb-md">Track all businesses you've referred to the platform.</p>
+
+      <div class="split-40-60">
+        <div class="split-left">
+          <article class="card mb-md">
+            <h3 class="gold">Stats</h3>
+            <div class="stat-grid-2">
+              <div class="stat-card">
+                <div class="stat-value" id="totalReferrals">0</div>
+                <div class="stat-label">Total</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="proReferrals">0</div>
+                <div class="stat-label">Pro</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="activeReferrals">0</div>
+                <div class="stat-label">Active</div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="split-right">
+          <div id="loading" class="text-center">
+            <p>Loading referrals...</p>
+          </div>
+
+          <div id="content" class="hidden">
+            <div class="table-wrapper">
+              <table class="referral-table">
+                <thead>
+                  <tr>
+                    <th>Business Name</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Tier</th>
+                    <th>Referred Date</th>
+                  </tr>
+                </thead>
+                <tbody id="referralsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div id="empty" class="hidden text-center">
+            <p>No referrals yet.</p>
+          </div>
+
+          <div id="error" class="hidden text-center">
+            <p class="text-muted">Unable to load referrals.</p>
+          </div>
+        </div>
+      </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+  
+  </div>
+  <script type="module" src="js/referrals.js"></script>
+  <script src="js/sales-auth-guard.js" defer></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

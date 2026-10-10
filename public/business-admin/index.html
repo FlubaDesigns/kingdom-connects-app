@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Business Dashboard - Kingdom Connects</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css">
+  <link rel="stylesheet" href="/styles/theme.css">
+  <link rel="stylesheet" href="/styles/buttons.css">
+  <link rel="stylesheet" href="/styles/forms.css">
+  <link rel="stylesheet" href="/styles/overrides.css">
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+  <div id="header"></div>
+
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h2 class="gold-metallic text-center">Business Dashboard</h2>
+      <p class="text-center mb-md">Welcome, <span id="businessName" class="gold"></span></p>
+      
+      <div id="loadingMessage" class="text-center p-md">Loading your dashboard...</div>
+      <div id="noBusinessMessage" class="text-center p-md hidden">
+        <p>No business listing found for your account.</p>
+        <a href="/add_to_directory.html" class="btn btn-gold">Create a Business Listing</a>
+      </div>
+
+      <div id="dashboardContent" class="hidden">
+        <div class="split-40-60">
+          <div class="split-left">
+            <div class="stat-grid-2 mb-md">
+              <div class="stat-card">
+                <div class="stat-value" id="avgRating">0</div>
+                <div class="stat-label">Average Rating</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="totalReviews">0</div>
+                <div class="stat-label">Total Reviews</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="profileViews">0</div>
+                <div class="stat-label">Profile Views</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="photoCount">0</div>
+                <div class="stat-label">Photos</div>
+              </div>
+            </div>
+
+            <article class="card mb-md">
+              <h3 class="gold">Business Details</h3>
+              <p><strong>Category:</strong> <span id="businessCategory">-</span></p>
+              <p><strong>Location:</strong> <span id="businessLocation">-</span></p>
+              <p><strong>Church:</strong> <span id="churchAffiliation">-</span> <button id="leaveChurchBtn" class="btn-text-small hidden">Leave</button> <button id="findChurchBtn" class="btn-text-small hidden">Find</button></p>
+              <p><strong>Membership:</strong> <span id="membershipBadge"></span></p>
+              <p><strong>Status:</strong> <span id="listingStatus">-</span></p>
+              <p><strong>Since:</strong> <span id="memberSince">-</span></p>
+              <div class="mt-sm">
+                <a href="#" id="viewPublicListing" class="btn btn-gold btn-small" target="_blank">View Public Listing</a>
+              </div>
+            </article>
+
+            <h4 class="gold mb-sm">Quick Actions</h4>
+            <div class="action-cards-row mb-md">
+          <a href="/business-admin/edit-listing.html" class="action-card">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </div>
+            <span class="action-card-title">Edit Listing</span>
+            <span class="action-card-desc">Update your business info</span>
+          </a>
+
+          <a href="/business-admin/reviews.html" class="action-card" id="reviewsTile">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+            </div>
+            <span class="action-card-title">Reviews</span>
+            <span class="action-card-desc">See customer feedback</span>
+            <span id="newReviewBadge" class="new-review-badge hidden">NEW</span>
+          </a>
+
+          <a href="/business-admin/stats.html" class="action-card">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="18" y1="20" x2="18" y2="10"/>
+                <line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/>
+              </svg>
+            </div>
+            <span class="action-card-title">Statistics</span>
+            <span class="action-card-desc">Track your performance</span>
+          </a>
+
+          <a href="/business-admin/suggest-category.html" class="action-card">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                <line x1="7" y1="7" x2="7.01" y2="7"/>
+              </svg>
+            </div>
+            <span class="action-card-title">Suggest Category</span>
+            <span class="action-card-desc">Request a new category</span>
+          </a>
+
+              <a href="/business-admin/user-manual.html" class="action-card">
+                <div class="action-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                  </svg>
+                </div>
+                <span class="action-card-title">User Manual</span>
+                <span class="action-card-desc">How-to guides</span>
+              </a>
+            </div>
+
+            <div id="proFeaturesSection" class="hidden">
+              <h4 class="gold mb-sm">Pro Features</h4>
+              <div class="action-cards-row">
+                <a href="/business-admin/promotions.html" class="action-card">
+                  <div class="action-card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                      <line x1="7" y1="7" x2="7.01" y2="7"/>
+                    </svg>
+                  </div>
+                  <span class="action-card-title">Promotions</span>
+                  <span class="action-card-desc">Create special offers</span>
+                </a>
+                <a href="/business-admin/products-services.html" class="action-card">
+                  <div class="action-card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                      <line x1="3" y1="6" x2="21" y2="6"/>
+                      <path d="M16 10a4 4 0 0 1-8 0"/>
+                    </svg>
+                  </div>
+                  <span class="action-card-title">Products & Services</span>
+                  <span class="action-card-desc">Showcase what you offer</span>
+                </a>
+                <a href="/business-admin/testimonials.html" class="action-card">
+                  <div class="action-card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                  </div>
+                  <span class="action-card-title">Testimonials</span>
+                  <span class="action-card-desc">Share customer stories</span>
+                </a>
+                <a href="/business-admin/questionnaire.html" class="action-card">
+                  <div class="action-card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                      <line x1="16" y1="13" x2="8" y2="13"/>
+                      <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                  </div>
+                  <span class="action-card-title">Questionnaire</span>
+                  <span class="action-card-desc">Collect customer info</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="split-right">
+            <article id="profileCompletion" class="card mb-md hidden">
+              <div class="flex-between mb-sm">
+                <h3 class="gold m-0">Profile Boosts</h3>
+                <span class="help-icon" data-tooltip="These are optional ways to improve your listing visibility. Not required, but completing them helps you stand out!">?</span>
+              </div>
+              <div class="completion-bar-container">
+                <div class="completion-bar">
+                  <div class="completion-fill" id="completionFill"></div>
+                </div>
+                <span class="completion-percent" id="completionPercent">0%</span>
+                <span id="completionStar" class="completion-star hidden">&#9733;</span>
+              </div>
+              <p class="help-text mt-sm" id="completionTip">Optional ways to stand out:</p>
+              <ul id="completionTasks" class="completion-tasks"></ul>
+            </article>
+
+            <div id="proStatus" class="card pro-status-card mb-md hidden">
+              <h3 class="gold-metallic">Pro Member Active</h3>
+              <p class="text-sm text-muted mb-sm">Pro Since: <span id="proStartDate">-</span> | Renews: <span id="proEndDate">-</span></p>
+              <ul class="pro-benefits-list">
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Upload photos &amp; videos</li>
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> View profile analytics</li>
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Create promotions</li>
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Respond to reviews</li>
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Showcase products</li>
+                <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> 10% supports ministries</li>
+              </ul>
+            </div>
+
+            <div id="upgradePromo" class="card card-gradient-strong mb-md hidden">
+              <h3 class="gold-metallic text-center">Unlock Pro Features</h3>
+              <div class="pro-feature-preview">
+                <div class="pro-preview-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                  <span>Photos & Videos</span>
+                </div>
+                <div class="pro-preview-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+                  <span>Analytics</span>
+                </div>
+                <div class="pro-preview-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                  <span>Promotions</span>
+                </div>
+                <div class="pro-preview-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  <span>Respond to Reviews</span>
+                </div>
+              </div>
+              <div class="text-center mt-md">
+                <a href="/business-admin/upgrade.html" class="btn btn-gold">Upgrade to Pro</a>
+              </div>
+            </div>
+
+            <div id="cancelSubSection" class="card text-center hidden">
+              <h4>Need to Cancel?</h4>
+              <button id="manageSubBtn" class="btn btn-red">Cancel Pro</button>
+              <p class="text-muted mt-1">Your business stays visible, just on free features!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+  </main>
+
+  <div id="footer"></div>
+  </div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="/business-admin/js/dashboard.js?v=102"></script>
+  <script src="js/business-auth-guard.js" defer></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Presentation Manager - Kingdom Connects Admin</title>
+  <link rel="stylesheet" href="/styles/layout.css">
+  <link rel="stylesheet" href="/styles/theme.css">
+  <link rel="stylesheet" href="/styles/buttons.css">
+  <link rel="stylesheet" href="/styles/forms.css">
+  <link rel="stylesheet" href="/styles/overrides.css">
+  <link rel="stylesheet" href="/styles/presentations.css">
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+<body>
+  <div id="header"></div>
+    <main id="main" class="page-content">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+    <div class="container m-block-lg">
+      <h1 class="gold-metallic">Presentation Manager</h1>
+      <p class="text-lg mb-lg">Generate and send role-specific presentations</p>
+        
+        <article class="card card-gradient">
+          <h2 class="gold-metallic">Send Presentation</h2>
+          
+          <form id="presentation-form">
+            <div class="form-field">
+              <label class="required" for="role-select">Role</label>
+              <select id="role-select" required>
+                <option value="">-- Select a role --</option>
+                <option value="sales_agent">Sales Agent</option>
+                <option value="church_admin">Church Admin</option>
+                <option value="business_owner">Business Owner</option>
+                <option value="member">Member</option>
+              </select>
+            </div>
+            
+            <div id="send-templates-section" class="form-field hidden">
+              <label for="send-template-select">Template</label>
+              <select id="send-template-select">
+                <option value="">-- Default Template --</option>
+              </select>
+            </div>
+            
+            <div class="form-field">
+              <label class="required" for="recipient-email">Email Address</label>
+              <input type="email" id="recipient-email" placeholder="recipient@example.com">
+            </div>
+            
+            <div class="form-field">
+              <label for="recipient-phone">Phone Number (SMS)</label>
+              <input type="tel" id="recipient-phone" placeholder="+1 (555) 000-0000">
+              <small class="text-muted">Optional - leave blank to send email only</small>
+            </div>
+            
+            <div class="form-field">
+              <label class="checkbox-label">
+                <input type="checkbox" id="include-presentation" checked>
+                <span>Include PowerPoint presentation</span>
+              </label>
+              <small class="text-muted">Uncheck to send email only (no View/Download buttons)</small>
+            </div>
+            
+            <div class="form-field">
+              <label class="checkbox-label">
+                <input type="checkbox" id="send-email" checked>
+                <span>Send via Email</span>
+              </label>
+            </div>
+            
+            <div class="form-field">
+              <label class="checkbox-label">
+                <input type="checkbox" id="send-sms">
+                <span>Send via SMS (with download link)</span>
+              </label>
+            </div>
+            
+            <div class="form-actions mt-lg">
+              <button type="submit" class="btn btn-gold btn-block mb-sm">Generate & Send</button>
+              <button type="button" class="btn btn-secondary btn-block" id="preview-btn">Preview</button>
+            </div>
+            <div id="status-message" class="mt-md"></div>
+          </form>
+        </article>
+        
+        <div id="preview-container" class="hidden mt-lg">
+          <article class="card card-gradient">
+            <h2 class="gold-metallic">Preview</h2>
+            <div id="preview-content" class="preview-pane">
+            </div>
+            <button type="button" class="btn btn-secondary btn-block mt-md" id="close-preview-btn">Close Preview</button>
+          </article>
+        </div>
+        
+        <!-- Edit Templates Section -->
+        <article id="edit-templates" class="card card-gradient mt-lg">
+          <div class="flex-between">
+            <h2 class="gold-metallic">Edit Templates</h2>
+            <button type="button" class="btn btn-secondary btn-small" id="toggle-editor-btn">Show Editor</button>
+          </div>
+          
+          <div id="editor-container" class="hidden mt-lg">
+            <div class="form-field">
+              <label for="edit-role-select">Select Role</label>
+              <select id="edit-role-select">
+                <option value="">-- Select a role --</option>
+                <option value="sales_agent">Sales Agent</option>
+                <option value="church_admin">Church Admin</option>
+                <option value="business_owner">Business Owner</option>
+                <option value="member">Member</option>
+              </select>
+            </div>
+            
+            <div id="saved-templates-section" class="hidden">
+              <div class="form-field">
+                <label for="saved-templates-select">Saved Templates</label>
+                <select id="saved-templates-select">
+                  <option value="">-- Create New Template --</option>
+                </select>
+              </div>
+            </div>
+            
+            <div id="template-editor" class="hidden">
+              <div id="speech-status" class="speech-status hidden"></div>
+              
+              <div class="form-field">
+                <label for="template-name">Template Name</label>
+                <div class="input-with-mic">
+                  <input type="text" id="template-name" placeholder="Template 001">
+                  <button type="button" class="mic-btn" data-target="template-name" aria-label="Voice input">&#127908;</button>
+                </div>
+              </div>
+              
+              <h3 class="gold-metallic mt-lg mb-md">Email Content</h3>
+              
+              <div class="form-field">
+                <label for="edit-subject">Email Subject</label>
+                <div class="input-with-mic">
+                  <input type="text" id="edit-subject" placeholder="Email subject line">
+                  <button type="button" class="mic-btn" data-target="edit-subject" aria-label="Voice input">&#127908;</button>
+                </div>
+              </div>
+              
+              <div class="form-field">
+                <label for="edit-headline">Headline</label>
+                <div class="input-with-mic">
+                  <input type="text" id="edit-headline" placeholder="Main headline in email">
+                  <button type="button" class="mic-btn" data-target="edit-headline" aria-label="Voice input">&#127908;</button>
+                </div>
+              </div>
+              
+              <div class="form-field">
+                <label for="edit-intro">Introduction</label>
+                <div class="input-with-mic">
+                  <textarea id="edit-intro" rows="4" placeholder="Opening paragraph"></textarea>
+                  <button type="button" class="mic-btn" data-target="edit-intro" aria-label="Voice input">&#127908;</button>
+                </div>
+              </div>
+              
+              <div class="form-field">
+                <label for="edit-highlights">Highlights (one per line)</label>
+                <div class="input-with-mic">
+                  <textarea id="edit-highlights" rows="5" placeholder="Enter one bullet point per line"></textarea>
+                  <button type="button" class="mic-btn" data-target="edit-highlights" aria-label="Voice input">&#127908;</button>
+                </div>
+              </div>
+              
+              <div class="form-field">
+                <label for="edit-cta">Call to Action</label>
+                <div class="input-with-mic">
+                  <input type="text" id="edit-cta" placeholder="Text before the buttons">
+                  <button type="button" class="mic-btn" data-target="edit-cta" aria-label="Voice input">&#127908;</button>
+                </div>
+              </div>
+              
+              <h3 class="gold-metallic mt-lg mb-md">Presentation Slides</h3>
+              <div id="slides-editor"></div>
+              
+              <div class="form-actions mt-lg">
+                <button type="button" class="btn btn-gold btn-block mb-sm" id="save-template-btn">Save Template</button>
+                <button type="button" class="btn btn-secondary btn-block mb-sm" id="delete-template-btn">Delete Template</button>
+                <button type="button" class="btn btn-secondary btn-block" id="reset-template-btn">Reset to Default</button>
+              </div>
+              <div id="editor-status-message" class="mt-md"></div>
+            </div>
+          </div>
+        </article>
+        
+        <article id="recent-sends" class="card card-gradient mt-lg">
+          <h2 class="gold-metallic">Recent Presentations Sent</h2>
+          <div id="sends-list">
+            <p class="text-muted">No presentations sent yet</p>
+          </div>
+        </article>
+      </div>
+    </main>
+  </div>
+  
+  <div id="footer"></div>
+  
+  <script src="/admin/js/header.js" defer></script>
+  <script src="/admin/js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="/admin/js/presentations.js" defer></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

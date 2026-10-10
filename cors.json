@@ -1,0 +1,29 @@
+[
+  {
+    "origin": [
+      "https://kingdomconnects.org",
+      "https://www.kingdomconnects.org",
+      "https://kingdom-commerce.web.app",
+      "https://kingdom-commerce.firebaseapp.com",
+      "https://93878a2f-7782-4a2b-8856-5310a965e985-00-2148o27kozh9u.janeway.replit.dev",
+      "*"
+    ],
+    "method": ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"],
+    "maxAgeSeconds": 3600,
+    "responseHeader": [
+      "Content-Type",
+      "Authorization", 
+      "Content-Length",
+      "Content-Range",
+      "x-goog-resumable",
+      "x-goog-upload-url",
+      "x-goog-upload-status",
+      "x-goog-upload-command",
+      "x-goog-upload-offset",
+      "x-goog-upload-header-content-type",
+      "x-goog-upload-header-content-length",
+      "x-firebase-storage-version",
+      "x-goog-upload-protocol"
+    ]
+  }
+]

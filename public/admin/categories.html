@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Manage Categories - Kingdom Connects Admin</title>
+  
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+  <link rel="stylesheet" href="/styles/loading-skeletons.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+<body>
+  <div class="page-wrap">
+    <div id="header"></div>
+      <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+    <div class="page-content">
+      <h1 class="gold-lg">Manage Categories</h1>
+      <p class="mb-md">Organize business categories and review suggestions from business owners.</p>
+
+      <div class="filter-tabs mb-lg">
+        <button class="filter-tab active" data-tab="categories">Category Tree</button>
+        <button class="filter-tab" data-tab="suggestions">
+          Pending Suggestions <span id="pendingSuggestionsBadge" class="badge badge-warning hidden">0</span>
+        </button>
+      </div>
+
+      <div id="categoriesTab" class="tab-content">
+        <div class="stats-bar">
+          <div class="stat-item">
+            <div class="stat-label">Parent Categories</div>
+            <div class="stat-value" id="parentCount">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Subcategories</div>
+            <div class="stat-value" id="subCount">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Total Categories</div>
+            <div class="stat-value" id="totalCount">0</div>
+          </div>
+        </div>
+
+        <div class="search-and-add-row">
+          <div class="search-box">
+            <input type="text" id="categorySearch" class="form-input" placeholder="Search categories...">
+            <button id="clearSearchBtn" class="btn btn-small btn-secondary hidden">Clear</button>
+          </div>
+          <button id="addParentBtn" class="btn">
+            + Add Parent Category
+          </button>
+        </div>
+
+        <div id="categoryGrid" class="category-grid">
+          <p class="opacity-70">Loading categories...</p>
+        </div>
+      </div>
+
+      <div id="suggestionsTab" class="tab-content hidden">
+        <div class="stat-grid-4 mb-lg">
+          <div class="stat-box">
+            <div class="stat-number" id="suggPendingCount">0</div>
+            <div class="stat-label">Pending</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="suggApprovedCount">0</div>
+            <div class="stat-label">Approved</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="suggRejectedCount">0</div>
+            <div class="stat-label">Rejected</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="suggTotalCount">0</div>
+            <div class="stat-label">Total</div>
+          </div>
+        </div>
+
+        <div class="filter-tabs mb-md">
+          <button class="filter-tab sugg-filter active" data-filter="pending">Pending</button>
+          <button class="filter-tab sugg-filter" data-filter="all">All</button>
+          <button class="filter-tab sugg-filter" data-filter="approved">Approved</button>
+          <button class="filter-tab sugg-filter" data-filter="rejected">Rejected</button>
+        </div>
+
+        <div id="suggestionsContainer">
+          <p class="text-center opacity-60">Loading suggestions...</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="editParentModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Edit Parent Category</h2>
+      </div>
+      <form id="editParentForm">
+        <input type="hidden" id="editParentId">
+        <div class="form-group">
+          <label class="form-label">Category Name*</label>
+          <input type="text" id="editParentLabel" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Slug (URL-friendly)*</label>
+          <input type="text" id="editParentSlug" class="form-input" required pattern="[a-z0-9-]+">
+          <small class="form-hint">Lowercase, numbers, and hyphens only</small>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea id="editParentDescription" class="form-textarea"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Display Order</label>
+          <input type="number" id="editParentOrder" class="form-input" min="1" value="1">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-modal btn-cancel" data-action="closeEditParentModal">Cancel</button>
+          <button type="submit" class="btn-modal btn-save">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="addParentModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Add Parent Category</h2>
+      </div>
+      <form id="addParentForm">
+        <div class="form-group">
+          <label class="form-label">Category Name*</label>
+          <input type="text" id="newParentLabel" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Slug (URL-friendly)*</label>
+          <input type="text" id="newParentSlug" class="form-input" required pattern="[a-z0-9-]+">
+          <small class="form-hint">Lowercase, numbers, and hyphens only</small>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea id="newParentDescription" class="form-textarea"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Display Order</label>
+          <input type="number" id="newParentOrder" class="form-input" min="1" value="1">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-modal btn-cancel" data-action="closeAddParentModal">Cancel</button>
+          <button type="submit" class="btn-modal btn-save">Add Category</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="editSubModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Edit Subcategory</h2>
+      </div>
+      <form id="editSubForm">
+        <input type="hidden" id="editSubId">
+        <input type="hidden" id="editSubParentSlug">
+        <div class="form-group">
+          <label class="form-label">Subcategory Name*</label>
+          <input type="text" id="editSubLabel" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Slug (URL-friendly)*</label>
+          <input type="text" id="editSubSlug" class="form-input" required pattern="[a-z0-9-]+">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea id="editSubDescription" class="form-textarea"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Display Order</label>
+          <input type="number" id="editSubOrder" class="form-input" min="1" value="1">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-modal btn-cancel" data-action="closeEditSubModal">Cancel</button>
+          <button type="submit" class="btn-modal btn-save">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="addSubModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Add Subcategory</h2>
+      </div>
+      <form id="addSubForm">
+        <input type="hidden" id="addSubParentSlug">
+        <div class="form-group">
+          <label class="form-label">Parent Category</label>
+          <input type="text" id="addSubParentName" class="form-input" disabled>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subcategory Name*</label>
+          <input type="text" id="newSubLabel" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Slug (URL-friendly)*</label>
+          <input type="text" id="newSubSlug" class="form-input" required pattern="[a-z0-9-]+">
+          <small class="form-hint">Lowercase, numbers, and hyphens only</small>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea id="newSubDescription" class="form-textarea"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Display Order</label>
+          <input type="number" id="newSubOrder" class="form-input" min="1" value="1">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-modal btn-cancel" data-action="closeAddSubModal">Cancel</button>
+          <button type="submit" class="btn-modal btn-save">Add Subcategory</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="approveModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Approve Category Suggestion</h2>
+      </div>
+      <form id="approveForm">
+        <input type="hidden" id="approveSuggestionId">
+        <div class="form-group">
+          <label class="form-label">Suggested Name</label>
+          <input type="text" id="approveCategoryName" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category Type</label>
+          <select id="approveCategoryType" class="form-input">
+            <option value="parent">Parent Category</option>
+            <option value="subcategory">Subcategory</option>
+          </select>
+        </div>
+        <div class="form-group hidden" id="parentSelectGroup">
+          <label class="form-label">Assign to Parent Category</label>
+          <select id="approveParentSlug" class="form-input">
+            <option value="">-- Select Parent --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description (optional)</label>
+          <textarea id="approveDescription" class="form-textarea" rows="2"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-modal btn-cancel" data-action="closeApproveModal">Cancel</button>
+          <button type="submit" class="btn-modal btn-save">Approve Category</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+    </main>
+    
+    <footer class="site-footer" id="footer"></footer>
+  </div>
+  <script src="/admin/js/header.js?v=20241220" defer></script>
+  <script src="/admin/js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+  <script type="module" src="/js/admin/admin-categories.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

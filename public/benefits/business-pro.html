@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Business Pro Benefits - Kingdom Connects</title>
+  <meta name="description" content="Discover what you get as a Kingdom Connects Business Pro - promotions, products showcase, testimonials, photo gallery, and church tithing.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=7">
+  <link rel="stylesheet" href="/styles/theme.css?v=7">
+  <link rel="stylesheet" href="/styles/buttons.css?v=7">
+  <link rel="stylesheet" href="/styles/forms.css?v=7">
+  <link rel="stylesheet" href="/styles/overrides.css?v=7">
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <div class="directory-cinema gold-border">
+        <img src="/assets/images/cinema/business-pro.png" alt="Kingdom Connects Business Pro">
+      </div>
+
+      <div id="benefitsContainer"></div>
+
+      <article class="card text-center">
+        <h3 class="gold">Ready to Go Pro?</h3>
+        <p class="line-height-relaxed m-block-lg">Upgrade your listing and unlock premium features while supporting your church.</p>
+        <a href="/pricing" class="btn btn-gold">View Pro Pricing</a>
+      </article>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="/js/maintenance-check.js" type="module"></script>
+  <script src="/js/demo-mode.js" type="module"></script>
+  <script src="/js/header.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script type="module">
+    import { renderBusinessProBenefits } from '/js/benefits/business-pro-benefits.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      renderBusinessProBenefits('benefitsContainer');
+    });
+  </script>
+  <script src="/js/breadcrumbs.js" defer></script>
+</body>
+</html>

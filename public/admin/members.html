@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Manage Members - Kingdom Connects Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+  <link rel="stylesheet" href="/styles/loading-skeletons.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h2 class="gold-metallic text-center">Member Directory</h2>
+      <p class="text-center text-muted mb-md">View and manage member accounts, roles, and permissions.</p>
+
+      <div class="text-center mb-md">
+        <button id="btnCreateMember" class="btn btn-gold">+ Add Member</button>
+      </div>
+
+      <div class="split-40-60">
+        <div class="split-left">
+          <article class="card mb-md">
+            <h3 class="gold">Stats</h3>
+            <div class="stat-grid-2">
+              <div class="stat-card">
+                <div class="stat-value" id="totalMembers">0</div>
+                <div class="stat-label">Total</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="churchAdmins">0</div>
+                <div class="stat-label">Church Admins</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="businessOwners">0</div>
+                <div class="stat-label">Business Owners</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="proMembers">0</div>
+                <div class="stat-label">Pro</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="card mb-md">
+            <h3 class="gold">Filters</h3>
+            <div class="form-group">
+              <input type="text" id="searchInput" placeholder="Search..." class="input-dark">
+            </div>
+            <div class="form-group">
+              <select id="filterRole" class="input-dark">
+                <option value="">All Roles</option>
+                <option value="member">Member</option>
+                <option value="business_owner">Business Owner</option>
+                <option value="church_admin">Church Admin</option>
+                <option value="sales">Sales Agent</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <select id="filterStatus" class="input-dark">
+                <option value="">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="suspended">Suspended</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <select id="sortFilter" class="input-dark">
+                <option value="">Sort By...</option>
+                <option value="name-asc">Name (A-Z)</option>
+                <option value="name-desc">Name (Z-A)</option>
+                <option value="created_at-desc">Newest First</option>
+                <option value="created_at-asc">Oldest First</option>
+              </select>
+            </div>
+            <button id="clearFilters" class="btn btn-small btn-secondary">Clear Filters</button>
+          </article>
+        </div>
+
+        <div class="split-right">
+          <div id="loadingMessage" class="text-center">Loading members...</div>
+
+          <div id="emptyState" class="hidden text-center">
+            <p>No members found.</p>
+          </div>
+          
+          <div id="errorMessage" class="hidden text-center">
+            <p class="text-error">Error loading members.</p>
+          </div>
+
+          <div id="contentArea" class="hidden">
+            <div class="table-wrapper">
+              <table class="business-table">
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Pro</th>
+                    <th>Listings</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="memberTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+  </main>
+
+  <div id="memberModal" class="modal hidden">
+    <div class="modal-content">
+      <h3 id="modalTitle" class="gold-metallic">Create Member</h3>
+      <form id="memberForm">
+        <div class="form-group">
+          <label for="memberEmail">Email *</label>
+          <input type="email" id="memberEmail" class="input-dark" required>
+        </div>
+        <div class="form-group">
+          <label for="memberName">Name</label>
+          <input type="text" id="memberName" class="input-dark">
+        </div>
+        <div class="form-group">
+          <label for="memberPhone">Phone</label>
+          <input type="tel" id="memberPhone" class="input-dark">
+        </div>
+        <div class="form-group">
+          <label for="memberPhoto">Profile Photo URL</label>
+          <input type="url" id="memberPhoto" class="input-dark">
+        </div>
+        <div class="form-group">
+          <label for="memberRole">Role *</label>
+          <select id="memberRole" class="input-dark" required>
+            <option value="member">Member</option>
+            <option value="business_owner">Business Owner</option>
+            <option value="church_admin">Church Admin</option>
+            <option value="sales">Sales Agent</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div id="salesSection" class="hidden">
+          <div class="form-group">
+            <label for="memberReferralCode">Referral Code</label>
+            <input type="text" id="memberReferralCode" class="input-dark" placeholder="Auto-generated if blank">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="memberStatus">Status *</label>
+          <select id="memberStatus" class="input-dark" required>
+            <option value="active">Active</option>
+            <option value="suspended">Suspended</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="memberIsPro"> Pro Member
+          </label>
+        </div>
+        <div id="proFields" class="hidden">
+          <div class="form-group">
+            <label for="memberProStart">Pro Start Date</label>
+            <input type="date" id="memberProStart" class="input-dark">
+          </div>
+          <div class="form-group">
+            <label for="memberProEnd">Pro End Date</label>
+            <input type="date" id="memberProEnd" class="input-dark">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="memberListingCount">Listing Count</label>
+          <input type="number" id="memberListingCount" class="input-dark" value="0" min="0">
+        </div>
+        <div class="form-group">
+          <label for="memberReviewCount">Review Count</label>
+          <input type="number" id="memberReviewCount" class="input-dark" value="0" min="0">
+        </div>
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="memberNotificationsEnabled" checked> Notifications Enabled
+          </label>
+        </div>
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="memberEmailVerified"> Email Verified
+          </label>
+        </div>
+        <div class="form-group">
+          <label for="memberAdminNotes">Admin Notes</label>
+          <textarea id="memberAdminNotes" class="input-dark" rows="3"></textarea>
+        </div>
+        <div id="modalStatus" class="mb-md"></div>
+        <div class="button-row">
+          <button type="submit" class="btn btn-gold">Save Member</button>
+          <button type="button" id="btnCancelModal" class="btn btn-secondary">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="footer"></div>
+
+  <script type="module" src="/js/utils.js"></script>
+  <script src="/admin/js/header.js?v=20241220" defer></script>
+  <script src="/admin/js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+  <script type="module" src="/admin/js/members.js?v=20241220"></script>
+  </div>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+{
+  "collection": "questionnaire_questions",
+  "description": "Church insights questionnaire questions",
+  "docs": [
+    {
+      "data": {
+        "question_text": "How many active members attend your church regularly?",
+        "question_type": "number",
+        "audience": "church",
+        "required": true,
+        "placeholder": "e.g., 150",
+        "active": true,
+        "order": 1
+      }
+    },
+    {
+      "data": {
+        "question_text": "How long has your church been established?",
+        "question_type": "select",
+        "audience": "church",
+        "required": true,
+        "options": ["Under 1 year", "1-5 years", "5-10 years", "10-25 years", "25+ years"],
+        "active": true,
+        "order": 2
+      }
+    },
+    {
+      "data": {
+        "question_text": "How many services do you hold each week?",
+        "question_type": "number",
+        "audience": "church",
+        "required": true,
+        "placeholder": "e.g., 3",
+        "active": true,
+        "order": 3
+      }
+    },
+    {
+      "data": {
+        "question_text": "Which ministries are active at your church?",
+        "question_type": "multiselect",
+        "audience": "church",
+        "required": false,
+        "options": ["Youth", "Men's", "Women's", "Children's", "Seniors", "Music/Worship", "Outreach/Missions", "Small Groups", "Marriage/Family", "Prayer", "Other"],
+        "active": true,
+        "order": 4
+      }
+    },
+    {
+      "data": {
+        "question_text": "Does your church currently promote local Christian businesses?",
+        "question_type": "yesno",
+        "audience": "church",
+        "required": true,
+        "active": true,
+        "order": 5
+      }
+    },
+    {
+      "data": {
+        "question_text": "Would you be willing to feature Kingdom Connects to your congregation?",
+        "question_type": "yesno",
+        "audience": "church",
+        "required": true,
+        "active": true,
+        "order": 6
+      }
+    },
+    {
+      "data": {
+        "question_text": "What is your estimated weekly reach (including online)?",
+        "question_type": "number",
+        "audience": "church",
+        "required": false,
+        "placeholder": "e.g., 500",
+        "active": true,
+        "order": 7
+      }
+    },
+    {
+      "data": {
+        "question_text": "How did you hear about Kingdom Connects?",
+        "question_type": "select",
+        "audience": "church",
+        "required": true,
+        "options": ["Another church", "Business owner", "Online search", "Social media", "Word of mouth", "Kingdom Connects representative", "Other"],
+        "active": true,
+        "order": 8
+      }
+    },
+    {
+      "data": {
+        "question_text": "Would you like to receive a Kingdom Connects welcome kit?",
+        "question_type": "yesno",
+        "audience": "church",
+        "required": false,
+        "active": true,
+        "order": 9
+      }
+    },
+    {
+      "data": {
+        "question_text": "What is your church's mailing address? (for welcome kit and materials)",
+        "question_type": "textarea",
+        "audience": "church",
+        "required": false,
+        "placeholder": "Street address, City, State, ZIP",
+        "active": true,
+        "order": 10
+      }
+    }
+  ]
+}

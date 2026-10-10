@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Periodic Message - Kingdom Connects</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=7">
+  <link rel="stylesheet" href="/styles/theme.css?v=7">
+  <link rel="stylesheet" href="/styles/buttons.css?v=7">
+  <link rel="stylesheet" href="/styles/forms.css?v=7">
+  <link rel="stylesheet" href="/styles/file-uploader.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=7">
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h1 class="gold-metallic text-center">Periodic Messages</h1>
+      <p class="text-center text-muted mb-md">Share messages with your congregation and social media followers.</p>
+
+      <div id="statusMessage" class="status-message success hidden"></div>
+
+      <div class="split-40-60">
+        <div class="split-left">
+          <button class="btn btn-gold mb-md" id="newMessageBtn">+ New Message</button>
+          <div class="card mb-md">
+            <h3 class="gold">Message History</h3>
+            <div id="historyList">
+              <p class="status-message text-sm">Loading history...</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="split-right">
+          <div id="activeMessages">
+            <h3 class="gold mb-sm">Active Messages</h3>
+            <div id="activeMessagesList">
+              <p class="status-message">Loading...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <div id="messageModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">New Message</h2>
+        <button class="close-btn" id="closeModal">&times;</button>
+      </div>
+
+      <form id="messageForm">
+        <input type="hidden" id="messageId">
+
+        <div class="form-group">
+          <label for="messageTitle" class="required">Message Title</label>
+          <input type="text" id="messageTitle" class="input-dark" required placeholder="e.g., Weekly Inspiration">
+        </div>
+
+        <div class="form-group">
+          <label for="messageHeader">Header/Subtitle</label>
+          <input type="text" id="messageHeader" class="input-dark" placeholder="Optional subtitle or tagline">
+        </div>
+
+        <div class="form-group">
+          <label for="messageDescription" class="required">Message</label>
+          <textarea id="messageDescription" class="input-dark" rows="6" required placeholder="Write your message to your congregation..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Message Image (Optional)</label>
+          <div id="imageUploadContainer"></div>
+          <div id="currentImage" class="hidden mt-sm">
+            <img id="currentImagePreview" src="" alt="Current image" class="img-preview">
+            <button type="button" id="removeImageBtn" class="btn-link text-danger">Remove image</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="messageFrequency" class="required">Frequency</label>
+            <select id="messageFrequency" class="input-dark" required>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly" selected>Monthly</option>
+              <option value="quarterly">Quarterly</option>
+              <option value="yearly">Yearly</option>
+              <option value="one_time">One-Time</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="messageAudience" class="required">Audience</label>
+            <select id="messageAudience" class="input-dark" required>
+              <option value="both" selected>Church Members & Social</option>
+              <option value="members">Church Members Only</option>
+              <option value="social">Social Media Only</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="startDate">Start Date</label>
+          <input type="date" id="startDate" class="input-dark">
+          <small class="text-muted">Leave blank to start immediately</small>
+        </div>
+
+        <div class="form-group">
+          <label for="endDate">End Date</label>
+          <input type="date" id="endDate" class="input-dark">
+          <small class="text-muted">Leave blank for no end date</small>
+        </div>
+
+        <div class="button-row mt-lg">
+          <button type="submit" class="btn btn-gold" id="submitBtn">Save Message</button>
+          <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="js/periodic-message.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

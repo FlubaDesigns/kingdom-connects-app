@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Church Admin Dashboard - Kingdom Connects</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=7">
+  <link rel="stylesheet" href="/styles/theme.css?v=7">
+  <link rel="stylesheet" href="/styles/buttons.css?v=8">
+  <link rel="stylesheet" href="/styles/forms.css?v=7">
+  <link rel="stylesheet" href="/styles/overrides.css?v=7">
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+
+  <div id="header"></div>
+
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <div id="loadingMessage" class="text-center p-md">Loading dashboard...</div>
+      
+      <div id="noChurchMessage" class="text-center p-md hidden"></div>
+
+      <div id="dashboardContent" class="hidden">
+        <h2 class="gold-metallic text-center">Church Admin Dashboard</h2>
+        <p class="text-center mb-md">Welcome, <span id="churchName" class="gold"></span></p>
+
+        <div class="split-40-60">
+          <div class="split-left">
+            <div class="stat-grid-2 mb-md">
+              <div class="stat-card">
+                <div class="stat-value" id="totalBusinesses">0</div>
+                <div class="stat-label">Member Businesses</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="thisMonthTithe">$0</div>
+                <div class="stat-label">This Month's Tithe</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="proMembers">0</div>
+                <div class="stat-label">Pro Members</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="totalTithe">$0</div>
+                <div class="stat-label">Total Tithe</div>
+              </div>
+            </div>
+
+            <article id="recentActivity" class="card mb-md hidden">
+              <h3 class="gold">This Week's Activity</h3>
+              <div class="activity-stats">
+                <div class="activity-item">
+                  <span class="activity-value" id="newBusinessesWeek">0</span>
+                  <span class="activity-label">New Businesses</span>
+                </div>
+                <div class="activity-item">
+                  <span class="activity-value" id="proUpgradesWeek">0</span>
+                  <span class="activity-label">Pro Upgrades</span>
+                </div>
+                <div class="activity-item">
+                  <span class="activity-value" id="titheWeek">$0</span>
+                  <span class="activity-label">Tithe Earned</span>
+                </div>
+              </div>
+            </article>
+
+            <div class="mb-md">
+              <a href="#" id="viewPublicListing" class="btn btn-gold btn-small" target="_blank">View Public Listing</a>
+            </div>
+
+            <h4 class="gold mb-sm">Quick Actions</h4>
+            <div class="action-cards-row mb-md">
+          <a href="/church-admin/members.html" class="action-card" id="membersTile">
+            <div class="action-card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <span class="action-card-title">Members</span>
+            <span class="action-card-desc">Approve requests</span>
+            <span id="pendingMembersBadge" class="pending-badge hidden">0</span>
+          </a>
+          <a href="/church-admin/businesses.html" class="action-card" id="businessesTile">
+            <div class="action-card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+            </div>
+            <span class="action-card-title">Businesses</span>
+            <span class="action-card-desc">Manage members</span>
+            <span id="pendingAffiliationBadge" class="pending-badge hidden">0</span>
+          </a>
+          <a href="/church-admin/tithings.html" class="action-card">
+            <div class="action-card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </div>
+            <span class="action-card-title">Tithings</span>
+            <span class="action-card-desc">Track earnings</span>
+          </a>
+          <a href="/church-admin/analytics.html" class="action-card">
+            <div class="action-card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            </div>
+            <span class="action-card-title">Analytics</span>
+            <span class="action-card-desc">Growth metrics</span>
+          </a>
+          <a href="/church-admin/announcements.html" class="action-card">
+            <div class="action-card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"></path></svg>
+            </div>
+            <span class="action-card-title">Announcements</span>
+            <span class="action-card-desc">Church notices</span>
+          </a>
+          <a href="/church-admin/events.html" class="action-card">
+            <div class="action-card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </div>
+            <span class="action-card-title">Events</span>
+            <span class="action-card-desc">Special occasions</span>
+          </a>
+          <a href="/church-admin/activities.html" class="action-card">
+            <div class="action-card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+            <span class="action-card-title">Activities</span>
+            <span class="action-card-desc">Ongoing programs</span>
+          </a>
+          <a href="/church-admin/periodic-message.html" class="action-card">
+            <div class="action-card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </div>
+            <span class="action-card-title">Message</span>
+            <span class="action-card-desc">Share updates</span>
+          </a>
+          <a href="/church-admin/profile.html" class="action-card">
+            <div class="action-card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            </div>
+            <span class="action-card-title">Profile</span>
+            <span class="action-card-desc">Church info</span>
+          </a>
+          <a href="/church-admin/church-insights.html" class="action-card">
+            <div class="action-card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+            </div>
+            <span class="action-card-title">Insights</span>
+            <span class="action-card-desc">Ministry details</span>
+          </a>
+          <a href="/church-admin/page-settings.html" class="action-card">
+            <div class="action-card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </div>
+            <span class="action-card-title">Page Settings</span>
+            <span class="action-card-desc">Visibility options</span>
+          </a>
+              <a href="/church-admin/user-manual.html" class="action-card">
+                <div class="action-card-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                </div>
+                <span class="action-card-title">User Manual</span>
+                <span class="action-card-desc">Complete guide</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="split-right">
+            <article id="churchProfileCompletion" class="card mb-md hidden">
+              <div class="flex-between mb-sm">
+                <h3 class="gold m-0">Profile Boosts</h3>
+                <span class="help-icon" data-tooltip="These are optional ways to improve your church listing visibility. Not required, but completing them helps you stand out!">?</span>
+              </div>
+              <div class="completion-bar-container">
+                <div class="completion-bar">
+                  <div class="completion-fill" id="churchCompletionFill"></div>
+                </div>
+                <span class="completion-percent" id="churchCompletionPercent">0%</span>
+                <span id="churchCompletionStar" class="completion-star hidden">&#9733;</span>
+              </div>
+              <p class="help-text mt-sm" id="churchCompletionTip">Complete these to attract more members:</p>
+              <ul id="churchCompletionTasks" class="completion-tasks"></ul>
+            </article>
+
+            <article class="card mb-md hidden" id="pendingMembersCard">
+              <h3 class="gold">Pending Member Requests</h3>
+              <p class="text-sm text-muted mb-sm">Members waiting for approval</p>
+              <div id="pendingMembersList" class="card-list"></div>
+              <div id="noMembersMessage" class="text-center p-sm hidden">
+                <p class="text-muted">No pending requests.</p>
+              </div>
+            </article>
+
+            <article class="card mb-md hidden" id="affiliationRequestsCard">
+              <h3 class="gold">Business Affiliation Requests</h3>
+              <p class="text-sm text-muted mb-sm">Businesses requesting to join</p>
+              <div id="pendingRequestsList" class="card-list"></div>
+              <div id="noRequestsMessage" class="text-center p-sm hidden">
+                <p class="text-muted">No pending requests.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+  </main>
+
+  <div id="footer"></div>
+  </div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="/church-admin/js/dashboard.js?v=101"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

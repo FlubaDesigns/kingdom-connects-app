@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Add Category Email Templates | Kingdom Connects</title>
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+      <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h1>Add Category Suggestion Email Templates</h1>
+      <div class="card">
+        <p>This utility adds 3 email templates for the category suggestion workflow:</p>
+        <ol>
+          <li><strong>category_suggestion_received</strong> - Sent when user submits a suggestion</li>
+          <li><strong>category_suggestion_approved</strong> - Sent when admin approves</li>
+          <li><strong>category_suggestion_rejected</strong> - Sent when admin rejects</li>
+        </ol>
+        
+        <button id="addTemplatesBtn" class="btn-primary">Add Email Templates to Firestore</button>
+        
+        <div id="statusMessage" class="hidden mt-md"></div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+
+  <script type="module">
+    import { db } from "../js/firebase-config.js";
+    import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const addTemplatesBtn = document.getElementById('addTemplatesBtn');
+    const statusMessage = document.getElementById('statusMessage');
+
+    const templates = [
+      {
+        name: 'Category Suggestion Received',
+        slug: 'category_suggestion_received',
+        category: 'category_suggestions',
+        subject: 'We Received Your Category Suggestion - {{category_name}}',
+        html_body: `<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #2563eb, #1e40af); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+    .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+    .highlight { background: #fef3c7; padding: 15px; border-left: 4px solid #f59e0b; margin: 20px 0; }
+    .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px; }
+    .btn { display: inline-block; background: #ffd700; color: #1e3a8a; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 20px; }
+  </style>
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Thank You for Your Suggestion!</h1>
+    </div>
+    <div class="content">
+      <p>Hi {{user_name}},</p>
+      
+      <p>We've received your business category suggestion and wanted to let you know it's under review!</p>
+      
+      <div class="highlight">
+        <strong>Your Suggested Category:</strong><br>
+        {{category_name}}
+      </div>
+      
+      <p><strong>What happens next?</strong></p>
+      <ul>
+        <li>Our admin team will review your suggestion within 2-3 business days</li>
+        <li>We'll evaluate if it fits our category structure and serves the Kingdom Connects community</li>
+        <li>You'll receive an email notification once we make a decision</li>
+      </ul>
+      
+      <p>In the meantime, you can continue with your business submission! We've temporarily added your suggested category to the dropdown so you can complete your listing.</p>
+      
+      <p>Thank you for helping us improve Kingdom Connects!</p>
+      
+      <p>Blessings,<br>
+      The Kingdom Connects Team</p>
+    </div>
+    <div class="footer">
+      <p>Kingdom Connects | Building Christian Commerce Together</p>
+      <p><a href="https://kingdomconnects.org">kingdomconnects.org</a></p>
+    </div>
+  </div>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>`,
+        text_body: 'Hi {{user_name}},\n\nWe received your category suggestion for "{{category_name}}" and our admin team will review it within 2-3 business days.\n\nYou will receive an email once we make a decision.\n\nThank you for helping improve Kingdom Connects!\n\nBlessings,\nThe Kingdom Connects Team',
+        description: 'Sent to user when they submit a category suggestion',
+        active: true
+      },
+      {
+        name: 'Category Suggestion Approved',
+        slug: 'category_suggestion_approved',
+        category: 'category_suggestions',
+        subject: 'Great News! Your Category Was Approved - {{category_name}}',
+        html_body: `<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+    .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+    .success-box { background: #d1fae5; padding: 20px; border-left: 4px solid #10b981; margin: 20px 0; text-align: center; }
+    .success-box h2 { color: #065f46; margin: 0 0 10px 0; }
+    .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px; }
+    .btn { display: inline-block; background: #ffd700; color: #1e3a8a; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 20px; }
+  </style>
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎉 Congratulations!</h1>
+    </div>
+    <div class="content">
+      <p>Hi {{business_name}} Team,</p>
+      
+      <div class="success-box">
+        <h2>Your {{category_type}} Suggestion Was Approved!</h2>
+        <p style="font-size: 18px; margin: 0;"><strong>{{category_name}}</strong></p>
+      </div>
+      
+      <p>Excellent news! Your suggested business {{category_type}} has been reviewed and added to Kingdom Connects.</p>
+      
+      <p><strong>What this means:</strong></p>
+      <ul>
+        <li>✅ Your category is now available for all businesses to use</li>
+        <li>✅ It's already applied to your business listing</li>
+        <li>✅ Other Christian businesses can now find and select this category</li>
+      </ul>
+      
+      <p>Thank you for helping us serve the Kingdom Connects community better! Your input helps us create a more comprehensive directory for Christian businesses.</p>
+      
+      <a href="https://kingdomconnects.org/business-admin/" class="btn">View Your Business Dashboard</a>
+      
+      <p style="margin-top: 30px;">Blessings,<br>
+      The Kingdom Connects Team</p>
+    </div>
+    <div class="footer">
+      <p>Kingdom Connects | Building Christian Commerce Together</p>
+      <p><a href="https://kingdomconnects.org">kingdomconnects.org</a></p>
+    </div>
+  </div>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>`,
+        text_body: 'Hi {{business_name}} Team,\n\nCongratulations! Your {{category_type}} suggestion "{{category_name}}" has been approved and added to Kingdom Connects.\n\nYour {{category_type}} is now available for all businesses to use, and it has been applied to your business listing.\n\nThank you for helping us serve the community better!\n\nBlessings,\nThe Kingdom Connects Team',
+        description: 'Sent to user when admin approves their category suggestion',
+        active: true
+      },
+      {
+        name: 'Category Suggestion Rejected',
+        slug: 'category_suggestion_rejected',
+        category: 'category_suggestions',
+        subject: 'Update on Your Category Suggestion - {{category_name}}',
+        html_body: `<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #6b7280, #4b5563); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+    .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+    .info-box { background: #fef3c7; padding: 15px; border-left: 4px solid #f59e0b; margin: 20px 0; }
+    .feedback-box { background: #e0e7ff; padding: 15px; border-left: 4px solid #6366f1; margin: 20px 0; }
+    .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px; }
+    .btn { display: inline-block; background: #ffd700; color: #1e3a8a; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 20px; }
+  </style>
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Category Suggestion Update</h1>
+    </div>
+    <div class="content">
+      <p>Hi {{business_name}} Team,</p>
+      
+      <p>Thank you for submitting your {{category_type}} suggestion for <strong>{{category_name}}</strong>. After careful review, we've decided not to add this {{category_type}} at this time.</p>
+      
+      <div class="feedback-box">
+        <strong>Admin Feedback:</strong><br>
+        {{admin_feedback}}
+      </div>
+      
+      <div class="info-box">
+        <strong>What this means for your business listing:</strong><br>
+        Your business is still active! We've assigned it to the closest matching category in our existing structure.
+      </div>
+      
+      <p><strong>Alternative Options:</strong></p>
+      <ul>
+        <li>Review our existing categories - there may be one that fits your business</li>
+        <li>Contact us if you'd like to discuss your category suggestion further</li>
+        <li>You can update your business category anytime in your dashboard</li>
+      </ul>
+      
+      <p>We appreciate your input in helping us improve Kingdom Connects. While we couldn't add this specific category, your feedback helps us understand the needs of our community.</p>
+      
+      <a href="https://kingdomconnects.org/business-admin/" class="btn">Manage Your Business Listing</a>
+      
+      <p style="margin-top: 30px;">Blessings,<br>
+      The Kingdom Connects Team</p>
+    </div>
+    <div class="footer">
+      <p>Kingdom Connects | Building Christian Commerce Together</p>
+      <p>Questions? Email us at <a href="mailto:support@kingdomconnects.org">support@kingdomconnects.org</a></p>
+      <p><a href="https://kingdomconnects.org">kingdomconnects.org</a></p>
+    </div>
+  </div>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>`,
+        text_body: 'Hi {{business_name}} Team,\n\nThank you for your {{category_type}} suggestion "{{category_name}}". After review, we decided not to add this {{category_type}} at this time.\n\nAdmin Feedback:\n{{admin_feedback}}\n\nYour business listing remains active and has been assigned to the closest matching {{category_type}}.\n\nYou can update your business categories anytime in your dashboard at https://kingdomconnects.org/business-admin/\n\nBlessings,\nThe Kingdom Connects Team',
+        description: 'Sent to user when admin rejects their category suggestion',
+        active: true
+      }
+    ];
+
+    addTemplatesBtn.addEventListener('click', async () => {
+      try {
+        addTemplatesBtn.disabled = true;
+        addTemplatesBtn.textContent = 'Adding templates...';
+        statusMessage.classList.remove('hidden');
+        statusMessage.className = 'info-message mt-md';
+        statusMessage.textContent = 'Adding templates to Firestore...';
+
+        for (const template of templates) {
+          await addDoc(collection(db, 'email_templates'), {
+            ...template,
+            created_at: serverTimestamp()
+          });
+          console.log(`✅ Added template: ${template.slug}`);
+        }
+
+        statusMessage.className = 'success-message mt-md';
+        statusMessage.textContent = '✅ All 3 email templates added successfully! You can now delete this page.';
+        addTemplatesBtn.textContent = 'Templates Added ✓';
+      } catch (error) {
+        console.error('Error adding templates:', error);
+        statusMessage.className = 'error-message mt-md';
+        statusMessage.textContent = '❌ Error: ' + error.message;
+        addTemplatesBtn.disabled = false;
+        addTemplatesBtn.textContent = 'Retry Adding Templates';
+      }
+    });
+  </script>
+
+  <script src="/js/header.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

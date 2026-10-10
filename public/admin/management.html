@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Management - Kingdom Connects Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+  <link rel="stylesheet" href="/styles/loading-skeletons.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+<body>
+  <div class="page-wrap">
+    <div id="header"></div>
+      <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <div class="card">
+        <div class="flex-between mb-md">
+          <div>
+            <h1 class="gold-metallic">Management Center</h1>
+            <p>Unified management for users, churches, and businesses across Kingdom Connects.</p>
+          </div>
+          <a href="/admin/index.html" class="btn btn-gold">← Dashboard</a>
+        </div>
+
+        <div class="stat-grid mb-lg">
+          <div class="stat-card">
+            <div class="stat-value" id="totalUsers">0</div>
+            <div class="stat-label">Active Users</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="pendingSubmissions">0</div>
+            <div class="stat-label">Pending Submissions</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="businessOwners">0</div>
+            <div class="stat-label">Business Owners</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="churchAdmins">0</div>
+            <div class="stat-label">Church Admins</div>
+          </div>
+        </div>
+
+        <div class="grid-2 gap-md mb-lg">
+          <div>
+            <label for="filterRole" class="form-label">Filter by Role</label>
+            <select id="filterRole" class="input-dark">
+              <option value="">All Roles</option>
+              <option value="member">Member</option>
+              <option value="business-admin">Business Owner</option>
+              <option value="church-admin">Church Admin</option>
+              <option value="sales">Sales Agent</option>
+            </select>
+          </div>
+          <div>
+            <label for="filterStatus" class="form-label">Filter by Status</label>
+            <select id="filterStatus" class="input-dark">
+              <option value="active">Active</option>
+              <option value="suspended">Suspended</option>
+              <option value="pending">Pending Submissions</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex-gap-center mb-md">
+          <input type="text" id="searchInput" class="input-dark flex-1" placeholder="Search by name or email...">
+          <button id="btnClearFilters" class="btn btn-secondary">Clear Filters</button>
+        </div>
+      </div>
+
+      <div id="loadingMessage" class="text-center mt-lg">
+        <p>Loading...</p>
+      </div>
+
+      <div id="contentArea" class="hidden">
+        <div id="resultsList" class="card-list"></div>
+      </div>
+
+      <div id="emptyState" class="hidden text-center mt-lg">
+        <div class="card">
+          <p class="text-lg">No results found.</p>
+          <p class="text-md opacity-70">Try adjusting your filters or search term.</p>
+        </div>
+      </div>
+
+      <div id="errorMessage" class="hidden text-center mt-lg">
+        <div class="card">
+          <p class="text-error">Error loading data. Please refresh the page.</p>
+        </div>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="/admin/js/header.js?v=20241220" defer></script>
+  <script src="./js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+  <script type="module" src="./js/management.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

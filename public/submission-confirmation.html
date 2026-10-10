@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Submission Confirmation - Kingdom Connects</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="styles/layout.css?v=7">
+  <link rel="stylesheet" href="styles/theme.css?v=7">
+  <link rel="stylesheet" href="styles/buttons.css?v=7">
+  <link rel="stylesheet" href="styles/forms.css?v=7">
+  <link rel="stylesheet" href="styles/overrides.css?v=7">
+</head>
+<body>
+  <div class="page-wrap">
+    <div id="header"></div>
+
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+        
+        <div id="pendingState" class="text-center mt-xl">
+          <div class="card max-w-2xl mx-auto">
+            <div class="mb-lg">
+              <svg class="icon-circle-gold mx-auto mb-md" width="80" height="80" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+              </svg>
+            </div>
+            
+            <h1 class="gold-metallic mb-md">Thank You for Your Submission!</h1>
+            <p class="mb-lg" id="submissionMessage">Your submission is under review by our admin team.</p>
+            
+            <div class="mb-lg p-lg" id="waitingBox">
+              <p class="font-bold gold-metallic mb-sm">⏳ Waiting for Approval...</p>
+              <p class="text-sm font-bold">📧 We will email you at each step - no need to wait here!</p>
+              <p class="text-sm mt-sm">Or stay on this page - we'll update you automatically when approved!</p>
+            </div>
+
+            <div class="mb-md">
+              <h3 class="font-bold mb-sm">What Happens Next:</h3>
+              <ul class="text-left max-w-lg mx-auto" id="approvalSteps">
+                <li class="mb-sm">📧 <strong>You'll receive emails</strong> at every approval step</li>
+                <li class="mb-sm">⏳ Your church admin reviews your affiliation (if church-affiliated)</li>
+                <li class="mb-sm">⏳ Platform admin reviews your business listing</li>
+                <li class="mb-sm" id="categorySuggestionStep" style="display: none;">⏳ Platform admin reviews your category suggestion</li>
+                <li class="mb-sm">✅ Once approved, you'll get dashboard access to manage your listing</li>
+              </ul>
+              <p class="text-sm mt-md" style="opacity: 0.8;"><strong>Important:</strong> Check your email inbox regularly. We'll notify you at each step!</p>
+            </div>
+
+            <div class="btn-row">
+              <a href="index.html" class="btn">← Back to Home</a>
+            </div>
+          </div>
+        </div>
+
+        <div id="approvedState" class="hidden text-center mt-xl">
+          <div class="card max-w-2xl mx-auto">
+            <div class="mb-lg">
+              <svg class="icon-circle-gold mx-auto mb-md" width="80" height="80" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9 12l2 2 4-4"/>
+              </svg>
+            </div>
+            
+            <h1 class="gold-metallic mb-md">🎉 Congratulations!</h1>
+            <p class="mb-lg" id="approvalMessage">Your submission has been approved!</p>
+            
+            <div class="mb-lg p-lg">
+              <p class="font-bold">Redirecting you to get started in <span id="countdown">3</span> seconds...</p>
+            </div>
+
+            <div class="btn-row">
+              <button id="getStartedBtn" class="btn btn-gold">Get Started Now →</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="errorState" class="hidden text-center mt-xl">
+          <div class="card max-w-2xl mx-auto">
+            <h2 class="text-error mb-md">Unable to Load Submission</h2>
+            <p class="mb-lg">We couldn't find your submission. Please contact support if this issue persists.</p>
+            <a href="index.html" class="btn">← Back to Home</a>
+          </div>
+        </div>
+
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="js/maintenance-check.js" type="module"></script>
+  <script src="/js/header.js" type="module"></script>
+  <script src="js/maintenance-check.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script src="js/maintenance-check.js" type="module"></script>
+  <script type="module" src="js/submission-confirmation.js"></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+</body>
+</html>

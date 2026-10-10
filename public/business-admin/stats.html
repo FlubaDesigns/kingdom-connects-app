@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Statistics - Kingdom Connects Business Portal</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css">
+  <link rel="stylesheet" href="/styles/theme.css">
+  <link rel="stylesheet" href="/styles/buttons.css">
+  <link rel="stylesheet" href="/styles/forms.css">
+  <link rel="stylesheet" href="/styles/overrides.css">
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+<h2 class="gold-metallic text-center">Business Statistics</h2>
+      <div id="loadingMessage" class="text-center p-md">Loading statistics...</div>
+      
+      <div id="noBusinessMessage" class="text-center p-md hidden">
+        <p>No business listing found for your account.</p>
+        <a href="/add_to_directory.html" class="btn btn-gold">Create a Business Listing</a>
+      </div>
+
+      <div id="statsContent" class="hidden">
+        <div class="split-40-60">
+          <div class="split-left">
+            <article class="card mb-md">
+              <h3 class="gold">Performance Overview</h3>
+              <div class="stat-grid-2">
+                <div class="stat-card">
+                  <div class="stat-value" id="totalViews">0</div>
+                  <div class="stat-label">Profile Views</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="averageRating">0.0</div>
+                  <div class="stat-label">Average Rating</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="reviewCount">0</div>
+                  <div class="stat-label">Reviews</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="photoCount">0</div>
+                  <div class="stat-label">Photos</div>
+                </div>
+              </div>
+            </article>
+
+            <div id="proPromo" class="card card-highlight mb-md hidden">
+              <h3 class="gold">Unlock Pro Analytics</h3>
+              <p>Pro members get detailed analytics: visitor trends, click-through rates, conversion tracking, and more.</p>
+              <a href="/business-admin/upgrade.html" class="btn btn-gold">Upgrade to Pro</a>
+            </div>
+          </div>
+
+          <div class="split-right">
+            <article class="card mb-md">
+              <h3 class="gold">Listing Details</h3>
+              <p><strong>Status:</strong> <span id="listingStatus">-</span></p>
+              <p><strong>Tier:</strong> <span id="membershipTier">-</span></p>
+              <p><strong>Category:</strong> <span id="primaryCategory">-</span></p>
+              <p><strong>Subcategories:</strong> <span id="secondaryCategories">-</span></p>
+              <p><strong>Member Since:</strong> <span id="memberSince">-</span></p>
+              <p><strong>Church:</strong> <span id="churchAffiliation">-</span></p>
+              <p><strong>Location:</strong> <span id="businessLocation">-</span></p>
+              <p><strong>Website:</strong> <span id="websiteListed">-</span></p>
+            </article>
+
+            <article class="card mb-md hidden" id="proStats">
+              <div class="flex-between mb-md">
+                <h3 class="gold m-0">Pro Analytics</h3>
+                <select id="dateRangeSelect" class="input-dark input-small">
+                  <option value="7">Last 7 days</option>
+                  <option value="30" selected>Last 30 days</option>
+                  <option value="90">Last 90 days</option>
+                  <option value="365">All time</option>
+                </select>
+              </div>
+              <div class="stat-grid-2">
+                <div class="stat-card">
+                  <div class="stat-value" id="clickThroughRate">0%</div>
+                  <div class="stat-label">CTR</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="searchImpressions">0</div>
+                  <div class="stat-label">Impressions</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="websiteClicks">0</div>
+                  <div class="stat-label">Website Clicks</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="phoneClicks">0</div>
+                  <div class="stat-label">Phone Clicks</div>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <h3 class="gold">Optimize Your Listing</h3>
+              <div id="optimizationTips"></div>
+            </article>
+          </div>
+        </div>
+      </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+
+  <script type="module" src="js/stats.js"></script>
+  </div>
+  <script src="js/business-auth-guard.js" defer></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Sales Directors - Kingdom Connects Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/styles/layout.css">
+  <link rel="stylesheet" href="/styles/theme.css">
+  <link rel="stylesheet" href="/styles/buttons.css">
+  <link rel="stylesheet" href="/styles/forms.css">
+  <link rel="stylesheet" href="/styles/overrides.css">
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+<body>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <div class="card">
+        <div class="flex-between mb-md">
+          <div>
+            <h1 class="gold-metallic">Sales Directors</h1>
+            <p>Manage who has Sales Director access. Directors see team performance and earn 30% overrides.</p>
+          </div>
+          <a href="/admin/index.html" class="btn btn-gold btn-small">Dashboard</a>
+        </div>
+
+        <div class="stat-grid mb-lg">
+          <div class="stat-card">
+            <div class="stat-value" id="totalDirectors">0</div>
+            <div class="stat-label">Active Directors</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="totalAgents">0</div>
+            <div class="stat-label">Sales Agents</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-md">
+        <h3 class="gold-metallic">Add Sales Director</h3>
+        <p class="text-muted mb-md">Enter the email of a user to grant them Sales Director privileges.</p>
+        
+        <div class="flex-gap-center">
+          <input type="email" id="directorEmail" class="input-dark flex-1" placeholder="Enter user email...">
+          <button id="btnAddDirector" class="btn btn-gold">Add Director</button>
+        </div>
+        <div id="addMessage" class="mt-sm hidden"></div>
+      </div>
+
+      <div id="loadingMessage" class="text-center mt-lg">
+        <p>Loading directors...</p>
+      </div>
+
+      <div id="directorsContent" class="hidden mt-md">
+        <div class="card">
+          <h3 class="gold-metallic">Current Directors</h3>
+          <div id="directorsList" class="card-list"></div>
+        </div>
+      </div>
+
+      <div id="emptyState" class="hidden text-center mt-lg">
+        <div class="card">
+          <p class="text-lg">No Sales Directors yet.</p>
+          <p class="text-md opacity-70">Add a director using the form above.</p>
+        </div>
+      </div>
+
+      <div id="errorMessage" class="hidden text-center mt-lg">
+        <div class="card">
+          <p class="text-error">Error loading data. Please refresh the page.</p>
+        </div>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="/admin/js/header.js?v=20241220" defer></script>
+  <script src="./js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="./js/sales-directors.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

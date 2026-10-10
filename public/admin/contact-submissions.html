@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Contact Submissions - Kingdom Connects Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+  <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <div class="flex-between mb-md">
+        <div>
+          <h2 class="gold-metallic">Contact & Feedback</h2>
+          <p>View and respond to contact form submissions and dashboard feedback.</p>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="totalNew">0</div>
+          <div class="stat-label">New</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="totalPending">0</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="totalResolved">0</div>
+          <div class="stat-label">Resolved</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="totalAll">0</div>
+          <div class="stat-label">Total</div>
+        </div>
+      </div>
+
+      <article class="card">
+        <h3 class="gold">Filter Submissions</h3>
+        <div class="filters">
+          <select id="filterStatus" class="input-dark">
+            <option value="">All Statuses</option>
+            <option value="new" selected>New</option>
+            <option value="pending">Pending</option>
+            <option value="resolved">Resolved</option>
+          </select>
+          <select id="filterCategory" class="input-dark">
+            <option value="">All Categories</option>
+            <option value="general">General Inquiry</option>
+            <option value="support">Support</option>
+            <option value="dashboard_feedback">Dashboard Feedback</option>
+          </select>
+          <select id="filterSource" class="input-dark">
+            <option value="">All Sources</option>
+            <option value="contact">Contact Form</option>
+            <option value="widget">Dashboard Widget</option>
+          </select>
+          <input type="text" id="searchInput" placeholder="Search by name or email..." class="input-dark">
+          <button id="clearFilters" class="btn btn-small btn-secondary">Clear</button>
+        </div>
+      </article>
+
+      <div id="loadingMessage" class="text-center p-md">Loading submissions...</div>
+      <div id="emptyState" class="hidden text-center p-md">
+        <p>No submissions found matching your filters.</p>
+      </div>
+
+      <div id="submissionsList" class="hidden"></div>
+
+      <div id="responseModal" class="modal hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="gold">Respond to Submission</h3>
+            <button class="modal-close" id="closeModal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div id="submissionDetails"></div>
+            <div class="form-group mt-md">
+              <label for="adminResponse">Your Response</label>
+              <textarea id="adminResponse" rows="6" placeholder="Type your response..."></textarea>
+            </div>
+            <div class="form-group">
+              <label for="newStatus">Update Status</label>
+              <select id="newStatus">
+                <option value="pending">Pending</option>
+                <option value="resolved">Resolved</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" id="cancelResponse">Cancel</button>
+            <button class="btn btn-gold" id="saveResponse">Save Response</button>
+          </div>
+        </div>
+      </div>
+    </main>
+    <div id="footer"></div>
+  </div>
+
+  <script src="/js/header.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script src="/admin/js/contact-submissions.js" type="module"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

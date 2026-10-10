@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Upgrade to Pro - Kingdom Connects Business Portal</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css">
+  <link rel="stylesheet" href="/styles/theme.css">
+  <link rel="stylesheet" href="/styles/buttons.css">
+  <link rel="stylesheet" href="/styles/forms.css">
+  <link rel="stylesheet" href="/styles/overrides.css">
+  <link rel="stylesheet" href="/styles/components/pricing.css">
+
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h2 class="gold-metallic">Complete Your Pro Upgrade</h2>
+      <p>You're one step away from unlocking premium features for your business.</p>
+
+      <article class="card card-gradient-strong">
+        <h3 class="gold-metallic text-center">Kingdom Connects Pro</h3>
+        
+        <div id="pricing-container">
+          <p class="text-center">Loading pricing options...</p>
+        </div>
+
+        <div class="m-block-xl">
+          <h4 class="gold">What You'll Get:</h4>
+          <ul class="list-unstyled">
+            <li class="p-block-sm">✓ Featured placement in directory</li>
+            <li class="p-block-sm">✓ Upload photos & videos</li>
+            <li class="p-block-sm">✓ Extended business description</li>
+            <li class="p-block-sm">✓ Custom QR code</li>
+            <li class="p-block-sm">✓ Priority in search results</li>
+            <li class="p-block-sm">✓ Business analytics</li>
+            <li class="p-block-sm">✓ Respond to reviews</li>
+          </ul>
+        </div>
+
+        <div id="promo_section" class="hidden">
+          <label class="block font-bold">Promo Code</label>
+          <input type="text" id="promo_code" placeholder="Enter promo code" class="input-dark">
+        </div>
+
+        <input type="hidden" id="utm_source" value="">
+        <input type="hidden" id="utm_campaign" value="">
+
+        <div class="text-center">
+          <button id="checkout-button" class="btn btn-gold btn-xl">
+            Loading...
+          </button>
+        </div>
+
+        <p class="text-center text-sm opacity-70">
+          Secure payment powered by Stripe. Cancel anytime.
+        </p>
+      </article>
+    </section>
+  </main>
+
+  <div id="footer"></div>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+
+  <script type="module" src="js/header.js"></script>
+  <script type="module" src="js/footer.js"></script>
+  <script type="module" src="js/pro-checkout.js"></script>
+  </div>
+  <script src="js/business-auth-guard.js" defer></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

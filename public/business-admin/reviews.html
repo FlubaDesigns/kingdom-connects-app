@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Reviews - Kingdom Connects Business Portal</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css">
+  <link rel="stylesheet" href="/styles/theme.css">
+  <link rel="stylesheet" href="/styles/buttons.css">
+  <link rel="stylesheet" href="/styles/forms.css">
+  <link rel="stylesheet" href="/styles/overrides.css">
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+<h2 class="gold-metallic text-center">Customer Reviews</h2>
+      <div id="loadingMessage" class="text-center p-md">Loading reviews...</div>
+      
+      <div id="noBusinessMessage" class="text-center p-md hidden">
+        <p>No business listing found for your account.</p>
+        <a href="/add_to_directory.html" class="btn btn-gold">Create a Business Listing</a>
+      </div>
+
+      <div id="reviewsContent" class="hidden">
+        <div class="split-40-60">
+          <div class="split-left">
+            <article class="card mb-md">
+              <h3 class="gold">Review Summary</h3>
+              <div class="stat-grid-2">
+                <div class="stat-card">
+                  <div class="stat-value" id="averageRating">0.0</div>
+                  <div class="stat-label">Average Rating</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="totalReviews">0</div>
+                  <div class="stat-label">Total Reviews</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="responseRate">0%</div>
+                  <div class="stat-label">Response Rate</div>
+                </div>
+              </div>
+            </article>
+
+            <div id="upgradePromo" class="card card-highlight hidden">
+              <h3 class="gold">Upgrade to Respond</h3>
+              <p>Pro members can respond to customer reviews, building trust.</p>
+              <a href="/business-admin/upgrade.html" class="btn btn-gold">Upgrade to Pro</a>
+            </div>
+          </div>
+
+          <div class="split-right">
+            <h4 class="gold mb-sm">All Reviews</h4>
+            <div id="reviewsList"></div>
+            
+            <div id="noReviews" class="text-center p-md hidden">
+              <p class="help-text">No reviews yet. When customers leave reviews, they'll appear here.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+
+  <script type="module" src="js/reviews.js"></script>
+  </div>
+  <script src="js/business-auth-guard.js" defer></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

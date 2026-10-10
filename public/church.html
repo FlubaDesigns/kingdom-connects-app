@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Church Profile - Kingdom Connects</title>
+  <meta name="description" content="View church profile and member businesses on Kingdom Connects.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#081529" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+
+  <link rel="stylesheet" href="styles/layout.css?v=7">
+  <link rel="stylesheet" href="styles/theme.css?v=7">
+  <link rel="stylesheet" href="styles/buttons.css?v=7">
+  <link rel="stylesheet" href="styles/forms.css?v=7">
+  <link rel="stylesheet" href="styles/overrides.css?v=7">
+  <link rel="stylesheet" href="styles/components/church.css">
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+        <div id="loadingMessage" class="card">
+          <p>Loading church information...</p>
+        </div>
+
+        <div id="errorMessage" class="card error-card hidden">
+          <h2 class="gold">Error</h2>
+          <p id="errorText"></p>
+          <a href="church_directory.html" class="btn btn-gold">← Back to Church Directory</a>
+        </div>
+
+        <div id="churchProfile" class="hidden">
+          <article class="card" id="heroSection">
+            <img id="heroImage" class="church-hero-image hidden" src="" alt="Church banner">
+            <div class="flex-between mb-sm">
+              <div>
+                <h1 id="churchName" class="gold-metallic"></h1>
+                <p id="churchDenomination" class="text-muted hidden"></p>
+              </div>
+              <button id="favoriteBtn" class="btn btn-gold btn-small hidden">Save</button>
+            </div>
+            <p id="churchDescription" class="line-height-relaxed"></p>
+            <p id="welcomeMessage" class="welcome-message hidden"></p>
+          </article>
+
+          <article id="shareSection" class="card hidden">
+            <div id="socialShareButtons"></div>
+          </article>
+
+          <article class="card hidden" id="contactCard">
+            <h2 class="gold">Contact Information</h2>
+            <div id="contactInfo" class="contact-info-grid"></div>
+          </article>
+
+          <article class="card hidden" id="socialMediaCard">
+            <h2 class="gold">Connect With Us</h2>
+            <div id="socialMediaLinks" class="social-links"></div>
+          </article>
+
+          <article class="card hidden" id="serviceTimesCard">
+            <h2 class="gold">Service Times</h2>
+            <ul id="serviceTimes" class="service-times-list"></ul>
+          </article>
+
+          <article class="card hidden" id="livestreamCard">
+            <h2 class="gold">Watch Live</h2>
+            <a id="livestreamLink" href="" target="_blank" class="btn btn-gold">Watch Live Stream</a>
+          </article>
+
+          <article class="card hidden" id="pastorMessageCard">
+            <h2 class="gold">Pastor's Message</h2>
+            <h3 id="messageTitle" class="church-message-title"></h3>
+            <p id="messageDate" class="church-message-date"></p>
+            <p id="messageContent" class="line-height-relaxed"></p>
+          </article>
+
+          <article class="card hidden" id="announcementsCard">
+            <h2 class="gold">Announcements</h2>
+            <div id="announcementsList"></div>
+          </article>
+
+          <article class="card hidden" id="eventsCard">
+            <h2 class="gold">Upcoming Events</h2>
+            <div id="eventsList"></div>
+          </article>
+
+          <article class="card hidden" id="activitiesCard">
+            <h2 class="gold">Ongoing Activities</h2>
+            <div id="activitiesList"></div>
+          </article>
+
+          <article class="card">
+            <a href="church_directory.html" class="btn btn-gold">Back to Church Directory</a>
+          </article>
+        </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="js/maintenance-check.js" type="module"></script>
+  <script src="/js/header.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script src="js/breadcrumbs.js" defer></script>
+  <script type="module" src="js/church.js"></script>
+</body>
+</html>

@@ -1,0 +1,372 @@
+/* Sales Dashboard Styles - Moved from inline <style> blocks for CSP compliance */
+
+/* === Dashboard (index.html) === */
+.stat-sublabel {
+  color: #666;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.action-card {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--gold);
+}
+
+.action-card h3 {
+  margin-top: 0;
+  color: var(--gold);
+}
+
+/* === Commissions (commissions.html) === */
+.filter-bar {
+  background: var(--card-bg);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-bar select {
+  padding: 0.5rem;
+  border-radius: 4px;
+  background: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid #444;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.summary-card {
+  background: var(--card-bg);
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.summary-value {
+  font-size: 1.5rem;
+  color: var(--gold);
+  font-weight: bold;
+}
+
+.summary-label {
+  color: #aaa;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.commission-table {
+  width: 100%;
+  min-width: 600px;
+  background: var(--card-bg);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.commission-table th {
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--gold);
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+.commission-table td {
+  padding: 1rem;
+  border-top: 1px solid #333;
+}
+
+.commission-table tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-paid {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+}
+
+.status-pending {
+  background: rgba(255, 152, 0, 0.2);
+  color: #ff9800;
+}
+
+/* === Conversions (conversions.html) === */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.metric-card {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.metric-value {
+  font-size: 2.5rem;
+  color: var(--gold);
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.metric-label {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.conversion-list {
+  background: var(--card-bg);
+  border-radius: 8px;
+  overflow: hidden;
+  min-width: 500px;
+}
+
+.conversion-item {
+  padding: 1rem;
+  border-bottom: 1px solid #333;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+.conversion-item:last-child {
+  border-bottom: none;
+}
+
+.conversion-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.business-info h4 {
+  margin: 0;
+  color: var(--gold);
+}
+
+.business-info p {
+  margin: 0.25rem 0 0 0;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+/* === Referrals (referrals.html) === */
+.referral-table {
+  width: 100%;
+  min-width: 600px;
+  background: var(--card-bg);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.referral-table th {
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--gold);
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+.referral-table td {
+  padding: 1rem;
+  border-top: 1px solid #333;
+}
+
+.referral-table tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.pro-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #d4af37 0%, #f4e5a8 100%);
+  color: #000;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.free-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.1);
+  color: #888;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+/* === Agents (agents.html) === */
+.agents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.agent-card {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--gold);
+}
+
+.agent-card h3 {
+  margin-top: 0;
+  color: var(--gold);
+}
+
+.agent-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #333;
+}
+
+.agent-stat:last-child {
+  border-bottom: none;
+}
+
+.agent-stat label {
+  color: #aaa;
+}
+
+.agent-stat value {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.info-box {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  border-left: 4px solid #2196F3;
+}
+
+/* === Director Commissions (director-commissions.html) === */
+.earnings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.earnings-card {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 2px solid var(--border-color);
+  text-align: center;
+}
+
+.earnings-card.highlight {
+  border-color: var(--gold);
+}
+
+.earnings-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.earnings-label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.team-table {
+  width: 100%;
+  background: var(--card-bg);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.team-table th {
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--gold);
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+.team-table td {
+  padding: 1rem;
+  border-top: 1px solid #333;
+}
+
+.team-table tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* === Empty State === */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+
+.empty-state p {
+  color: #aaa;
+  margin-bottom: 2rem;
+}
+
+.empty-state-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.tithe-impact {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(212, 175, 55, 0.1);
+  border-radius: 4px;
+  grid-column: 1 / -1;
+}

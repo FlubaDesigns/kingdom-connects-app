@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Social Sharing Hub - Kingdom Connects Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+  <link rel="stylesheet" href="/styles/loading-skeletons.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <div class="flex-between mb-md">
+        <div>
+          <h2 class="gold-metallic">Social Sharing Hub</h2>
+          <p>Manage social sharing settings and share content to Facebook, X, and more.</p>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="shareableReviews">0</div>
+          <div class="stat-label">Shareable Reviews</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="shareableTestimonials">0</div>
+          <div class="stat-label">Testimonials</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="featuredBusinesses">0</div>
+          <div class="stat-label">Featured Businesses</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="optedOutCount">0</div>
+          <div class="stat-label">Opted Out</div>
+        </div>
+      </div>
+
+      <article class="card mb-md">
+        <h3 class="gold">Platform Settings</h3>
+        <div class="form-field mb-md">
+          <label class="flex-gap-center">
+            <input type="checkbox" id="masterToggle" checked>
+            <span>Enable social sharing platform-wide</span>
+          </label>
+          <small class="text-muted">When disabled, all sharing buttons are hidden across the site</small>
+        </div>
+        
+        <div class="form-field mb-md">
+          <label class="block font-bold mb-sm">Default Share Message (Reviews)</label>
+          <textarea id="reviewTemplate" class="textarea-dark" rows="2" placeholder="Check out this review on Kingdom Connects!"></textarea>
+        </div>
+        
+        <div class="form-field mb-md">
+          <label class="block font-bold mb-sm">Default Share Message (Businesses)</label>
+          <textarea id="businessTemplate" class="textarea-dark" rows="2" placeholder="Discover this Christian business on Kingdom Connects!"></textarea>
+        </div>
+        
+        <button id="saveSettings" class="btn btn-gold">Save Settings</button>
+      </article>
+
+      <article class="card mb-md">
+        <h3 class="gold">Shareable Content Queue</h3>
+        <p class="text-muted mb-md">Approved reviews and content ready to share on social media.</p>
+        
+        <div class="filters mb-md">
+          <select id="contentTypeFilter" class="input-dark">
+            <option value="all">All Content</option>
+            <option value="reviews">Reviews Only</option>
+            <option value="testimonials">Testimonials Only</option>
+            <option value="businesses">Featured Businesses</option>
+          </select>
+          <button id="refreshContent" class="btn btn-small">Refresh</button>
+        </div>
+        
+        <div id="loadingContent" class="text-center p-md">Loading shareable content...</div>
+        <div id="contentQueue" class="hidden"></div>
+        <div id="emptyContent" class="hidden text-center p-md">
+          <p>No shareable content found. Approve reviews to make them shareable.</p>
+        </div>
+      </article>
+
+      <article class="card mb-md">
+        <h3 class="gold">Permission Overview</h3>
+        <p class="text-muted mb-md">See who has disabled social sharing.</p>
+        
+        <div class="permission-grid">
+          <div class="permission-section">
+            <h4>Churches with Sharing Disabled</h4>
+            <div id="churchesOptedOut" class="opt-out-list">
+              <p class="text-muted">Loading...</p>
+            </div>
+          </div>
+          
+          <div class="permission-section">
+            <h4>Businesses with Sharing Disabled</h4>
+            <div id="businessesOptedOut" class="opt-out-list">
+              <p class="text-muted">Loading...</p>
+            </div>
+          </div>
+          
+          <div class="permission-section">
+            <h4>Members with Sharing Disabled</h4>
+            <div id="membersOptedOut" class="opt-out-list">
+              <p class="text-muted">Loading...</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="/admin/js/header.js?v=20241220" defer></script>
+  <script src="/admin/js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script src="/js/social-sharing.js"></script>
+
+  <script type="module" src="/admin/js/social-sharing-admin.js"></script>
+  </div>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

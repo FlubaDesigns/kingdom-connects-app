@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Suggest a Category - Kingdom Connects</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css">
+  <link rel="stylesheet" href="/styles/theme.css">
+  <link rel="stylesheet" href="/styles/buttons.css">
+  <link rel="stylesheet" href="/styles/forms.css">
+  <link rel="stylesheet" href="/styles/overrides.css">
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+    <h2 class="gold-metallic text-center">Suggest a New Category</h2>
+    <p class="text-center text-muted mb-md">Don't see your business type? Suggest a new category for review.</p>
+
+    <div class="split-40-60">
+      <div class="split-left">
+        <article class="card mb-md">
+          <h3 class="gold">My Suggestions</h3>
+          <div id="suggestionsList">
+            <p class="opacity-60">Loading your suggestions...</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="split-right">
+        <article class="card">
+          <h3 class="gold">Submit Category Suggestion</h3>
+          <form id="suggestionForm">
+        <div class="form-group">
+          <label for="suggestionType">What are you suggesting?<span class="error-text">*</span></label>
+          <select id="suggestionType" name="suggestionType" required class="input-dark">
+            <option value="">Select type...</option>
+            <option value="subcategory">A new subcategory under an existing category</option>
+            <option value="primary">A completely new primary category</option>
+          </select>
+        </div>
+
+        <div class="form-group hidden" id="parentCategoryGroup">
+          <label for="parentCategory">Parent Category<span class="error-text">*</span></label>
+          <select id="parentCategory" name="parentCategory" class="input-dark">
+            <option value="">Select parent category...</option>
+          </select>
+          <p class="text-sm opacity-70 mt-sm">Select which main category this subcategory belongs under</p>
+        </div>
+
+        <div class="form-group">
+          <label for="suggestedLabel">Category Name<span class="error-text">*</span></label>
+          <input type="text" id="suggestedLabel" name="suggestedLabel" required 
+                 placeholder="e.g., Mobile Car Wash Services"
+                 class="w-full input-dark">
+          <p class="text-sm opacity-70 mt-sm">Enter the display name for the category</p>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Why is this category needed?<span class="error-text">*</span></label>
+          <textarea id="description" name="description" required rows="4"
+                    placeholder="Explain what types of businesses this category would serve and why it's needed..."
+                    class="textarea-rounded"></textarea>
+          <p class="text-sm opacity-70 mt-sm">Help us understand the need for this category (minimum 20 characters)</p>
+        </div>
+
+        <div id="formMessage" class="m-block"></div>
+
+            <button type="submit" class="btn btn-gold" id="submitBtn">Submit Suggestion</button>
+          </form>
+        </article>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+  <script type="module" src="js/suggest-category.js"></script>
+  </div>
+  <script src="js/business-auth-guard.js" defer></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

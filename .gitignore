@@ -1,3 +1,60 @@
+# Firebase credentials - NEVER COMMIT!
+serviceAccount.json
+firebase-adminsdk-*.json
+firebase-service-account.json
+**/firebase-service-account.json
+*.pem
+*.key
+*service-account*
+*serviceaccount*
+*private_key*
+*credentials*.json
+
+# Node modules
 node_modules/
-*.log
+node_modules
+.firebase/
+package-lock.json
+
+# Python cache and libraries
+__pycache__/
+*.pyc
+.pythonlibs/
+
+# Environment variables
+.env
+.env.local
+.env.*
+!.env.*.template
+*.zip
+
+# OS files
 .DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Replit
+.replit
+replit.nix
+.config/
+.upm/
+.local/
+.cache/
+
+# Large export zips (keep NEXUS-SYSTEM-OVERVIEW.zip and AI-COMMS.zip)
+docs/KC-SOURCE-ONLY.zip
+docs/KC-Export.zip
+
+# Temp files
+/tmp/
+*.tmp
+ziVpSNTx
+
+# Logs
+*.log
+logs/

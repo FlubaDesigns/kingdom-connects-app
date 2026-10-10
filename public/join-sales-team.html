@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Join Our Sales Team - Kingdom Connects</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/theme.css">
+  <link rel="stylesheet" href="styles/buttons.css">
+  <link rel="stylesheet" href="styles/forms.css">
+  <link rel="stylesheet" href="styles/overrides.css">
+</head>
+<body>
+  <div class="page-wrap">
+    <div id="header"></div>
+    
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+      <div class="card max-width-md mx-auto">
+        <h1 class="gold-metallic text-center">Join Our Sales Team</h1>
+        <p class="text-center text-muted mb-lg">Earn commissions helping Christian businesses grow. Complete this application to get started.</p>
+
+        <div class="progress-bar-container mb-lg">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-steps">
+            <div class="progress-step active" data-step="1">
+              <div class="step-number">1</div>
+              <div class="step-label">Personal Info</div>
+            </div>
+            <div class="progress-step" data-step="2">
+              <div class="step-number">2</div>
+              <div class="step-label">Experience</div>
+            </div>
+            <div class="progress-step" data-step="3">
+              <div class="step-number">3</div>
+              <div class="step-label">Motivation</div>
+            </div>
+            <div class="progress-step" data-step="4">
+              <div class="step-number">4</div>
+              <div class="step-label">Review</div>
+            </div>
+          </div>
+        </div>
+
+        <form id="applicationForm">
+          <div class="form-step active" data-step="1">
+            <h3 class="gold-metallic">Personal Information</h3>
+            
+            <div class="form-field">
+              <label>Full Name <span class="req">*</span></label>
+              <input type="text" id="fullName" class="input-dark" required placeholder="Your full name">
+            </div>
+            
+            <div class="form-field">
+              <label>Email Address <span class="req">*</span></label>
+              <input type="email" id="email" class="input-dark" required placeholder="your@email.com">
+            </div>
+            
+            <div class="form-field">
+              <label>Phone Number <span class="req">*</span></label>
+              <input type="text" id="phone" class="input-dark" required placeholder="(555) 123-4567" autocomplete="tel">
+            </div>
+            
+            <div class="form-field">
+              <label>City / Region</label>
+              <input type="text" id="location" class="input-dark" placeholder="Your city or region">
+            </div>
+
+            <div class="flex-gap-end mt-lg">
+              <button type="button" class="btn btn-gold" data-action="next">Next Step</button>
+            </div>
+          </div>
+
+          <div class="form-step" data-step="2">
+            <h3 class="gold-metallic">Sales Experience</h3>
+            
+            <div class="form-field">
+              <label>Do you have sales experience?</label>
+              <select id="salesExperience" class="input-dark">
+                <option value="">Select one...</option>
+                <option value="none">No prior sales experience</option>
+                <option value="some">Some experience (1-2 years)</option>
+                <option value="experienced">Experienced (3-5 years)</option>
+                <option value="veteran">Sales veteran (5+ years)</option>
+              </select>
+            </div>
+            
+            <div class="form-field">
+              <label>What industries have you worked in?</label>
+              <input type="text" id="industries" class="input-dark" placeholder="e.g., Real estate, Insurance, Retail">
+            </div>
+            
+            <div class="form-field">
+              <label>Are you connected to any churches or Christian communities?</label>
+              <textarea id="churchConnection" class="input-dark" rows="3" placeholder="Tell us about your church involvement..."></textarea>
+            </div>
+
+            <div class="flex-between mt-lg">
+              <button type="button" class="btn" data-action="prev">Back</button>
+              <button type="button" class="btn btn-gold" data-action="next">Next Step</button>
+            </div>
+          </div>
+
+          <div class="form-step" data-step="3">
+            <h3 class="gold-metallic">Your Motivation</h3>
+            
+            <div class="form-field">
+              <label>Why do you want to join Kingdom Connects? <span class="req">*</span></label>
+              <textarea id="motivation" class="input-dark" rows="4" required placeholder="Tell us what excites you about this opportunity..."></textarea>
+            </div>
+            
+            <div class="form-field">
+              <label>How many hours per week can you dedicate?</label>
+              <select id="hoursPerWeek" class="input-dark">
+                <option value="">Select one...</option>
+                <option value="5-10">5-10 hours (part-time)</option>
+                <option value="10-20">10-20 hours (substantial part-time)</option>
+                <option value="20-30">20-30 hours (near full-time)</option>
+                <option value="30+">30+ hours (full-time)</option>
+              </select>
+            </div>
+            
+            <div class="form-field">
+              <label>How did you hear about us?</label>
+              <input type="text" id="referralSource" class="input-dark" placeholder="Friend, church, social media, etc.">
+            </div>
+
+            <div class="flex-between mt-lg">
+              <button type="button" class="btn" data-action="prev">Back</button>
+              <button type="button" class="btn btn-gold" data-action="next">Review Application</button>
+            </div>
+          </div>
+
+          <div class="form-step" data-step="4">
+            <h3 class="gold-metallic">Review Your Application</h3>
+            <p class="text-muted mb-md">Please review your information before submitting.</p>
+            
+            <div class="review-section" id="reviewContent"></div>
+
+            <div class="form-field mt-lg">
+              <label class="checkbox-label">
+                <input type="checkbox" id="agreeTerms" required>
+                <span>I agree to the <a href="/terms.html" target="_blank">Terms of Service</a> and understand that my application will be reviewed.</span>
+              </label>
+            </div>
+
+            <div class="flex-between mt-lg">
+              <button type="button" class="btn" data-action="prev">Back</button>
+              <button type="submit" class="btn btn-gold" id="submitBtn">Submit Application</button>
+            </div>
+          </div>
+        </form>
+
+        <div id="successMessage" class="hidden text-center mt-lg">
+          <div class="success-icon">&#10003;</div>
+          <h2 class="gold-metallic">Application Submitted!</h2>
+          <p class="text-muted">Thank you for your interest in joining our sales team. We'll review your application and get back to you within 2-3 business days.</p>
+          <a href="/" class="btn btn-gold mt-md">Return to Home</a>
+        </div>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="/js/header.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script type="module" src="js/sales-application.js"></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+</body>
+</html>

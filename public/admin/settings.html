@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Settings - Kingdom Connects Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+  <link rel="stylesheet" href="/styles/loading-skeletons.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h2 class="gold-metallic">Platform Settings</h2>
+      <p>Configure Kingdom Connects platform settings and preferences.</p>
+
+      <div id="loadingMessage" class="text-center p-lg">
+        <p class="text-lg">Loading settings...</p>
+      </div>
+
+      <div id="errorMessage" class="hidden text-center p-lg">
+        <p class="text-danger">Error loading settings. Please try again.</p>
+      </div>
+
+      <div id="settingsContent" class="hidden">
+        <article class="card">
+          <h3 class="gold">Maintenance Mode</h3>
+          <p class="text-sm mb-md">Put the site under construction to prevent public access during updates.</p>
+          
+          <div class="form-group">
+            <label class="toggle-label">
+              <input type="checkbox" id="maintenanceMode">
+              <span class="toggle-switch"></span>
+              <span>
+                <span class="font-bold gold">Site Under Construction</span>
+                <span class="toggle-description">When enabled, all public pages redirect to maintenance.html. Admin pages remain accessible.</span>
+              </span>
+            </label>
+          </div>
+
+          <div class="button-container mt-md">
+            <button type="button" id="saveMaintenanceMode" class="btn btn-gold">Save Maintenance Mode</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3 class="gold">Review Sharing Settings</h3>
+          <p class="text-sm mb-md">Control social media sharing of user reviews across the platform.</p>
+          
+          <div class="form-group">
+            <label class="toggle-label">
+              <input type="checkbox" id="allowReviewSharing">
+              <span class="toggle-switch"></span>
+              <span>
+                <span class="font-bold gold">Allow Social Sharing of Reviews</span>
+                <span class="toggle-description">When enabled, users can share their business reviews to social media (Facebook, Twitter, LinkedIn). Individual churches, businesses, and users can still opt-out independently.</span>
+              </span>
+            </label>
+          </div>
+
+          <div class="button-container mt-md">
+            <button type="button" id="saveReviewSettings" class="btn btn-gold">Save Settings</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3 class="gold">Charitable Fund Settings</h3>
+          <p class="text-sm mb-md">When businesses are not affiliated with a church, their 10% tithing contribution goes to this charitable fund recipient.</p>
+          
+          <div class="form-group">
+            <label for="charitableFundRecipient" class="block font-bold">Charitable Fund Recipient</label>
+            <input type="text" id="charitableFundRecipient" class="input-dark" placeholder="e.g., Kingdom Connects Foundation, Your Charity Name">
+            <small class="text-muted">This appears in reports and communications about unchurched business contributions.</small>
+          </div>
+
+          <div class="button-container mt-md">
+            <button type="button" id="saveCharitableSettings" class="btn btn-gold">Save Charitable Fund Settings</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3 class="gold">General Settings</h3>
+          <p class="text-sm text-muted mb-md">These settings are for display only. Contact your developer to make changes.</p>
+          
+          <div class="form-group">
+            <label class="block font-bold">Platform Name</label>
+            <input type="text" value="Kingdom Connects" class="input-dark" disabled>
+          </div>
+
+          <div class="form-group">
+            <label class="block font-bold">Support Email</label>
+            <input type="email" value="support@kingdomconnects.org" class="input-dark" disabled>
+          </div>
+        </article>
+      </div>
+
+      <article class="card">
+        <h3 class="gold">Pro Subscription Pricing</h3>
+        <form>
+          <div class="form-group">
+            <label class="block font-bold">Monthly Price (USD)</label>
+            <input type="number" value="12" min="1" class="input-dark">
+          </div>
+
+          <div class="form-group">
+            <label class="block font-bold">Church Tithe Percentage</label>
+            <input type="number" value="10" min="0" max="100" class="input-dark">
+          </div>
+
+          <button type="submit" class="btn btn-gold">Update Pricing</button>
+        </form>
+      </article>
+
+      <article class="card">
+        <h3 class="gold color-red">Danger Zone</h3>
+        <p class="color-ccc">Careful with these actions - they affect the entire platform.</p>
+        <div class="flex-gap-sm">
+          <button class="btn btn-danger">Clear All Cache</button>
+          <button class="btn btn-danger">Export All Data</button>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <div id="footer"></div>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+
+  <script type="module" src="/admin/js/settings.js"></script>
+  <script src="/admin/js/header.js?v=20241220" defer></script>
+  <script src="/admin/js/footer.js" defer></script>
+  </div>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

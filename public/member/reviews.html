@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>My Reviews - Kingdom Connects</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=8">
+  <link rel="stylesheet" href="/styles/theme.css?v=8">
+  <link rel="stylesheet" href="/styles/buttons.css?v=8">
+  <link rel="stylesheet" href="/styles/forms.css?v=8">
+  <link rel="stylesheet" href="/styles/overrides.css?v=8">
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+  <div id="header"></div>
+
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h2 class="gold-metallic text-center mb-md">My Reviews</h2>
+
+      <div id="loadingMessage" class="text-center p-md">Loading your reviews...</div>
+
+      <div id="contentArea" class="hidden">
+        <div class="stat-grid-2 mb-md" id="reviewStats">
+          <div class="stat-card">
+            <div class="stat-value" id="totalReviewCount">0</div>
+            <div class="stat-label">Total Reviews</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="avgRatingGiven">-</div>
+            <div class="stat-label">Avg Rating Given</div>
+          </div>
+        </div>
+
+        <div id="reviewsList"></div>
+      </div>
+
+      <div id="emptyState" class="text-center p-md hidden">
+        <article class="card">
+          <h3 class="gold">No Reviews Yet</h3>
+          <p>You haven't written any reviews yet. Share your experiences with Christian businesses to help the community!</p>
+          <a href="/business_directory" class="btn btn-gold">Browse Businesses</a>
+        </article>
+      </div>
+
+      <div id="errorMessage" class="text-center p-md hidden">
+        <p class="error-text">Unable to load reviews. Please refresh and try again.</p>
+      </div>
+  </main>
+
+  <div id="footer"></div>
+  </div>
+
+  <script src="/js/header.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js?v=8" defer></script>
+  <script type="module" src="js/reviews.js?v=2"></script>
+  <script src="js/member-auth-guard.js" defer></script>
+  <script src="/js/feedback-widget.js?v=2" type="module"></script>
+</body>
+</html>

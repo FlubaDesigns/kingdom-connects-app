@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Member Businesses – Kingdom Connects</title>
+  <meta name="description" content="Browse trusted, faith-aligned businesses in your community—by category or location.">
+  <link rel="canonical" href="https://kingdomconnects.org/business_directory.html">
+
+  <meta property="og:title" content="Member Businesses – Kingdom Connects">
+  <meta property="og:description" content="Browse trusted, faith-aligned businesses in your community—by category or location.">
+  <meta property="og:url" content="https://kingdomconnects.org/business_directory.html">
+  <meta property="og:image" content="https://kingdomconnects.org/assets/og-kingdom-connects.png">
+
+  <meta name="twitter:title" content="Member Businesses – Kingdom Connects">
+  <meta name="twitter:description" content="Browse trusted, faith-aligned businesses in your community—by category or location.">
+  <meta name="twitter:image" content="https://kingdomconnects.org/assets/og-kingdom-connects.png">
+
+  <meta name="keywords" content="business directory, Christian businesses, faith-based services, local listings">
+  <meta name="author" content="Fluba Designs LLC">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+  <link rel="dns-prefetch" href="//www.gstatic.com">
+  <link rel="dns-prefetch" href="//firestore.googleapis.com">
+
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#081529" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#ffffff"  media="(prefers-color-scheme: light)">
+
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+
+  <link rel="stylesheet" href="styles/layout.css?v=23">
+  <link rel="stylesheet" href="styles/theme.css?v=7">
+  <link rel="stylesheet" href="styles/buttons.css?v=7">
+  <link rel="stylesheet" href="styles/forms.css?v=7">
+  <link rel="stylesheet" href="styles/components/business-cards.css">
+  <link rel="stylesheet" href="styles/overrides.css?v=7">
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+
+    <div id="header"></div>
+
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h1 class="gold-metallic text-center mb-md">Business Directory</h1>
+
+      <div class="split-40-60 items-start">
+        <div class="split-40-60-left">
+          <p class="line-height-relaxed">Find trusted Christian businesses in your community. Support local entrepreneurs and keep commerce within the Body of Christ.</p>
+          <div class="action-cards-row mt-sm">
+            <a href="#searchFilters" class="action-card">
+              <div class="action-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+              </div>
+              <span class="action-card-title">Find a Business</span>
+              <span class="action-card-desc">Search by category or location</span>
+            </a>
+            <a href="add_to_directory?role=business" class="action-card">
+              <div class="action-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M12 5v14M5 12h14"></path>
+                </svg>
+              </div>
+              <span class="action-card-title">Add Your Business</span>
+              <span class="action-card-desc">FREE listing in our directory</span>
+            </a>
+            <a href="index" class="action-card">
+              <div class="action-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                  <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+              </div>
+              <span class="action-card-title">Home</span>
+              <span class="action-card-desc">Back to Kingdom Connects</span>
+            </a>
+            <a href="member/dashboard" class="action-card action-card-gold">
+              <div class="action-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+              </div>
+              <span class="action-card-title">My Favorites</span>
+              <span class="action-card-desc">View saved businesses</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="split-40-60-right">
+          <article class="card" id="searchFilters">
+            <button type="button" class="collapsible-header" id="filterToggle" aria-expanded="false">
+              <h2 class="gold text-2xl m-0">Search Filters</h2>
+              <svg class="collapse-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            
+            <div class="collapsible-content" id="filterContent">
+            <div>
+              <label class="block font-semibold opacity-90">Business Category</label>
+              <select id="filterCategory" class="input-rounded">
+                <option value="">All Categories</option>
+              </select>
+            </div>
+
+            <div class="grid-2 gap-md">
+              <div>
+                <label class="block font-semibold opacity-90">Church Affiliation</label>
+                <select id="filterChurch" class="input-rounded">
+                  <option value="">All Churches</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block font-semibold opacity-90">Minimum Rating</label>
+                <select id="filterRating" class="input-rounded">
+                  <option value="">All Ratings</option>
+                  <option value="5">5 Stars</option>
+                  <option value="4">4+ Stars</option>
+                  <option value="3">3+ Stars</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid-2 gap-md">
+              <div>
+                <label class="block font-semibold opacity-90">State</label>
+                <select id="filterState" class="input-rounded">
+                  <option value="">All States</option>
+                  <option value="FL">Florida</option>
+                  <option value="AL">Alabama</option>
+                  <option value="GA">Georgia</option>
+                  <option value="SC">South Carolina</option>
+                  <option value="NC">North Carolina</option>
+                  <option value="TN">Tennessee</option>
+                  <option value="MS">Mississippi</option>
+                  <option value="LA">Louisiana</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block font-semibold opacity-90">City</label>
+                <input type="text" id="filterCity" placeholder="Enter city name" class="input-rounded">
+              </div>
+            </div>
+
+            <div class="grid-2 gap-md">
+              <div>
+                <label class="block font-semibold opacity-90">ZIP Code</label>
+                <input type="text" id="filterZip" placeholder="Enter ZIP" class="input-rounded">
+              </div>
+
+              <div>
+                <label class="block font-semibold opacity-90">Business Name</label>
+                <input type="text" id="filterName" placeholder="Search by name" class="input-rounded">
+              </div>
+            </div>
+
+            <div class="flex-gap">
+              <button id="clearFilters" class="btn flex-1-min">Clear Filters</button>
+              <div id="resultCount" class="flex-1 flex-center font-semibold opacity-80"></div>
+            </div>
+            </div><!-- end collapsible-content -->
+          </article>
+        </div>
+      </div>
+
+      <article class="card directory-results">
+        <div class="flex-between-center mb-md">
+          <h2 class="gold text-2xl m-0">Current Business Listings</h2>
+          <div class="view-toggle hide-mobile">
+            <button id="viewCards" class="view-toggle-btn active" title="Card View">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                <rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+            </button>
+            <button id="viewList" class="view-toggle-btn" title="List View">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div id="businessList" class="card-list"></div>
+      </article>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="js/maintenance-check.js" type="module"></script>
+  <script src="/js/header.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script src="js/button-effects.js" defer></script>
+  <script src="js/business-directory.js?v=13" type="module" defer></script>
+  <script src="js/breadcrumbs.js" defer></script>
+</body>
+</html>

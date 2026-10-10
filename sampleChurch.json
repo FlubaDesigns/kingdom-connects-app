@@ -1,6 +1,0 @@
-{
-  "church_name":"Sample Community Church","city":"Venice","state":"FL",
-  "email":"info@samplechurch.test","phone":"555-2222",
-  "members_count":120,"admin_user_id":"sampleUser",
-  "created_at":{"_seconds":1731100000,"_nanoseconds":0}
-}

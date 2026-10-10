@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Review Moderation - Kingdom Connects Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+  <link rel="stylesheet" href="/styles/loading-skeletons.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <div class="flex-between mb-md">
+        <div>
+          <h2 class="gold-metallic">Review Moderation</h2>
+          <p>Approve, flag, or remove business reviews. Manage reported content and maintain quality standards.</p>
+        </div>
+</div>
+      
+      <div id="feedbackMessage" class="hidden"></div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="totalReviews">0</div>
+          <div class="stat-label">Total Reviews</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="pendingCount">0</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="approvedCount">0</div>
+          <div class="stat-label">Approved</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="flaggedCount">0</div>
+          <div class="stat-label">Flagged</div>
+        </div>
+      </div>
+
+      <div class="flex-gap-center mb-md">
+        <select id="filterStatus" class="input-dark" class="max-w-xs">
+          <option value="">All Reviews</option>
+          <option value="pending">Pending Only</option>
+          <option value="approved">Approved Only</option>
+          <option value="flagged">Flagged Only</option>
+        </select>
+        <select id="sortBy" class="input-dark" class="max-w-xs">
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+          <option value="rating-high">Highest Rating</option>
+          <option value="rating-low">Lowest Rating</option>
+        </select>
+      </div>
+
+      <div id="loadingMessage" class="text-center mt-lg">
+        <p>Loading reviews...</p>
+      </div>
+
+      <div id="contentArea" class="hidden">
+        <div id="reviewsList"></div>
+      </div>
+
+      <div id="emptyState" class="hidden" class="text-center mt-lg">
+        <p>No reviews found.</p>
+      </div>
+
+      <div id="errorMessage" class="hidden" class="text-center mt-lg">
+        <p class="text-error">Error loading reviews. Please refresh the page.</p>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer"></div>
+
+  <!-- Add Admin Notes Modal -->
+  <div id="notesModal" class="modal">
+    <div class="modal-content">
+      <h3 class="gold-metallic">Add Notes & Notify</h3>
+      <form id="notesForm">
+        <div class="mb-md">
+          <label class="block font-bold mb-sm">Internal Notes</label>
+          <textarea id="adminNotesInput" class="textarea-dark" rows="4" maxlength="1000" placeholder="Why was this review flagged? Any context for other admins..."></textarea>
+        </div>
+        
+        <div class="mb-md">
+          <label class="flex-gap-center">
+            <input type="checkbox" id="sendEmailCheckbox">
+            <span>Send email notification</span>
+          </label>
+        </div>
+        
+        <div id="emailSection" class="hidden">
+          <div class="mb-md">
+            <label class="block font-bold mb-sm">Send To</label>
+            <select id="emailRecipient" class="input-dark">
+              <option value="reviewer">Reviewer</option>
+              <option value="business">Business Owner</option>
+            </select>
+            <small id="recipientEmail" class="text-muted"></small>
+          </div>
+          <div class="mb-md">
+            <label class="block font-bold mb-sm">Subject</label>
+            <input type="text" id="emailSubject" class="input-dark" placeholder="Regarding your review on Kingdom Connects">
+          </div>
+          <div class="mb-md">
+            <label class="block font-bold mb-sm">Message</label>
+            <textarea id="emailMessage" class="textarea-dark" rows="4" placeholder="Your message to the recipient..."></textarea>
+          </div>
+        </div>
+        
+        <div class="flex-gap-center">
+          <button type="submit" class="btn btn-gold">Save & Send</button>
+          <button type="button" id="btnCancelNotes" class="btn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/admin/js/header.js?v=20241220" defer></script>
+  <script src="/admin/js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script src="/js/email-service.js"></script>
+
+  <script type="module" src="/admin/js/review-moderation.js"></script>
+  </div>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

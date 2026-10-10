@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <base href="/marketing-manager/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Marketing Manager Dashboard - Kingdom Connects</title>
+  
+  <link rel="stylesheet" href="/styles/layout.css?v=7">
+  <link rel="stylesheet" href="/styles/theme.css?v=7">
+  <link rel="stylesheet" href="/styles/buttons.css?v=7">
+  <link rel="stylesheet" href="/styles/forms.css?v=7">
+  <link rel="stylesheet" href="/styles/overrides.css?v=7">
+</head>
+<body>
+  <div class="page-wrap">
+  <div id="header"></div>
+
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+    <h2 class="gold-metallic text-center">Marketing Manager Dashboard</h2>
+    <p class="text-center text-muted mb-md">Manage your sales team, track performance, and monitor revenue growth.</p>
+
+    <div class="split-40-60">
+      <div class="split-40-60-left">
+        <div class="stat-grid-2 mb-md">
+          <div class="stat-card">
+            <div class="stat-value" id="monthlyRevenue">$0</div>
+            <div class="stat-label">Monthly Revenue</div>
+            <div class="stat-change positive" id="revenueChange">+0%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="totalAgents">0</div>
+            <div class="stat-label">Active Agents</div>
+            <div class="stat-change positive" id="agentsChange">+0 this month</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="totalConversions">0</div>
+            <div class="stat-label">Pro Conversions</div>
+            <div class="stat-change positive" id="conversionsChange">+0 this month</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="conversionRate">0%</div>
+            <div class="stat-label">Conversion Rate</div>
+          </div>
+        </div>
+
+        <h4 class="gold mb-sm">Quick Actions</h4>
+        <div class="action-cards-row mb-md">
+          <a href="sales-applications.html" class="action-card">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <span class="action-card-title">Applications</span>
+            <span class="action-card-desc">Review agent apps</span>
+          </a>
+          <a href="team.html" class="action-card">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <span class="action-card-title">Manage Team</span>
+            <span class="action-card-desc">View agents, quotas</span>
+          </a>
+          <a href="analytics.html" class="action-card">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </div>
+            <span class="action-card-title">Analytics</span>
+            <span class="action-card-desc">Performance metrics</span>
+          </a>
+          <a href="reports.html" class="action-card">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <span class="action-card-title">Reports</span>
+            <span class="action-card-desc">Export statements</span>
+          </a>
+          <a href="/admin/email-campaigns.html" class="action-card">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <span class="action-card-title">Email Campaigns</span>
+            <span class="action-card-desc">Team announcements</span>
+          </a>
+          <a href="documentation.html" class="action-card">
+            <div class="action-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            </div>
+            <span class="action-card-title">Documentation</span>
+            <span class="action-card-desc">User manuals</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="split-40-60-right">
+        <article class="card mb-md">
+          <h3 class="gold">Top Performers This Month</h3>
+          <div id="leaderboardContainer">
+            <p class="text-center opacity-60">Loading top performers...</p>
+          </div>
+        </article>
+
+        <article class="card mb-md">
+          <h3 class="gold">Team Goals</h3>
+          <div id="goalsContainer">
+            <div class="mb-md">
+              <div class="flex-between-center mb-sm">
+                <span>Monthly Conversion Goal</span>
+                <span class="gold"><span id="goalProgress">0</span> / <span id="goalTarget">50</span></span>
+              </div>
+              <div class="progress-bar-container">
+                <div id="goalProgressBar" class="progress-bar-fill-gold"></div>
+              </div>
+            </div>
+            <div class="mb-sm">
+              <div class="flex-between-center mb-sm">
+                <span>Revenue Target</span>
+                <span class="gold">$<span id="revenueProgress">0</span> / $<span id="revenueTarget">10000</span></span>
+              </div>
+              <div class="progress-bar-container">
+                <div id="revenueProgressBar" class="progress-bar-fill-green"></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card mb-md">
+          <h3 class="gold">Recent Activity</h3>
+          <div id="activityFeed">
+            <p class="text-center opacity-60">Loading recent activity...</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="js/header.js" type="module" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script src="js/index.js" type="module" defer></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

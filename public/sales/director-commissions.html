@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Director Commissions - Kingdom Connects Sales</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="/styles/layout.css">
+  <link rel="stylesheet" href="/styles/theme.css">
+  <link rel="stylesheet" href="/styles/buttons.css">
+  <link rel="stylesheet" href="/styles/forms.css">
+  <link rel="stylesheet" href="/styles/overrides.css">
+  
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h2 class="gold-metallic text-center">Sales Director Dashboard</h2>
+      <p class="text-center text-muted mb-md">Track your team's performance and 30% override commissions.</p>
+
+      <div class="split-40-60">
+        <div class="split-left">
+          <article class="card mb-md">
+            <h3 class="gold">Summary</h3>
+            <div class="stat-grid-2">
+              <div class="stat-card">
+                <div class="stat-value" id="directorMonthly">$0.00</div>
+                <div class="stat-label">This Month</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="directorYTD">$0.00</div>
+                <div class="stat-label">YTD</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="directorLifetime">$0.00</div>
+                <div class="stat-label">Lifetime</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="teamSize">0</div>
+                <div class="stat-label">Team</div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="split-right">
+          <div id="loading" class="text-center">
+            <p>Loading team data...</p>
+          </div>
+
+          <div id="emptyState" class="hidden text-center">
+            <p class="text-muted">No team members yet.</p>
+          </div>
+
+          <div id="teamWrapper" class="hidden">
+            <table class="team-table">
+              <thead>
+                <tr>
+                  <th>Salesperson</th>
+                  <th>Referrals</th>
+                  <th>Sales</th>
+                  <th>Your Cut</th>
+                </tr>
+              </thead>
+              <tbody id="teamBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <article class="card mt-md">
+        <h3 class="gold">Director Commission Structure</h3>
+        <ul class="line-height-relaxed">
+          <li><strong>30% Override:</strong> You earn 30% on every Pro subscription your team sells</li>
+          <li><strong>Recurring Income:</strong> As long as businesses stay Pro, you keep earning</li>
+          <li><strong>Team Growth:</strong> More salespeople = more recurring income</li>
+          <li><strong>Example:</strong> Team member signs 10 Pro businesses (<span id="monthlyPriceDetail">$8.99</span> each) = $26.97/month for you</li>
+        </ul>
+      </article>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="js/director-commissions.js"></script>
+  <script type="module" src="/js/pricing-loader.js"></script>
+  </div>
+  <script src="js/sales-auth-guard.js" defer></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{
+  "name": "workspace",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "firebase emulators:exec --only firestore,storage --project demo-kingdom-hierarchy --config firebase.test.json \"node --test tests/hierarchy*.test.cjs\"",
+    "test:policy": "node --test tests/hierarchy-policy.test.cjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "firebase-admin": "^13.6.0",
+    "firebase-tools": "^14.24.1",
+    "pptxgenjs": "^4.0.1",
+    "puppeteer-core": "^24.34.0",
+    "resend": "^6.5.0",
+    "stripe": "^20.1.0"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "4.0.1",
+    "firebase": "11.10.0"
+  }
+}

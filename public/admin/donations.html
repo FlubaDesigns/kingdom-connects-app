@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Donations - Admin Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+  <link rel="stylesheet" href="/styles/admin/styles.css?v=20241220">
+  <link rel="stylesheet" href="/styles/loading-skeletons.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+      <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <div class="admin-header">
+        <h1 class="gold-metallic">💰 Donations</h1>
+        <div class="admin-actions">
+          <button type="button" class="btn-secondary" data-action="export">Export CSV</button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingMessage" class="text-center mt-xl">
+        <p>Loading donations...</p>
+      </div>
+
+      <!-- Stats Cards -->
+      <div id="statsSection" class="hidden">
+        <div class="stats-grid mb-lg">
+          <div class="stat-card">
+            <div class="stat-value gold" id="totalDonations">$0</div>
+            <div class="stat-label">Total Donations</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value gold" id="oneTimeDonations">$0</div>
+            <div class="stat-label">One-Time</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value gold" id="recurringDonations">$0</div>
+            <div class="stat-label">Monthly Recurring</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value gold" id="totalDonors">0</div>
+            <div class="stat-label">Total Donors</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Donations Table -->
+      <div id="dashboardContent" class="card hidden">
+        <div class="table-controls mb-md">
+          <div class="search-bar">
+            <input type="text" id="searchInput" class="input-dark" placeholder="Search by donor name or email...">
+          </div>
+          <select id="statusFilter" class="input-dark">
+            <option value="">All Statuses</option>
+            <option value="completed">Completed</option>
+            <option value="pending_stripe_setup">Pending Setup</option>
+            <option value="failed">Failed</option>
+            <option value="refunded">Refunded</option>
+          </select>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Donor</th>
+                <th>Email</th>
+                <th>Amount</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="donationsTableBody">
+              <tr>
+                <td colspan="7" class="text-center text-muted">No donations found</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="card text-center hidden">
+        <p class="text-muted mb-md">No donations yet. Share your donation page to start receiving support!</p>
+        <a href="/donate.html" class="btn-gold" target="_blank">View Donation Page</a>
+      </div>
+
+      <!-- Error State -->
+      <div id="errorMessage" class="card error-card hidden">
+        <p id="errorText"></p>
+      </div>
+    </main>
+  
+    <div id="footer"></div>
+  </div>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+  <script type="module" src="/js/firebase-config.js"></script>
+  <script type="module" src="/admin/js/donations.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

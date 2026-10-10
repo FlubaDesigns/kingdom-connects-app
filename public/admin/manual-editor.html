@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+    <title>Manual Editor | Kingdom Connects Admin</title>
+    <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+    <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+    <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+    <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+    <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+<body>
+    <a id="top"></a>
+    <div class="page-wrap">
+        <div id="header"></div>
+                <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+            <div class="page-header">
+                <h1 class="gold-metallic">User Manual Editor</h1>
+                <a href="/admin/index.html" class="btn btn-outline">Back to Admin</a>
+            </div>
+
+            <div class="form-field m-block">
+                <label for="manualSelect">Select Manual to Edit</label>
+                <select id="manualSelect" class="input-dark">
+                    <option value="">-- Choose a Manual --</option>
+                    <option value="sales_agent">Sales Agent Manual</option>
+                    <option value="business_admin">Business Owner Manual</option>
+                    <option value="church_admin">Church Admin Manual</option>
+                    <option value="member">Member Manual</option>
+                    <option value="marketing">Marketing Manual</option>
+                </select>
+            </div>
+
+            <div id="variablesBox" class="info-box m-block hidden">
+                <h3 class="gold">Available Variables</h3>
+                <p class="text-sm">These will be replaced with live values from your settings:</p>
+                <ul class="variable-list text-sm">
+                    <li><code>{{agent_commission}}</code> - Sales agent commission</li>
+                    <li><code>{{director_commission}}</code> - Sales director commission</li>
+                    <li><code>{{monthly_price}}</code> - Monthly Pro price</li>
+                    <li><code>{{annual_price}}</code> - Annual Pro price</li>
+                    <li><code>{{church_tithe}}</code> - Church tithe percentage</li>
+                    <li><code>{{platform_name}}</code> - Kingdom Connects</li>
+                </ul>
+                <p class="text-muted text-sm">Values are pulled from admin settings when the manual is viewed.</p>
+            </div>
+
+            <div id="loadingMessage" class="loading-message hidden">
+                Loading manual content...
+            </div>
+
+            <div id="noSelectionMessage" class="text-center text-muted p-block">
+                <p>Select a manual from the dropdown above to start editing.</p>
+            </div>
+
+            <form id="manualForm" class="hidden">
+                <div id="formFields"></div>
+
+                <div class="form-actions">
+                    <button type="button" id="previewBtn" class="btn btn-outline">Preview Changes</button>
+                    <button type="submit" id="saveBtn" class="btn btn-gold">Save Changes</button>
+                </div>
+            </form>
+
+            <div id="previewModal" class="modal">
+                <div class="modal-content modal-large">
+                    <div class="modal-header">
+                        <h2 class="gold-metallic">Preview</h2>
+                        <button id="closePreview" class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body" id="previewContent"></div>
+                </div>
+            </div>
+        </main>
+
+        <div id="footer"></div>
+    </div>
+
+    <script src="/admin/js/header.js"></script>
+    <script src="/js/breadcrumbs.js"></script>
+    <script src="/admin/js/footer.js"></script>
+    <script type="module" src="/admin/js/manual-editor.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Testimonials - Kingdom Connects Business Portal</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=7">
+  <link rel="stylesheet" href="/styles/theme.css?v=7">
+  <link rel="stylesheet" href="/styles/buttons.css?v=7">
+  <link rel="stylesheet" href="/styles/forms.css?v=7">
+  <link rel="stylesheet" href="/styles/overrides.css?v=7">
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h1 class="gold-metallic text-center">Testimonials <span class="pro-badge">PRO</span></h1>
+      <p class="text-center text-muted mb-md">Showcase curated customer quotes on your public page.</p>
+
+      <div class="split-40-60">
+        <div class="split-left">
+          <div id="proGate" class="card mb-md hidden">
+            <h3 class="gold">Unlock Testimonials</h3>
+            <p>Testimonials are a Pro feature. Upgrade to display curated quotes.</p>
+            <a href="/business-admin/upgrade.html" class="btn btn-gold">Upgrade to Pro</a>
+          </div>
+          <button class="btn btn-gold mb-md" id="addTestimonialBtn">+ Add Testimonial</button>
+        </div>
+
+        <div class="split-right">
+          <div id="testimonialsList">
+            <p class="status-message">Loading testimonials...</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <div id="testimonialModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">Add Testimonial</h2>
+        <button class="close-btn" id="closeModal">&times;</button>
+      </div>
+
+      <form id="testimonialForm">
+        <input type="hidden" id="testimonialId">
+
+        <div class="form-group">
+          <label for="customerName">Customer Name *</label>
+          <input type="text" id="customerName" class="input-dark" required placeholder="e.g., John D.">
+        </div>
+
+        <div class="form-group">
+          <label for="customerTitle">Title/Company (optional)</label>
+          <input type="text" id="customerTitle" class="input-dark" placeholder="e.g., CEO, ABC Company">
+        </div>
+
+        <div class="form-group">
+          <label for="quote">Testimonial Quote *</label>
+          <textarea id="quote" class="input-dark" rows="4" required placeholder="Their feedback about your business..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="rating">Star Rating</label>
+          <select id="rating" class="input-dark">
+            <option value="5">5 Stars</option>
+            <option value="4">4 Stars</option>
+            <option value="3">3 Stars</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="isFeatured">
+            Feature this testimonial (shows first)
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="isActive" checked>
+            Active (visible on public page)
+          </label>
+        </div>
+
+        <div class="button-row">
+          <button type="submit" class="btn btn-gold">Save Testimonial</button>
+          <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="js/business-auth-guard.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="js/testimonials.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

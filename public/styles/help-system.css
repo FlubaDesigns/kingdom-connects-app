@@ -1,0 +1,270 @@
+/* =========================================
+   Kingdom Connects - Help System
+   Responsive help tooltips for forms
+   Mobile: Tappable ? icons
+   Desktop: Inline help text
+   ========================================= */
+
+.field-help-wrapper {
+  position: relative;
+}
+
+/* Help icon (mobile only) */
+.help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 215, 0, 0.2);
+  color: #FFD700;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: help;
+  margin-left: 0.5rem;
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.help-icon:hover,
+.help-icon:focus {
+  background: rgba(255, 215, 0, 0.3);
+  transform: scale(1.1);
+}
+
+/* Help text (hidden on mobile, shown on desktop) */
+.help-text {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  opacity: 0.7;
+  margin-top: 0.25rem;
+  display: none; /* Hidden by default (mobile) */
+}
+
+/* Mobile: Show icon, hide text */
+@media (max-width: 719px) {
+  .help-icon {
+    display: inline-flex;
+  }
+  
+  .help-text {
+    display: none;
+  }
+
+  /* Tooltip popup when icon is tapped */
+  .help-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    background: linear-gradient(135deg, #1a2f4a 0%, #0d1f35 100%);
+    color: #fff;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    max-width: 280px;
+    width: max-content;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .help-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1a2f4a;
+  }
+
+  .help-tooltip.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-12px);
+  }
+}
+
+/* Desktop: Hide icon, show inline text */
+@media (min-width: 720px) {
+  .help-icon {
+    display: none;
+  }
+  
+  .help-text {
+    display: block;
+  }
+}
+
+/* Enhanced label styling with help */
+.kc-label-with-help {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.kc-label-with-help .kc-label {
+  margin-bottom: 0;
+}
+
+/* =========================================
+   Action Card Tooltips (Homepage buttons)
+   ========================================= */
+
+.action-card {
+  position: relative;
+}
+
+.action-card .card-help-icon {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 215, 0, 0.2);
+  color: #FFD700;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: help;
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.action-card .card-help-icon:hover,
+.action-card .card-help-icon:active {
+  background: rgba(255, 215, 0, 0.4);
+  transform: scale(1.1);
+}
+
+.action-card .card-tooltip {
+  position: absolute;
+  top: 48px;
+  right: 8px;
+  width: clamp(160px, 50vw, 200px);
+  background: linear-gradient(135deg, #1a2f4a 0%, #0d1f35 100%);
+  color: #fff;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-5px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.action-card .card-tooltip.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.action-card .card-tooltip.align-left {
+  right: auto;
+  left: -40px;
+}
+
+.action-card .card-tooltip.align-right {
+  right: 8px;
+  left: auto;
+}
+
+.action-card .card-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 14px;
+  border: 6px solid transparent;
+  border-bottom-color: #1a2f4a;
+  border-top: none;
+}
+
+.action-card .card-tooltip.align-left::before {
+  right: auto;
+  left: 14px;
+}
+
+/* =========================================
+   Generic Tooltip (data-tooltip attribute)
+   Pure CSS - no JS needed
+   ========================================= */
+
+.help-icon[data-tooltip] {
+  position: relative;
+}
+
+.help-icon[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #1a2f4a 0%, #0d1f35 100%);
+  color: #fff;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.5;
+  width: max-content;
+  max-width: 260px;
+  text-align: left;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  white-space: normal;
+}
+
+.help-icon[data-tooltip]::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #1a2f4a;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 1001;
+}
+
+.help-icon[data-tooltip]:hover::after,
+.help-icon[data-tooltip]:focus::after,
+.help-icon[data-tooltip]:active::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+.help-icon[data-tooltip]:hover::before,
+.help-icon[data-tooltip]:focus::before,
+.help-icon[data-tooltip]:active::before {
+  opacity: 1;
+}
+
+/* Right-aligned tooltip for edge cases */
+.help-icon[data-tooltip].tooltip-right::after {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+.help-icon[data-tooltip].tooltip-right:hover::after,
+.help-icon[data-tooltip].tooltip-right:focus::after {
+  transform: translateY(-4px);
+}

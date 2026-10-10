@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Welcome to Pro - Kingdom Connects</title>
+  <meta name="description" content="Congratulations on upgrading to Business Pro!">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+
+  <link rel="stylesheet" href="styles/layout.css?v=66">
+  <link rel="stylesheet" href="styles/theme.css?v=8">
+  <link rel="stylesheet" href="styles/buttons.css?v=8">
+  <link rel="stylesheet" href="styles/forms.css?v=7">
+  <link rel="stylesheet" href="styles/overrides.css?v=7">
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <div class="split-40-60">
+        <div class="split-40-60-left">
+          <div class="action-cards-row">
+            <a href="business-admin/" class="action-card action-card-gold">
+              <div class="action-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+              </div>
+              <span class="action-card-title">Dashboard</span>
+              <span class="action-card-desc">Set up your Pro listing</span>
+            </a>
+            <a href="business_directory" class="action-card">
+              <div class="action-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+              </div>
+              <span class="action-card-title">Directory</span>
+              <span class="action-card-desc">Browse businesses</span>
+            </a>
+            <a href="index" class="action-card">
+              <div class="action-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                  <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+              </div>
+              <span class="action-card-title">Home</span>
+              <span class="action-card-desc">Back to Kingdom Connects</span>
+            </a>
+          </div>
+          <div class="directory-cinema gold-border">
+            <img src="/assets/images/cinema/business-pro.png" alt="Kingdom Connects Business Pro">
+          </div>
+        </div>
+
+        <div class="split-40-60-right">
+          <article class="card thank-you-hero-card">
+            <div class="text-huge gold-metallic">★</div>
+            <h1 class="gold-metallic">Welcome to Pro!</h1>
+            <p class="text-lg" id="welcomeMessage">Your Business Pro membership is now active.</p>
+            
+            <div id="annualSwagNotice" class="approval-notice hidden">
+              <strong class="gold">FREE Swag Coming Your Way!</strong>
+              <p>Check your email for instructions on selecting your t-shirt and cap size/color. We'll ship your Kingdom Connects merchandise once you confirm your preferences.</p>
+            </div>
+
+            <div id="monthlyTrialNotice" class="approval-notice hidden">
+              <strong class="gold">Your 30-Day Free Trial Has Started</strong>
+              <p>Enjoy all Pro features free for 30 days. We'll send you a reminder email before your first charge. Cancel anytime if Pro isn't right for you.</p>
+            </div>
+
+            <div class="btn-stack m-block">
+              <a href="business-admin/" class="btn btn-gold btn-block">Go to Your Dashboard</a>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div id="benefitsContainer"></div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="/js/header.js" type="module"></script>
+  <script src="/js/pages/thank-you-pro.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+</body>
+</html>

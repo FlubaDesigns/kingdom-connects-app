@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Create Account - Kingdom Connects</title>
+  <meta name="description" content="Create your Kingdom Connects account to join our faith-based business directory.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="styles/layout.css?v=7">
+  <link rel="stylesheet" href="styles/theme.css?v=7">
+  <link rel="stylesheet" href="styles/buttons.css?v=7">
+  <link rel="stylesheet" href="styles/forms.css?v=7">
+  <link rel="stylesheet" href="styles/overrides.css?v=7">
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <div class="card signup-card">
+        <h1 class="gold-metallic text-center">Create Your Account</h1>
+        <p class="text-center text-muted m-block">Join Kingdom Connects and support the Body of Christ through Christian commerce.</p>
+
+        <div id="statusMessage" class="status-message"></div>
+
+        <form id="signupForm" class="form-wrapper">
+          <div class="form-field">
+            <label for="name" class="required">Full Name</label>
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              class="input-dark" 
+              required 
+              maxlength="100"
+              placeholder="John Doe"
+            >
+          </div>
+
+          <div class="form-field">
+            <label for="email" class="required">Email Address</label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              class="input-dark" 
+              required 
+              autocomplete="email"
+              placeholder="you@example.com"
+            >
+          </div>
+
+          <div class="form-field">
+            <label for="password" class="required">Password</label>
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              class="input-dark" 
+              required 
+              minlength="8"
+              autocomplete="new-password"
+              placeholder="Create a strong password"
+            >
+            <div id="passwordRequirements" class="password-requirements hidden"></div>
+          </div>
+
+          <div class="form-field">
+            <label for="confirmPassword" class="required">Confirm Password</label>
+            <input 
+              type="password" 
+              id="confirmPassword" 
+              name="confirmPassword" 
+              class="input-dark" 
+              required 
+              minlength="8"
+              autocomplete="new-password"
+              placeholder="Re-enter your password"
+            >
+            <div id="confirmPasswordError" class="field-error hidden">Passwords do not match</div>
+          </div>
+
+          <div class="form-field">
+            <label for="homeChurch">Home Church (Optional)</label>
+            <select id="homeChurch" name="homeChurch" class="input-dark">
+              <option value="">Not Affiliated</option>
+              <option value="loading" disabled>Loading churches...</option>
+            </select>
+            <small class="helper-text-small">Help us connect you with your faith community</small>
+          </div>
+
+          <div class="card-highlight">
+            <p><strong>Note:</strong> All new accounts start as Regular Users. After signing up, you can:</p>
+            <ul class="signup-benefits-list">
+              <li>Submit a business listing to become a Business Owner</li>
+              <li>Submit a church profile to become a Church Admin</li>
+              <li>Contact us to apply for Sales Agent role</li>
+            </ul>
+          </div>
+
+          <div class="form-field">
+            <label class="flex-align-center cursor-pointer">
+              <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
+              <span>I agree to the <a href="terms.html" class="gold" target="_blank">Terms of Service</a> and <a href="privacy.html" class="gold" target="_blank">Privacy Policy</a></span>
+            </label>
+          </div>
+
+          <button type="submit" id="signupBtn" class="btn btn-gold full-width">
+            Create Account
+          </button>
+        </form>
+
+        <div class="text-center m-block">
+          <p class="text-muted">Already have an account?</p>
+          <p><a href="login.html" class="gold">Sign In</a></p>
+        </div>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="js/demo-mode.js" type="module"></script>
+  <script src="js/maintenance-check.js" type="module"></script>
+  <script src="/js/header.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script src="js/breadcrumbs.js" defer></script>
+  <script src="js/password-toggle.js" defer></script>
+  <script type="module" src="js/signup-form.js"></script>
+</body>
+</html>

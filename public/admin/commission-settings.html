@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Commission Settings - Kingdom Connects Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+  <link rel="stylesheet" href="/styles/loading-skeletons.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+  
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <div class="page-header">
+        <h1 class="gold-metallic">Commission Settings</h1>
+        <button class="btn btn-gold" id="saveSettingsBtn">Save Changes</button>
+      </div>
+
+      <p class="text-muted">Configure how Pro subscription revenue is split between stakeholders. Changes apply to all future Pro payments.</p>
+
+      <div class="policy-card active">
+        <h2 class="gold">Origination Fee</h2>
+        <p class="text-muted">One-time bonus paid to agent when a business first converts to Pro</p>
+
+        <div class="form-wrapper">
+          <div class="form-field">
+            <label for="originationFee">Origination Fee ($)</label>
+            <input type="number" id="originationFee" class="input-dark" value="20" min="0" step="1">
+            <p class="help-text">Flat bonus paid once per new Pro signup (separate from recurring commission)</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="policy-card active">
+        <h2 class="gold">Default Commission Policy</h2>
+        <p class="text-muted">Revenue split for every Pro subscription ($8.99/month or $74.99/year)</p>
+
+        <div class="split-grid">
+          <div class="split-item church">
+            <div class="split-label">Church Share</div>
+            <div class="split-value">
+              <input type="number" id="churchPercent" class="input-dark commission-input" value="10" min="0" max="100" step="0.1">%
+            </div>
+            <div class="split-amount" id="churchAmount">$0.90 per monthly</div>
+          </div>
+
+          <div class="split-item salesperson">
+            <div class="split-label">Sales Agent Share</div>
+            <div class="split-value">
+              <input type="number" id="salespersonPercent" class="input-dark commission-input" value="20" min="0" max="100" step="0.1">%
+            </div>
+            <div class="split-amount" id="salespersonAmount">$1.80 per monthly</div>
+          </div>
+
+          <div class="split-item director">
+            <div class="split-label">Sales Director Share</div>
+            <div class="split-value">
+              <input type="number" id="directorPercent" class="input-dark commission-input" value="15" min="0" max="100" step="0.1">%
+            </div>
+            <div class="split-amount" id="directorAmount">$1.35 per monthly</div>
+          </div>
+
+          <div class="split-item kc">
+            <div class="split-label">Kingdom Connect</div>
+            <div class="split-value" id="kcPercent">55%</div>
+            <div class="split-amount" id="kcAmount">$4.94 per monthly</div>
+          </div>
+        </div>
+
+        <div id="totalCheck" class="total-check">
+          <div class="validation-message">✓ Total: <span id="totalPercent">100</span>%</div>
+        </div>
+
+        <div class="card warning-yellow-card">
+          <h3>💡 How Commissions Work</h3>
+          <ul class="list-spaced-lg">
+            <li><strong>Origination Fee:</strong> One-time bonus when business first converts to Pro</li>
+            <li><strong>Recurring:</strong> Monthly payments or once/year for annual subscriptions</li>
+            <li><strong>Church:</strong> Tithe goes to affiliated church (or Kingdom Fund if unchurched)</li>
+            <li><strong>Sales Agent:</strong> Commission to agent who signed the business</li>
+            <li><strong>Sales Director:</strong> Override commission on all their agents' sales</li>
+            <li><strong>Kingdom Connect:</strong> Remainder for platform operations</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="policy-card active">
+        <h2 class="gold">Agent Performance Bonuses</h2>
+        <p class="text-muted">Monthly bonuses for agents who hit signup targets (paid in addition to regular commission)</p>
+
+        <div class="form-wrapper">
+          <div class="form-field grid-3">
+            <div>
+              <label for="agentTier1Threshold">Tier 1 Threshold</label>
+              <input type="number" id="agentTier1Threshold" class="input-dark" value="5" min="1" step="1">
+              <p class="help-text">Signups needed</p>
+            </div>
+            <div>
+              <label for="agentTier1Bonus">Tier 1 Bonus ($)</label>
+              <input type="number" id="agentTier1Bonus" class="input-dark" value="25" min="0" step="1">
+              <p class="help-text">Bonus amount</p>
+            </div>
+            <div class="tier-preview" id="agentTier1Preview">5+ signups = $25 bonus</div>
+          </div>
+
+          <div class="form-field grid-3">
+            <div>
+              <label for="agentTier2Threshold">Tier 2 Threshold</label>
+              <input type="number" id="agentTier2Threshold" class="input-dark" value="10" min="1" step="1">
+              <p class="help-text">Signups needed</p>
+            </div>
+            <div>
+              <label for="agentTier2Bonus">Tier 2 Bonus ($)</label>
+              <input type="number" id="agentTier2Bonus" class="input-dark" value="75" min="0" step="1">
+              <p class="help-text">Bonus amount</p>
+            </div>
+            <div class="tier-preview" id="agentTier2Preview">10+ signups = $75 bonus</div>
+          </div>
+
+          <div class="form-field grid-3">
+            <div>
+              <label for="agentTier3Threshold">Tier 3 Threshold</label>
+              <input type="number" id="agentTier3Threshold" class="input-dark" value="20" min="1" step="1">
+              <p class="help-text">Signups needed</p>
+            </div>
+            <div>
+              <label for="agentTier3Bonus">Tier 3 Bonus ($)</label>
+              <input type="number" id="agentTier3Bonus" class="input-dark" value="200" min="0" step="1">
+              <p class="help-text">Bonus amount</p>
+            </div>
+            <div class="tier-preview" id="agentTier3Preview">20+ signups = $200 bonus</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="policy-card active">
+        <h2 class="gold">Director Performance Bonuses</h2>
+        <p class="text-muted">Monthly bonuses for directors based on total team signups</p>
+
+        <div class="form-wrapper">
+          <div class="form-field grid-3">
+            <div>
+              <label for="directorTier1Threshold">Tier 1 Threshold</label>
+              <input type="number" id="directorTier1Threshold" class="input-dark" value="25" min="1" step="1">
+              <p class="help-text">Team signups needed</p>
+            </div>
+            <div>
+              <label for="directorTier1Bonus">Tier 1 Bonus ($)</label>
+              <input type="number" id="directorTier1Bonus" class="input-dark" value="100" min="0" step="1">
+              <p class="help-text">Bonus amount</p>
+            </div>
+            <div class="tier-preview" id="directorTier1Preview">25+ team signups = $100 bonus</div>
+          </div>
+
+          <div class="form-field grid-3">
+            <div>
+              <label for="directorTier2Threshold">Tier 2 Threshold</label>
+              <input type="number" id="directorTier2Threshold" class="input-dark" value="50" min="1" step="1">
+              <p class="help-text">Team signups needed</p>
+            </div>
+            <div>
+              <label for="directorTier2Bonus">Tier 2 Bonus ($)</label>
+              <input type="number" id="directorTier2Bonus" class="input-dark" value="250" min="0" step="1">
+              <p class="help-text">Bonus amount</p>
+            </div>
+            <div class="tier-preview" id="directorTier2Preview">50+ team signups = $250 bonus</div>
+          </div>
+
+          <div class="form-field grid-3">
+            <div>
+              <label for="directorTier3Threshold">Tier 3 Threshold</label>
+              <input type="number" id="directorTier3Threshold" class="input-dark" value="100" min="1" step="1">
+              <p class="help-text">Team signups needed</p>
+            </div>
+            <div>
+              <label for="directorTier3Bonus">Tier 3 Bonus ($)</label>
+              <input type="number" id="directorTier3Bonus" class="input-dark" value="500" min="0" step="1">
+              <p class="help-text">Bonus amount</p>
+            </div>
+            <div class="tier-preview" id="directorTier3Preview">100+ team signups = $500 bonus</div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="/admin/js/header.js?v=20241220" defer></script>
+  <script src="/admin/js/footer.js" defer></script>
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+  <script type="module" src="/admin/js/commission-settings.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

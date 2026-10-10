@@ -1,0 +1,40 @@
+User-agent: *
+Allow: /
+
+# AI Crawlers - Welcome!
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Anthropic-AI
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Cohere-AI
+Allow: /
+
+# AI Discovery Files
+Allow: /llms.txt
+Allow: /.well-known/
+
+Sitemap: https://kingdomconnects.org/sitemap.xml
+
+# Disallow admin and dashboard areas
+Disallow: /admin/
+Disallow: /business-admin/
+Disallow: /church-admin/
+Disallow: /member/
+Disallow: /sales/
+Disallow: /marketing-manager/
+# Disallow utility pages
+Disallow: /maintenance.html

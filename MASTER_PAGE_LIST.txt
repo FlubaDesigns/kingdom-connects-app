@@ -1,0 +1,97 @@
+KINGDOM CONNECTS - MASTER PAGE LIST
+====================================
+
+PUBLIC PAGES (Root Directory)
+------------------------------
+about.html
+business.html (individual business detail page)
+business_directory.html (business listing page)
+church.html (individual church detail page)
+church_directory.html (church listing page)
+contact.html
+faq.html
+for-agents.html
+for-businesses.html
+for-churches.html
+forgot-password.html
+index.html
+login.html
+pricing.html
+privacy.html
+signup.html
+submit_business.html
+submit_church.html
+submit_review.html
+terms.html
+testimonials.html
+thank_you_review.html
+
+ADMIN DASHBOARD
+---------------
+admin/activity_log.html
+admin/analytics.html
+admin/business-insights.html
+admin/business-submissions.html
+admin/businesses.html
+admin/categories.html
+admin/church-insights.html
+admin/church-submissions.html
+admin/churches.html
+admin/commission-settings.html
+admin/email-campaigns.html
+admin/factoids.html
+admin/index.html
+admin/payments.html
+admin/pricing-settings.html
+admin/questionnaire-manager.html
+admin/review-categories.html
+admin/review_moderation.html
+admin/settings.html
+admin/users.html
+
+BUSINESS ADMIN DASHBOARD
+------------------------
+business-admin/edit-listing.html
+business-admin/index.html
+business-admin/pro_cancel.html
+business-admin/pro_checkout.html
+business-admin/pro_success.html
+business-admin/questionnaire.html
+business-admin/reviews.html
+business-admin/stats.html
+business-admin/suggest-category.html
+business-admin/upgrade.html
+
+CHURCH ADMIN DASHBOARD
+----------------------
+church-admin/activities.html
+church-admin/analytics.html
+church-admin/businesses.html
+church-admin/commissions.html
+church-admin/featured.html
+church-admin/index.html
+church-admin/periodic-message.html
+church-admin/profile.html
+church-admin/questionnaire.html
+
+SALES DASHBOARD
+---------------
+sales/agents.html
+sales/commissions.html
+sales/conversions.html
+sales/director-commissions.html
+sales/index.html
+sales/referrals.html
+
+MARKETING MANAGER DASHBOARD
+---------------------------
+marketing-manager/analytics.html
+marketing-manager/index.html
+marketing-manager/reports.html
+marketing-manager/team.html
+
+UTILITY/DEVELOPMENT PAGES (Deleted - no longer needed)
+-------------------------
+All category utility pages removed - use admin/categories.html instead
+
+TOTAL PAGES: 79

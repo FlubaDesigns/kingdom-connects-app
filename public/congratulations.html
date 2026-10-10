@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Congratulations - Kingdom Connects</title>
+  <meta name="description" content="Your account has been created successfully!">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+
+  <link rel="stylesheet" href="styles/layout.css?v=66">
+  <link rel="stylesheet" href="styles/theme.css?v=8">
+  <link rel="stylesheet" href="styles/buttons.css?v=8">
+  <link rel="stylesheet" href="styles/forms.css?v=7">
+  <link rel="stylesheet" href="styles/overrides.css?v=7">
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <div id="loadingState" class="text-center p-lg">
+        <p class="text-muted">Loading your account status...</p>
+      </div>
+
+      <div id="congratsContent" class="hidden">
+        <div class="split-40-60">
+          <div class="split-40-60-left">
+            <div class="action-cards-row" id="actionCards">
+            </div>
+            <div class="directory-cinema">
+              <img id="cinemaImage" src="/assets/images/cinema/member.png" alt="Kingdom Connects">
+            </div>
+          </div>
+
+          <div class="split-40-60-right">
+            <article class="card thank-you-hero-card">
+              <div class="text-huge" id="statusIcon">✓</div>
+              <h1 class="gold-metallic" id="congratsTitle">Congratulations!</h1>
+              <p class="text-lg" id="congratsSubtitle">Your account has been created successfully.</p>
+              
+              <div id="approvedSection" class="hidden">
+                <p class="text-muted mb-md">You're all set! Head to your dashboard to get started.</p>
+                <a id="dashboardBtn" href="/member/index" class="btn btn-gold full-width">Go to Dashboard</a>
+              </div>
+              
+              <div id="pendingSection" class="hidden">
+                <div class="approval-notice">
+                  <strong class="gold" id="pendingTitle">Account Pending Approval</strong>
+                  <p id="pendingMessage">Our team will review your account within 24-48 hours. You'll receive an email when approved.</p>
+                </div>
+                <p class="text-muted mt-md">While you wait, feel free to explore:</p>
+                <div class="btn-row mt-md">
+                  <a href="/business_directory" class="btn btn-gold">Browse Businesses</a>
+                  <a href="/church_directory" class="btn btn-secondary">Find Churches</a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div id="benefitsContainer"></div>
+      </div>
+
+      <div id="errorState" class="hidden text-center p-lg">
+        <p class="error-text">Unable to load your account information.</p>
+        <a href="/login" class="btn btn-secondary mt-md">Go to Login</a>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <script src="js/maintenance-check.js" type="module"></script>
+  <script src="/js/header.js" type="module"></script>
+  <script src="/js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="/js/congratulations.js"></script>
+</body>
+</html>

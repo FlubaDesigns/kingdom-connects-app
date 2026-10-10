@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Manage Promotions - Kingdom Connects Business Portal</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=7">
+  <link rel="stylesheet" href="/styles/theme.css?v=7">
+  <link rel="stylesheet" href="/styles/buttons.css?v=7">
+  <link rel="stylesheet" href="/styles/forms.css?v=7">
+  <link rel="stylesheet" href="/styles/overrides.css?v=7">
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+        <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h1 class="gold-metallic text-center">Manage Promotions <span class="pro-badge">PRO</span></h1>
+      <p class="text-center text-muted mb-md">Create special offers that appear on your public business page.</p>
+
+      <div class="split-40-60">
+        <div class="split-left">
+          <div id="proGate" class="card mb-md hidden">
+            <h3 class="gold">Unlock Promotions</h3>
+            <p>Promotions are a Pro feature. Upgrade to create special offers.</p>
+            <a href="/business-admin/upgrade.html" class="btn btn-gold">Upgrade to Pro</a>
+          </div>
+          <button class="btn btn-gold mb-md" id="addPromotionBtn">+ Add Promotion</button>
+        </div>
+
+        <div class="split-right">
+          <div id="promotionsList">
+            <p class="status-message">Loading promotions...</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="footer"></div>
+  </div>
+
+  <div id="promotionModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">Add Promotion</h2>
+        <button class="close-btn" id="closeModal">&times;</button>
+      </div>
+
+      <form id="promotionForm">
+        <input type="hidden" id="promotionId">
+
+        <div class="form-group">
+          <label for="title">Promotion Title *</label>
+          <input type="text" id="title" class="input-dark" required placeholder="e.g., 20% Off All Services">
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description *</label>
+          <textarea id="description" class="input-dark" rows="3" required placeholder="Describe your promotion..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="promoType">Promotion Type</label>
+          <select id="promoType" class="input-dark">
+            <option value="discount">Discount</option>
+            <option value="sale">Sale</option>
+            <option value="coupon">Coupon Code</option>
+            <option value="bogo">Buy One Get One</option>
+            <option value="special">Special Offer</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="couponCodeGroup">
+          <label for="couponCode">Coupon Code</label>
+          <input type="text" id="couponCode" class="input-dark" placeholder="e.g., SAVE20">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="startDate">Start Date *</label>
+            <input type="date" id="startDate" class="input-dark" required>
+          </div>
+          <div class="form-group">
+            <label for="endDate">End Date *</label>
+            <input type="date" id="endDate" class="input-dark" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="terms">Terms & Conditions</label>
+          <textarea id="terms" class="input-dark" rows="2" placeholder="Any restrictions or fine print..."></textarea>
+        </div>
+
+        <div class="button-row">
+          <button type="submit" class="btn btn-gold">Save Promotion</button>
+          <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script src="js/business-auth-guard.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="js/promotions.js"></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

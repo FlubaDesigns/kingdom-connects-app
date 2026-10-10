@@ -1,0 +1,76 @@
+{
+  "collection": "factoids",
+  "description": "Faith-based church trivia facts for the homepage Did You Know section",
+  "docs": [
+    {
+      "data": {
+        "text": "The smallest church in the United States is the Cross Island Chapel near Utica, New York. It seats only two people and sits on a tiny island in a pond.",
+        "active": true,
+        "created_at": "2024-12-18T00:00:00Z"
+      }
+    },
+    {
+      "data": {
+        "text": "The largest church building in the Christian world is St. Peter's Basilica in Vatican City. It can hold more than 60,000 people inside.",
+        "active": true,
+        "created_at": "2024-12-18T00:00:00Z"
+      }
+    },
+    {
+      "data": {
+        "text": "There are approximately 2.4 billion Christians in the world today, making Christianity the largest religion globally.",
+        "active": true,
+        "created_at": "2024-12-18T00:00:00Z"
+      }
+    },
+    {
+      "data": {
+        "text": "One of the oldest continuously used church buildings is located in Jordan and dates back to the 3rd century A.D.",
+        "active": true,
+        "created_at": "2024-12-18T00:00:00Z"
+      }
+    },
+    {
+      "data": {
+        "text": "The tallest church in the world is Ulm Minster in Germany, with a steeple reaching 530 feet high.",
+        "active": true,
+        "created_at": "2024-12-18T00:00:00Z"
+      }
+    },
+    {
+      "data": {
+        "text": "The United States has more churches than any other country, with over 380,000 churches nationwide.",
+        "active": true,
+        "created_at": "2024-12-18T00:00:00Z"
+      }
+    },
+    {
+      "data": {
+        "text": "Notre Dame Cathedral in Paris was the most visited church in the world before the fire, attracting over 13 million visitors per year.",
+        "active": true,
+        "created_at": "2024-12-18T00:00:00Z"
+      }
+    },
+    {
+      "data": {
+        "text": "Pentecostal and Charismatic Christianity is the fastest-growing Christian movement, especially in Africa, Latin America, and parts of Asia.",
+        "active": true,
+        "created_at": "2024-12-18T00:00:00Z"
+      }
+    },
+    {
+      "data": {
+        "text": "One of the largest Christian gatherings takes place in Nigeria, where some church events attract more than 5 million attendees.",
+        "active": true,
+        "created_at": "2024-12-18T00:00:00Z"
+      }
+    },
+    {
+      "data": {
+        "text": "Christian churches exist on every continent, including Antarctica, where chapels serve research stations.",
+        "active": true,
+        "created_at": "2024-12-18T00:00:00Z"
+      }
+    }
+  ]
+}

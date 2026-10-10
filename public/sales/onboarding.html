@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Complete Your Setup - Kingdom Connects Sales</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="/styles/layout.css">
+  <link rel="stylesheet" href="/styles/theme.css">
+  <link rel="stylesheet" href="/styles/buttons.css">
+  <link rel="stylesheet" href="/styles/forms.css">
+  <link rel="stylesheet" href="/styles/overrides.css">
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+
+  <div id="header"></div>
+
+  <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+    <div class="card max-w-lg mx-auto">
+      <div id="loading-state" class="text-center">
+        <h2 class="gold-metallic text-center mb-md">Checking Your Status...</h2>
+        <p class="text-muted text-center">Please wait while we verify your account.</p>
+      </div>
+
+      <div id="welcome-state" class="hidden">
+        <h2 class="gold-metallic text-center mb-sm">Welcome to the Sales Team!</h2>
+        <p class="text-muted text-center mb-lg">Set up your payout account to receive commission payments. This only takes a few minutes.</p>
+
+        <div class="info-card mb-lg">
+          <h4 class="gold-metallic mb-sm">For Testing (Sandbox Mode):</h4>
+          <ul class="checklist text-sm">
+            <li>Phone: <code>000-000-0000</code></li>
+            <li>SSN last 4: <code>0000</code></li>
+            <li>Bank Routing: <code>110000000</code></li>
+            <li>Bank Account: <code>000123456789</code></li>
+          </ul>
+        </div>
+
+        <div class="text-center">
+          <button type="button" class="btn btn-gold" id="start-onboarding-btn">
+            Set Up Payout Account
+          </button>
+        </div>
+      </div>
+
+      <div id="onboarding-container" class="hidden">
+        <h2 class="gold-metallic text-center mb-md">Complete Your Payout Setup</h2>
+        <p class="text-muted text-center mb-lg">Fill out the form below to enable commission payments to your account.</p>
+        
+        <div id="stripe-onboarding"></div>
+        
+        <div class="text-center mt-lg">
+          <button type="button" class="btn btn-outline" id="check-status-btn">
+            I've Completed Setup
+          </button>
+        </div>
+      </div>
+
+      <div id="success-state" class="hidden text-center">
+        <div class="success-icon mb-md">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-success"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        </div>
+        <h3 class="gold-metallic mb-sm">You're All Set!</h3>
+        <p class="text-muted mb-lg">Your payout account is ready. You can now access your sales dashboard and start earning commissions.</p>
+        <a href="/sales/index.html" class="btn btn-gold">Go to Dashboard</a>
+      </div>
+
+      <div id="no-account-state" class="hidden text-center">
+        <div class="warning-icon mb-md">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-warning"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        </div>
+        <h3 class="gold-metallic mb-sm">Account Not Ready</h3>
+        <p class="text-muted mb-lg">Your sales agent account hasn't been fully set up yet. Please contact the marketing team for assistance.</p>
+        <a href="/" class="btn btn-outline">Return Home</a>
+      </div>
+
+      <div id="error-state" class="hidden text-center">
+        <div class="error-icon mb-md">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-error"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+        </div>
+        <h3 class="gold-metallic mb-sm">Something Went Wrong</h3>
+        <p class="text-muted mb-md" id="error-message">Unable to check your account status. Please try again.</p>
+        <button type="button" class="btn btn-outline" onclick="location.reload()">Try Again</button>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="/js/demo-mode.js" type="module"></script>
+  <script src="https://connect-js.stripe.com/v1.0/connect.js" async></script>
+  <script src="js/header.js" defer></script>
+  <script src="js/footer.js" defer></script>
+  <script type="module" src="js/onboarding.js"></script>
+  </div>
+  <script src="js/sales-auth-guard.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>

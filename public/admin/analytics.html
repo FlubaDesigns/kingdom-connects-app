@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Analytics - Kingdom Connects Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="/styles/layout.css?v=20241220">
+  <link rel="stylesheet" href="/styles/theme.css?v=20241220">
+  <link rel="stylesheet" href="/styles/buttons.css?v=20241220">
+  <link rel="stylesheet" href="/styles/forms.css?v=20241220">
+  <link rel="stylesheet" href="/styles/loading-skeletons.css">
+  <link rel="stylesheet" href="/styles/overrides.css?v=20241220">
+  <script type="module" src="/admin/js/admin-auth-guard.js"></script>
+</head>
+
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+  <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+
+      <h2 class="gold-metallic">Sales Analytics</h2>
+      <p>Track Pro subscriptions, revenue, commissions, and platform growth.</p>
+
+      <article class="card">
+        <h3 class="gold">Platform Overview</h3>
+        <div id="stats" class="grid-responsive">
+          <div class="card text-center">
+            <div class="text-5xl font-bold gold" id="totalBusinesses">-</div>
+            <div class="opacity-80">Total Businesses</div>
+          </div>
+          <div class="card text-center">
+            <div class="text-5xl font-bold gold" id="proBusinesses">-</div>
+            <div class="opacity-80">Pro Subscriptions</div>
+          </div>
+          <div class="card text-center">
+            <div class="text-5xl font-bold gold" id="totalChurches">-</div>
+            <div class="opacity-80">Total Churches</div>
+          </div>
+          <div class="card text-center">
+            <div class="text-5xl font-bold gold" id="totalUsers">-</div>
+            <div class="opacity-80">Total Users</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <h3 class="gold">Revenue & Tithing</h3>
+        <p>Financial data will be calculated from Stripe payments collection.</p>
+        <div id="revenue" class="card-highlight">
+          <strong>Coming soon:</strong> Monthly recurring revenue (MRR), total revenue, 10% tithe allocation
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="/admin/js/header.js?v=20241220" defer></script>
+  <script src="/admin/js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+
+  <script type="module" src="/admin/js/analytics.js"></script>
+  </div>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>
