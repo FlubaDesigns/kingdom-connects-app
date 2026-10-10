@@ -4,7 +4,8 @@ const fs = require('node:fs');
 const { initializeTestEnvironment, assertSucceeds, assertFails } = require('@firebase/rules-unit-testing');
 const { doc, setDoc, updateDoc, deleteField, getDoc, collection, query, where, getDocs, writeBatch } = require('firebase/firestore');
 const { ref: storageRef, uploadBytes } = require('firebase/storage');
-const admin = require('firebase-admin');
+// Resolve the backend's locked SDK even when test tooling is installed separately.
+const admin = require(require.resolve('firebase-admin', { paths: [require('node:path').join(__dirname, '../functions')] }));
 const { createHierarchyService } = require('../functions/hierarchy-service');
 let env, db, service, app;
 const projectId = 'demo-kingdom-hierarchy';
