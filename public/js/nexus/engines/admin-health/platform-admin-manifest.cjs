@@ -12,6 +12,11 @@ module.exports = {
 
   pages: [
     {
+      id: 'todo', path: '/admin/todo.html', name: 'To-Do List',
+      jsFile: 'js/todo.js', requiresAuth: true, requiresRole: 'admin',
+      firestoreCollections: ['admin_tasks'], criticalElements: ['#header', '#main', '#taskList']
+    },
+    {
       id: 'dashboard',
       path: '/admin/index.html',
       name: 'Dashboard',

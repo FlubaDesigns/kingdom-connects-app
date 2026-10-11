@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>To-Do List - Kingdom Connects Admin</title>
+  <link rel="stylesheet" href="/styles/layout.css">
+  <link rel="stylesheet" href="/styles/theme.css">
+  <link rel="stylesheet" href="/styles/buttons.css">
+  <link rel="stylesheet" href="/styles/forms.css">
+  <link rel="stylesheet" href="/styles/overrides.css">
+</head>
+<body>
+  <a id="top"></a>
+  <div class="page-wrap">
+    <div id="header"></div>
+    <main class="page-content" id="main">
+      <div id="breadcrumbs" class="breadcrumb-container"></div>
+      <h1 class="gold-metallic">Admin To-Do List</h1>
+      <p class="text-muted">Keep track of remaining work. Changes are saved across your devices.</p>
+      <p id="taskMessage" role="status" aria-live="polite">Checking admin access…</p>
+      <div id="todoContent" class="hidden">
+        <div class="stat-grid-2 mb-md">
+          <div class="stat-card"><div class="stat-value" id="activeTaskCount">—</div><div class="stat-label">Active tasks</div></div>
+          <div class="stat-card"><div class="stat-value" id="doneTaskCount">—</div><div class="stat-label">Completed</div></div>
+        </div>
+        <details id="taskEditor" class="card mb-md">
+          <summary class="gold">Add or edit a task</summary>
+          <form id="taskForm" class="mt-md">
+            <input type="hidden" id="taskId">
+            <div class="form-field"><label for="taskTitle">Task</label><input id="taskTitle" class="input-dark" required maxlength="160"></div>
+            <div class="form-field"><label for="taskNotes">Notes / completion criteria</label><textarea id="taskNotes" class="input-dark" rows="4" maxlength="5000"></textarea></div>
+            <div class="form-field"><label for="taskLink">Action link (optional)</label><input id="taskLink" class="input-dark" placeholder="https://… or /admin/…" maxlength="2000"></div>
+            <div class="form-field"><label for="taskPriority">Priority</label><select id="taskPriority" class="input-dark"><option value="high">High</option><option value="normal" selected>Normal</option><option value="low">Low</option></select></div>
+            <div class="form-field"><label for="taskStatus">Status</label><select id="taskStatus" class="input-dark"><option value="open">Open</option><option value="in_progress">In progress</option><option value="blocked">Blocked</option><option value="deferred">Deferred</option><option value="done">Done</option><option value="archived">Archived</option></select></div>
+            <div class="btn-row"><button id="saveTask" class="btn btn-gold" type="submit">Save Task</button><button id="cancelTask" class="btn btn-secondary" type="button">Cancel</button></div>
+          </form>
+        </details>
+        <div class="form-field mb-md"><label for="taskFilter">Show</label><select id="taskFilter" class="input-dark"><option value="all">All current tasks</option><option value="active">Active</option><option value="done">Completed</option><option value="deferred">Deferred</option><option value="archived">Archived</option></select></div>
+        <div id="taskList" class="card-list"></div>
+        <p id="taskEmpty" class="text-muted hidden">No tasks in this view.</p>
+      </div>
+    </main>
+    <div id="footer"></div>
+  </div>
+  <script src="/admin/js/header.js" defer></script>
+  <script src="/admin/js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+  <script type="module" src="/admin/js/todo.js"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "member-email-delivery",
+    "title": "Verify the email domain and test member email delivery",
+    "notes": "Resend rejected welcome, approval, and verification emails because kingdomconnects.org is not verified. Add the DNS records shown by Resend, verify the domain, then confirm those emails reach a real test inbox. Also confirm password-reset email delivery. Keep this open until delivery is proven.",
+    "link": "https://resend.com/domains",
+    "priority": "high",
+    "status": "blocked"
+  },
+  {
+    "id": "member-custom-domain",
+    "title": "Finish kingdomconnects.org DNS and HTTPS setup",
+    "notes": "Firebase Hosting reported the domain as unhosted. Required records: root A = 199.36.158.100; root TXT = hosting-site=kingdom-commerce; www CNAME = kingdom-commerce.web.app. Check for conflicting records, then confirm both root and www load correctly with a valid HTTPS certificate.",
+    "link": "https://console.firebase.google.com/project/kingdom-commerce/hosting/sites/kingdom-commerce",
+    "priority": "high",
+    "status": "blocked"
+  },
+  {
+    "id": "member-browser-walkthrough",
+    "title": "Complete the signed-in member browser walkthrough",
+    "notes": "Walk through signup, church nomination and approval, login, dashboard, profile and photo editing, church changes, favorites, review creation/editing/deletion, verification, password reset, suspension, and account closure on desktop and mobile. Backend checks and the targeted live profile/favorite handlers passed; the complete browser walkthrough is still outstanding. Use temporary accounts and clean up afterward.",
+    "link": "https://kingdom-commerce.web.app/member/",
+    "priority": "high",
+    "status": "open"
+  },
+  {
+    "id": "member-qrgear-stores",
+    "title": "Finish the QR Gear mini-store integration",
+    "notes": "Deferred integration work: members, businesses, and churches each retain their own permanent ID and store ownership. Preserve the Dave → churches → businesses hierarchy. QR Gear stores remain disabled until the integration and end-to-end ownership checks are complete; this is not a completed member feature.",
+    "link": "https://kingdom-commerce.web.app/admin/members",
+    "priority": "normal",
+    "status": "deferred"
+  }
+]
