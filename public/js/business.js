@@ -67,6 +67,7 @@ async function loadBusinessDetails() {
     const controllingChurch = await getDoc(doc(db, 'churches', business.church_id));
     if (controllingChurch.data()?.listing_status !== 'active') throw new Error('The controlling church is not active.');
 
+    await ensureStorefrontLayout();
     loadedBusiness = business;
     const isPro = isBusinessPro(business);
     document.title = `${business.business_name || "Business"} - Kingdom Connects`;
@@ -140,7 +141,7 @@ async function loadBusinessDetails() {
 
     await loadReviews(businessId, business);
 
-    document.getElementById('submitReviewBtn').href = `submit_review.html?id=${businessId}`;
+    document.getElementById('submitReviewBtn').href = `/submit_review.html?id=${encodeURIComponent(businessId)}`;
     
     // Hide review button if viewing your own business
     if (currentUser && business.created_by_uid === currentUser.uid) {
@@ -161,7 +162,26 @@ async function loadBusinessDetails() {
     console.error('Error loading business:', error);
     document.getElementById('loadingMessage').classList.add('hidden');
     document.getElementById('businessContent').classList.add('hidden');
-    document.getElementById('errorMessage').classList.remove('hidden');
+    const errorMessage = document.getElementById('errorMessage');
+    if (!errorMessage.textContent.trim()) errorMessage.textContent = 'This business is unavailable. Please return to the business directory.';
+    errorMessage.classList.remove('hidden');
+  }
+}
+
+// Older server-rendered URLs retain their SEO metadata, then hydrate the shared
+// static layout. Keep one storefront template rather than two diverging pages.
+async function ensureStorefrontLayout() {
+  if (document.getElementById('storefrontActions')) return;
+  const response = await fetch('/business.html');
+  if (!response.ok) throw new Error('The storefront could not be loaded.');
+  const template = new DOMParser().parseFromString(await response.text(), 'text/html');
+  for (const id of ['businessContent', 'errorMessage']) {
+    const replacement = template.getElementById(id);
+    if (!replacement) throw new Error('The storefront layout is unavailable.');
+    document.getElementById(id).replaceWith(replacement);
+  }
+  if (!document.querySelector('link[href*="business-storefront.css"]')) {
+    const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = '/styles/components/business-storefront.css?v=1'; document.head.append(css);
   }
 }
 
@@ -174,7 +194,7 @@ async function loadChurchInfo(churchId) {
       
       churchContainer.textContent = '⛪ ';
       const churchLink = document.createElement('a');
-      churchLink.href = (church.slug && church.slug.trim()) ? `church.html?slug=${church.slug}` : `church.html?id=${churchId}`;
+      churchLink.href = (church.slug && church.slug.trim()) ? `/church.html?slug=${encodeURIComponent(church.slug)}` : `/church.html?id=${encodeURIComponent(churchId)}`;
       churchLink.textContent = church.church_name || 'Unknown Church';
       churchLink.className = 'gold text-underline';
       churchContainer.appendChild(churchLink);

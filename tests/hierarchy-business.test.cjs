@@ -126,3 +126,12 @@ test('a paid listing cannot use a cancelled or unrelated subscription to manage 
   await env.withSecurityRulesDisabled(c=>updateDoc(doc(c.firestore(),'users/owner'),{stripeSubscriptionId:'sub_one',subscription_status:'trialing'}));
   await assertSucceeds(setDoc(ref,{is_active:true,name:'Matching trial'}));
 });
+test('legacy server-rendered business pages hydrate the shared layout, keep metadata and avoid duplicate fetches on current pages',async()=>{
+  const source=fs.readFileSync('public/js/business.js','utf8');
+  const actual=source.slice(source.indexOf('async function ensureStorefrontLayout'),source.indexOf('async function loadChurchInfo'));
+  const replacements=[],styles=[];let fetches=0,modern=false;
+  const context=vm.createContext({document:{getElementById:id=>id==='storefrontActions'?(modern?{}:null):{replaceWith:node=>replacements.push(node)},querySelector:()=>null,createElement:()=>({}),head:{append:node=>styles.push(node)}},fetch:async url=>{assert.equal(url,'/business.html');fetches++;return {ok:true,text:async()=>fs.readFileSync('public/business.html','utf8')};},DOMParser:class {parseFromString(html){return {getElementById:id=>{assert(html.includes(`id="${id}"`));return {id};}};}}});
+  vm.runInContext(actual,context);await context.ensureStorefrontLayout();
+  assert.deepEqual(replacements.map(n=>n.id),['businessContent','errorMessage']);assert.equal(styles[0].href,'/styles/components/business-storefront.css?v=1');
+  modern=true;await context.ensureStorefrontLayout();assert.equal(fetches,1);
+});

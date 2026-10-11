@@ -10,6 +10,7 @@ This branch starts from the deployed church follow-up, dab4e94f35644904c5bca3fe5
 - Public product/service and testimonial reads require active content on a published Pro business under an active church; owners can manage drafts.
 - The actual review reply button saves only response text/date. Ratings, moderation, reviewer identity and other businesses remain protected. Review lists request approved reviews.
 - Business Insights supports an initial missing record, draft/save, and ownership boundaries. Questions use an audience query and local ordering without an extra composite index.
+- Older server-rendered business URLs hydrate the same static storefront layout while retaining their SEO metadata.
 - Storefront presentation includes business identity/logo, primary contact actions, a contact/hours sidebar, responsive offering cards, and optional offering image/details URLs. Contact display settings are honored. This does not make contact fields private in the underlying public document.
 - Owners can add/edit optional image and booking/details URLs. Unsafe URL schemes and markup are rejected/escaped.
 
