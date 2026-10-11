@@ -32,7 +32,9 @@ service firebase.storage {
     // User profile images
     match /users/{userId}/{allPaths=**} {
       allow read: if true;
-      allow write: if enabled() && request.auth.uid == userId;
+      allow write: if enabled() && request.auth.uid == userId &&
+        (request.resource == null || (request.resource.size <= 5 * 1024 * 1024 &&
+          request.resource.contentType.matches('image/(jpeg|png|gif|webp)')));
     }
     
     // Test uploads (for debugging)

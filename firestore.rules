@@ -1,19 +1,19 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
+
     // ========================================
     // HELPER FUNCTIONS
     // ========================================
-    
+
     function isAuthenticated() {
       return request.auth != null;
     }
-    
+
     function getUserData() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
-    
+
     function hasRole(roleName) {
       let user = isAuthenticated() ? getUserData() : {};
       return isAuthenticated() &&
@@ -47,61 +47,61 @@ service cloud.firestore {
     function isAdmin() {
       return accountEnabled() && (hasRole('admin') || hasRole('platform_admin'));
     }
-    
+
     function isSalesAgent() {
       return isAuthenticated() && (hasRole('sales_agent') || hasRole('sales_director') || hasRole('marketing_manager') || isAdmin());
     }
-    
+
     function isChurchAdmin() {
       return isAuthenticated() && (hasRole('church_admin') || isAdmin());
     }
-    
+
     function isBusinessOwner() {
       return isAuthenticated() && (hasRole('business_owner') || isAdmin());
     }
-    
+
     function isOwnerOfBusiness(businessId) {
       let privateBiz = get(/databases/$(database)/documents/business_listings_private/$(businessId)).data;
       return isAuthenticated() && privateBiz.owner_uid == request.auth.uid;
     }
-    
+
     function isOwnerOfChurch(churchId) {
       let church = get(/databases/$(database)/documents/churches/$(churchId)).data;
       return accountEnabled() && church.admin_uid == request.auth.uid && !(church.listing_status in ['suspended', 'rejected']);
     }
-    
+
     function isPro() {
       let userData = isAuthenticated() ? getUserData() : null;
       return userData != null && userData.subscription_status == 'active';
     }
-    
+
     function isValidString(field, minLen, maxLen) {
       return field is string && field.size() >= minLen && field.size() <= maxLen;
     }
-    
+
     function isValidEmail(email) {
       return email is string && email.matches('^[^@]+@[^@]+\\.[^@]+$');
     }
-    
+
     function isValidPhone(phone) {
       return phone == null || phone == '' || (phone is string && phone.size() <= 20);
     }
-    
+
     function isValidUrl(url) {
       return url == null || url == '' || (url is string && (url.matches('^https?://.*') || url.size() == 0));
     }
-    
+
     // Prevent changing protected fields
     function notChanging(field) {
       return !request.resource.data.diff(resource.data).affectedKeys().hasAny([field]);
     }
-    
+
     // ========================================
     // USERS COLLECTION
     // ========================================
     match /users/{userId} {
       allow read: if isAdmin() || request.auth.uid == userId;
-      
+
       allow create: if isAuthenticated() && request.auth.uid == userId
         && request.resource.data.keys().hasOnly(['name', 'display_name', 'email', 'role', 'roles',
           'account_status', 'church_membership_status', 'created_at', 'last_login', 'is_demo', 'business_name', 'business_phone'])
@@ -114,11 +114,11 @@ service cloud.firestore {
       allow update: if isAdmin() || (accountEnabled() && request.auth.uid == userId &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'name', 'display_name', 'phone_number', 'profile_photo_url', 'allow_review_sharing',
-          'notifications_enabled', 'email_verified', 'last_login', 'updated_at', 'business_name', 'business_phone']));
+          'notifications_enabled', 'last_login', 'updated_at', 'business_name', 'business_phone']));
 
       allow delete: if isAdmin();
     }
-    
+
     // ========================================
     // BUSINESS LISTINGS PUBLIC
     // Public-facing data for directory and detail pages
@@ -127,7 +127,7 @@ service cloud.firestore {
       // Anyone can read visible listings, owners can read their own, admins can read all
       allow read: if isAdmin() || managesChurch(resource.data.get('church_id', null)) ||
         resource.data.get('is_visible', false) == true || isOwnerOfBusiness(businessId) || reviewsBusiness(businessId);
-      
+
       // Authenticated users can create new submissions (pending, not visible)
       allow create: if accountEnabled()
                     && isValidString(request.resource.data.business_name, 2, 200)
@@ -142,7 +142,7 @@ service cloud.firestore {
                     && request.resource.data.get('is_pro', false) == false
                     && request.resource.data.get('pro_status', null) == null
                     && request.resource.data.get('subscription_tier', 'free') == 'free';
-      
+
       // Owners can update their own, admins can update any
       allow update: if isAdmin() || (mayEditBusiness(businessId) &&
         !request.resource.data.diff(resource.data).affectedKeys().hasAny([
@@ -153,39 +153,39 @@ service cloud.firestore {
           'trial_start_date', 'trial_end_date', 'pro_activated_at', 'pro_start_date', 'pro_end_date',
           'promotional_grant', 'promotional_type', 'church_promotion']));
       allow delete: if isAdmin();
-      
+
       // Pro features subcollections - owners with Pro status can manage
       match /promotions/{promotionId} {
         allow read: if get(/databases/$(database)/documents/business_listings_public/$(businessId)).data.get('is_visible', false) == true || isAdmin() || isOwnerOfBusiness(businessId) || managesBusiness(businessId);
         allow write: if isAdmin() || (mayEditBusiness(businessId) && isPro());
       }
-      
+
       match /products_services/{productId} {
         allow read: if get(/databases/$(database)/documents/business_listings_public/$(businessId)).data.get('is_visible', false) == true || isAdmin() || isOwnerOfBusiness(businessId) || managesBusiness(businessId);
         allow write: if isAdmin() || (mayEditBusiness(businessId) && isPro());
       }
-      
+
       match /testimonials/{testimonialId} {
         allow read: if get(/databases/$(database)/documents/business_listings_public/$(businessId)).data.get('is_visible', false) == true || isAdmin() || isOwnerOfBusiness(businessId) || managesBusiness(businessId);
         allow write: if isAdmin() || (mayEditBusiness(businessId) && isPro());
       }
     }
-    
+
     // ========================================
     // BUSINESS LISTINGS PRIVATE
     // Sensitive owner/billing data - owner and admin only
     // ========================================
     match /business_listings_private/{businessId} {
       // Only owner or admin can read
-      allow read: if isAdmin() || 
+      allow read: if isAdmin() ||
                     (isAuthenticated() && resource.data.owner_uid == request.auth.uid);
-      
+
       // Authenticated users can create (for submissions), must set owner_uid to self
       allow create: if accountEnabled()
                     && request.resource.data.owner_uid == request.auth.uid
                     && getAfter(/databases/$(database)/documents/business_listings_public/$(businessId)).data.created_by_uid == request.auth.uid
                     && getAfter(/databases/$(database)/documents/business_listings_public/$(businessId)).data.listing_status == 'pending';
-      
+
       // Owners can update their own (but can't change sensitive fields), admins can update any
       allow update: if isAdmin() || (
                       mayEditBusiness(businessId)
@@ -199,93 +199,88 @@ service cloud.firestore {
                       && notChanging('approved_by')
                     );
       allow delete: if isAdmin();
-      
+
       // Commissions subcollection - admin/sales only
       match /commissions/{commissionId} {
         allow read: if isAdmin() || isSalesAgent();
         allow write: if isAdmin();
       }
     }
-    
+
     // ========================================
     // CHURCHES
     // ========================================
     match /churches/{churchId} {
       allow read: if true;
-      
+
       allow create: if accountEnabled()
                     && isValidString(request.resource.data.church_name, 2, 200)
                     && isValidEmail(request.resource.data.contact_email)
                     && request.resource.data.listing_status in ['pending', 'draft']
                     && request.resource.data.admin_uid == request.auth.uid;
-      
+
       allow update: if isAdmin() || (
                       isOwnerOfChurch(churchId)
                       && notChanging('admin_uid')
                       && notChanging('listing_status')
                       && notChanging('created_at')
                     );
-      
+
       allow delete: if isAdmin();
-      
+
       // Church subcollections
       match /announcements/{announcementId} {
         allow read: if true;
         allow write: if isAdmin() || managesChurch(churchId);
       }
-      
+
       match /events/{eventId} {
         allow read: if true;
         allow write: if isAdmin() || managesChurch(churchId);
       }
-      
+
       match /activities/{activityId} {
         allow read: if true;
         allow write: if isAdmin() || managesChurch(churchId);
       }
-      
+
       match /media/{mediaId} {
         allow read: if true;
         allow write: if isAdmin() || managesChurch(churchId);
       }
-      
+
       match /resources/{resourceId} {
         allow read: if true;
         allow write: if isAdmin() || managesChurch(churchId);
       }
     }
-    
+
     // ========================================
     // CHURCH SUBMISSIONS (DEPRECATED)
     // ========================================
     match /church_submissions/{submissionId} {
-      allow read: if isAdmin() || 
+      allow read: if isAdmin() ||
                      (isAuthenticated() && resource.data.submitter_uid == request.auth.uid);
       allow create: if false;
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
-    
+
     // ========================================
     // REVIEWS - Stricter validation
     // ========================================
     match /reviews/{reviewId} {
-      allow read: if resource.data.status == 'approved' 
+      allow read: if resource.data.status == 'approved'
                   || (isAuthenticated() && resource.data.user_id == request.auth.uid)
                   || isAdmin();
-      
-      allow create: if isAuthenticated()
-                    && request.resource.data.user_id == request.auth.uid
-                    && isValidString(request.resource.data.review_text, 10, 2000)
-                    && request.resource.data.rating is int
-                    && request.resource.data.rating >= 1
-                    && request.resource.data.rating <= 5
-                    && request.resource.data.status == 'pending';
-      
+
+      // Authenticated member review changes use the backend ownership and moderation checks.
+      allow create: if false;
+
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
-    
+
     // ========================================
     // CATEGORIES
     // ========================================
@@ -293,7 +288,7 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
-    
+
     // ========================================
     // CATEGORY SUGGESTIONS
     // ========================================
@@ -304,7 +299,7 @@ service cloud.firestore {
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
-    
+
     // ========================================
     // ACTIVITY LOG (Immutable audit trail)
     // ========================================
@@ -315,7 +310,7 @@ service cloud.firestore {
       allow update: if false;
       allow delete: if false;
     }
-    
+
     // ========================================
     // UPLOAD TESTS (Admin diagnostic tool)
     // ========================================
@@ -323,41 +318,41 @@ service cloud.firestore {
       allow read: if isAdmin();
       allow write: if isAdmin();
     }
-    
+
     // ========================================
     // PAYMENTS & COMMISSIONS (Admin-controlled)
     // ========================================
     match /payments/{paymentId} {
-      allow read: if isAdmin() || 
+      allow read: if isAdmin() ||
                      (isAuthenticated() && resource.data.user_id == request.auth.uid);
       allow write: if false;
     }
-    
+
     match /commission_policies/{policyId} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
     }
-    
+
     match /commission_ledger/{ledgerId} {
       allow read: if isAdmin() || isSalesAgent();
       allow write: if false;
     }
-    
+
     match /commission_balances/{balanceId} {
-      allow read: if isAdmin() || 
+      allow read: if isAdmin() ||
                      (isSalesAgent() && resource.data.agent_uid == request.auth.uid);
       allow write: if false;
     }
-    
+
     // ========================================
     // TITHES (System-generated from Stripe webhook)
     // ========================================
     match /tithes/{titheId} {
-      allow read: if isAdmin() || 
+      allow read: if isAdmin() ||
                      (isChurchAdmin() && resource.data.church_id != null && isOwnerOfChurch(resource.data.church_id));
       allow write: if false;
     }
-    
+
     // ========================================
     // CHURCH AFFILIATION REQUESTS
     // ========================================
@@ -376,7 +371,7 @@ service cloud.firestore {
       allow read: if isAdmin();
       allow write: if false;
     }
-    
+
     // ========================================
     // FACTOIDS
     // ========================================
@@ -384,7 +379,7 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
-    
+
     // ========================================
     // TESTIMONIALS (Platform-level)
     // ========================================
@@ -396,7 +391,7 @@ service cloud.firestore {
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
-    
+
     // ========================================
     // EMAIL CAMPAIGNS (Admin only)
     // ========================================
@@ -404,20 +399,19 @@ service cloud.firestore {
       allow read: if isAdmin();
       allow write: if isAdmin();
     }
-    
+
     // ========================================
     // FAVORITE BUSINESSES
     // ========================================
     match /favorite_businesses/{favoriteId} {
-      allow list: if isAuthenticated();
-      allow get: if isAuthenticated() && resource.data.user_id == request.auth.uid;
-      allow create: if isAuthenticated() 
+      allow list, get: if accountEnabled() && resource.data.user_id == request.auth.uid;
+      allow create: if accountEnabled() && getUserData().account_status == 'active'
                     && request.resource.data.user_id == request.auth.uid
                     && request.resource.data.business_id is string;
-      allow delete: if isAuthenticated() && resource.data.user_id == request.auth.uid;
+      allow delete: if accountEnabled() && resource.data.user_id == request.auth.uid;
       allow update: if false;
     }
-    
+
     // ========================================
     // DONATION REQUESTS & DONATIONS
     // ========================================
@@ -428,12 +422,12 @@ service cloud.firestore {
       allow update: if isAdmin();
       allow delete: if false;
     }
-    
+
     match /donations/{donationId} {
       allow read: if isAdmin();
       allow write: if false;
     }
-    
+
     // ========================================
     // PLATFORM SETTINGS
     // ========================================
@@ -441,7 +435,7 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
-    
+
     // ========================================
     // PRICING SETTINGS
     // ========================================
@@ -449,33 +443,33 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
-    
+
     // ========================================
     // CHURCH ACTIVITIES (Top-level)
     // ========================================
     match /church_activities/{activityId} {
       allow read: if true;
-      allow create: if isAuthenticated() && 
+      allow create: if isAuthenticated() &&
         request.resource.data.church_id != null &&
         isOwnerOfChurch(request.resource.data.church_id);
-      allow update, delete: if isAuthenticated() && 
+      allow update, delete: if isAuthenticated() &&
         resource.data.church_id != null &&
         isOwnerOfChurch(resource.data.church_id);
     }
-    
+
     // ========================================
     // CHURCH MESSAGES
     // ========================================
     match /church_messages/{messageId} {
       allow read: if true;
-      allow create: if isAuthenticated() && 
+      allow create: if isAuthenticated() &&
         request.resource.data.church_id != null &&
         isOwnerOfChurch(request.resource.data.church_id);
-      allow update, delete: if isAuthenticated() && 
+      allow update, delete: if isAuthenticated() &&
         resource.data.church_id != null &&
         isOwnerOfChurch(resource.data.church_id);
     }
-    
+
     // ========================================
     // QUESTIONNAIRE QUESTIONS
     // ========================================
@@ -483,23 +477,23 @@ service cloud.firestore {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
     }
-    
+
     // ========================================
     // CHURCH INSIGHTS
     // ========================================
     match /church_insights/{insightId} {
-      allow read: if isAdmin() || 
+      allow read: if isAdmin() ||
                      (isAuthenticated() && resource.data.church_id != null &&
                       isOwnerOfChurch(resource.data.church_id));
-      allow create: if isAuthenticated() && 
+      allow create: if isAuthenticated() &&
         request.resource.data.church_id != null &&
         isOwnerOfChurch(request.resource.data.church_id);
-      allow update: if isAdmin() || 
+      allow update: if isAdmin() ||
         (isAuthenticated() && resource.data.church_id != null &&
          isOwnerOfChurch(resource.data.church_id));
       allow delete: if isAdmin();
     }
-    
+
     // ========================================
     // SALES APPLICATIONS
     // ========================================
@@ -510,7 +504,7 @@ service cloud.firestore {
       allow update: if isAdmin() || hasRole('marketing_manager');
       allow delete: if isAdmin();
     }
-    
+
     // ========================================
     // KINGDOM FUND
     // ========================================
@@ -518,7 +512,7 @@ service cloud.firestore {
       allow read: if isAdmin();
       allow write: if false;
     }
-    
+
     // ========================================
     // EMAIL TEMPLATES
     // ========================================
@@ -526,7 +520,7 @@ service cloud.firestore {
       allow read: if isAdmin();
       allow write: if isAdmin();
     }
-    
+
     // ========================================
     // CONTACT SUBMISSIONS
     // ========================================
@@ -536,7 +530,7 @@ service cloud.firestore {
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
-    
+
     // ========================================
     // PRESENTATION TEMPLATES
     // ========================================
@@ -544,7 +538,7 @@ service cloud.firestore {
       allow read: if isAdmin();
       allow write: if isAdmin();
     }
-    
+
     // ========================================
     // EMAIL LOGS (Immutable)
     // ========================================
@@ -554,7 +548,7 @@ service cloud.firestore {
       allow update: if false;
       allow delete: if false;
     }
-    
+
     // ========================================
     // FALLBACK - DENY ALL
     // ========================================

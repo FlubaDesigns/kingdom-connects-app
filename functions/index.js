@@ -14,13 +14,18 @@ const { createHierarchyService } = require('./hierarchy-service');
 const hierarchy = createHierarchyService(admin.firestore(), () => admin.firestore.FieldValue.serverTimestamp());
 const { createBusinessMediaService } = require('./business-media');
 const businessMedia = createBusinessMediaService(admin.firestore(), admin.storage().bucket('kingdom-commerce.firebasestorage.app'));
-const { onDocumentUpdated } = require('firebase-functions/v2/firestore');
+const { onDocumentUpdated, onDocumentCreated } = require('firebase-functions/v2/firestore');
+const { createMemberService, memberActions } = require('./member-service');
+const { createMemberMailDelivery, queueMemberMail } = require('./member-mail');
+const memberService = createMemberService(admin.firestore(), admin.auth(), admin.storage().bucket('kingdom-commerce.firebasestorage.app'), () => admin.firestore.FieldValue.serverTimestamp());
+const resendApiKey = defineSecret('RESEND_API_KEY');
 
 exports.hierarchyAction = onRequest((req, res) => cors(req, res, async () => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Use POST.' });
   try {
-    const { user } = await verifyAuth(req);
-    const result = ['uploadBusinessMedia', 'deleteBusinessMedia'].includes(req.body?.action)
+    const user = req.body?.action === 'completeMemberSignup'
+      ? await verifyToken(req) : (await verifyAuth(req)).user;
+    const result = memberActions.includes(req.body?.action) ? await memberService.execute(user, req.body) : ['uploadBusinessMedia', 'deleteBusinessMedia'].includes(req.body?.action)
       ? await businessMedia.execute(user, req.body)
       : await hierarchy.execute(user, req.body);
     if (req.body.action === 'setChurchStatus') await hierarchy.syncChurchBusinesses(result.churchId);
@@ -37,7 +42,10 @@ exports.syncChurchAuthority = onDocumentUpdated({ document: 'churches/{churchId}
   }
 });
 
-const resendApiKey = defineSecret('RESEND_API_KEY');
+exports.deliverMemberNotification = onDocumentCreated({ document: 'member_mail/{mailId}', retry: true, secrets: [resendApiKey] }, async event => {
+  const { client } = getResendClient();
+  await createMemberMailDelivery(admin.firestore(), admin.auth(), client, () => admin.firestore.FieldValue.serverTimestamp())(event.data.ref);
+});
 
 function getResendClient() {
   const apiKey = resendApiKey.value();
@@ -50,31 +58,18 @@ function getResendClient() {
   };
 }
 
+async function verifyToken(req) {
+  const header = req.headers.authorization || '';
+  if (!header.startsWith('Bearer ')) throw { status:401, message:'Please sign in.' };
+  try { return await admin.auth().verifyIdToken(header.slice(7), true); }
+  catch { throw { status:401, message:'Please sign in again.' }; }
+}
+
 async function verifyAuth(req) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    console.error('Auth failed: No bearer token in header');
-    throw { status: 401, message: 'Unauthorized: No token provided' };
-  }
-  const idToken = authHeader.split('Bearer ')[1];
-  if (!idToken || idToken.length < 100) {
-    console.error('Auth failed: Token appears truncated or invalid, length:', idToken?.length);
-    throw { status: 401, message: 'Unauthorized: Invalid token format' };
-  }
-  try {
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
-    console.log('Token verified for user:', decodedToken.email);
-    const userDoc = await admin.firestore().collection('users').doc(decodedToken.uid).get();
-    if (!userDoc.exists) {
-      console.error('User not found in Firestore:', decodedToken.uid);
-      throw { status: 403, message: 'Forbidden: User not found' };
-    }
-    if (hierarchyPolicy.isBlocked(userDoc.data())) throw { status: 403, message: 'Account access is suspended.' };
-    return { user: decodedToken, userData: userDoc.data() };
-  } catch (authError) {
-    console.error('Token verification failed:', authError.message);
-    throw { status: authError.status || 401, message: authError.status ? authError.message : 'Unauthorized: Invalid token' };
-  }
+  const user = await verifyToken(req);
+  const userDoc = await admin.firestore().doc('users/' + user.uid).get();
+  if (!userDoc.exists || hierarchyPolicy.isBlocked(userDoc.data())) throw { status:403, message:'Account access is unavailable.' };
+  return { user, userData:userDoc.data() };
 }
 
 function checkRole(userData, allowedRoles) {
@@ -120,6 +115,8 @@ exports.sendTemplate = onRequest({ secrets: [resendApiKey] }, (req, res) => {
     }
     if (isRateLimited(req, res, 15, 60000)) return;
     try {
+      const { userData } = await verifyAuth(req);
+      checkRole(userData, ['admin', 'platform_admin']);
       const { templateName, templateSlug, to, variables } = req.body;
       const template_name = templateName || templateSlug;
       if (!template_name || !to) {
@@ -159,7 +156,8 @@ exports.sendTemplate = onRequest({ secrets: [resendApiKey] }, (req, res) => {
       console.log('Template email sent successfully:', JSON.stringify(data));
       res.json({ success: true, messageId: data?.id });
     } catch (error) {
-      console.error('Error sending email:', error.message, error.stack);
+      console.error('Error sending email:', error.message);
+      if (error.status) return res.status(error.status).json({ error:error.message });
       res.status(500).json({ error: 'Failed to send email', details: error.message });
     }
   });
@@ -191,7 +189,8 @@ exports.sendEmail = onRequest({ secrets: [resendApiKey] }, (req, res) => {
       res.json({ success: true, messageId: data?.id });
     } catch (error) {
       if (error.status) return res.status(error.status).json({ error: error.message });
-      console.error('Error sending email:', error.message, error.stack);
+      console.error('Error sending email:', error.message);
+      if (error.status) return res.status(error.status).json({ error:error.message });
       res.status(500).json({ error: 'Failed to send email', details: error.message });
     }
   });
@@ -963,84 +962,18 @@ exports.getProducts = onRequest({ secrets: [stripeSecretKey] }, (req, res) => {
   });
 });
 
-exports.sendVerificationEmail = onRequest({ secrets: [resendApiKey] }, (req, res) => {
-  cors(req, res, async () => {
-    if (req.method !== 'POST') {
-      return res.status(405).json({ error: 'Method not allowed' });
-    }
-    
-    try {
-      const { user, userData } = await verifyAuth(req);
-      
-      const verificationLink = await admin.auth().generateEmailVerificationLink(user.email, {
-        url: 'https://kingdom-commerce.web.app/member/?verified=true'
-      });
-      
-      const displayName = userData.display_name || user.email.split('@')[0];
-      
-      const { client, fromEmail } = getResendClient();
-      
-      const htmlBody = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body style="font-family: Arial, sans-serif; background-color: #1a1a2e; color: #ffffff; padding: 20px; margin: 0;">
-  <div style="max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 12px; padding: 30px; border: 1px solid #c9a227;">
-    <div style="text-align: center; margin-bottom: 24px;">
-      <h1 style="color: #c9a227; margin: 0; font-size: 24px;">Kingdom Connects</h1>
-    </div>
-    
-    <h2 style="color: #ffffff; margin-bottom: 16px;">Verify Your Email, ${displayName}</h2>
-    
-    <p style="color: #cccccc; line-height: 1.6; margin-bottom: 24px;">
-      Thank you for joining Kingdom Connects! Please verify your email address to unlock all member features and complete your profile.
-    </p>
-    
-    <div style="text-align: center; margin: 32px 0;">
-      <a href="${verificationLink}" style="display: inline-block; background: linear-gradient(135deg, #c9a227 0%, #8b7355 100%); color: #1a1a2e; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">
-        Verify My Email
-      </a>
-    </div>
-    
-    <p style="color: #888888; font-size: 14px; line-height: 1.6;">
-      If you didn't create an account with Kingdom Connects, you can safely ignore this email.
-    </p>
-    
-    <hr style="border: none; border-top: 1px solid #333; margin: 24px 0;">
-    
-    <p style="color: #666666; font-size: 12px; text-align: center;">
-      Kingdom Connects - Building Christian Commerce Together<br>
-      <a href="https://kingdomconnects.org" style="color: #c9a227;">kingdomconnects.org</a>
-    </p>
-  </div>
-</body>
-</html>`;
-
-      const { data, error } = await client.emails.send({
-        from: fromEmail,
-        to: user.email,
-        subject: 'Verify Your Email - Kingdom Connects',
-        html: htmlBody
-      });
-      
-      if (error) {
-        console.error('Resend API error:', JSON.stringify(error));
-        return res.status(400).json({ error: 'Email send failed', details: error.message || error });
-      }
-      
-      console.log('Verification email sent to:', user.email, 'messageId:', data?.id);
-      res.json({ success: true, messageId: data?.id });
-      
-    } catch (error) {
-      console.error('Send verification email error:', error);
-      if (error.status) return res.status(error.status).json({ error: error.message });
-      res.status(500).json({ error: 'Failed to send verification email', details: error.message });
-    }
-  });
-});
+exports.sendVerificationEmail = onRequest((req, res) => cors(req, res, async () => {
+  if (req.method !== 'POST') return res.status(405).json({error:'Use POST.'});
+  try {
+    const {user}=await verifyAuth(req);
+    const key='verification-'+user.uid+'-'+Math.floor(Date.now()/300000);
+    const ref=admin.firestore().doc('member_mail/'+key);
+    await admin.firestore().runTransaction(async tx=>{
+      if (!(await tx.get(ref)).exists) queueMemberMail(admin.firestore(),tx,user.uid,'verification',()=>admin.firestore.FieldValue.serverTimestamp(),key);
+    });
+    res.json({success:true,queued:true});
+  } catch(error) { res.status(error.status||500).json({error:error.status?error.message:'Unable to queue verification email.'}); }
+}));
 
 // Send Pro welcome email (different content for annual vs monthly)
 exports.sendProWelcomeEmail = onRequest({ secrets: [resendApiKey] }, (req, res) => {
@@ -1187,7 +1120,8 @@ exports.updateProductPrice = onRequest({ secrets: [stripeSecretKey] }, (req, res
     }
     
     try {
-      await verifyAuth(req);
+      const { userData } = await verifyAuth(req);
+      checkRole(userData, ['admin', 'platform_admin']);
       const { productId, newPriceAmount, oldPriceId } = req.body;
       
       if (!productId || !newPriceAmount) {

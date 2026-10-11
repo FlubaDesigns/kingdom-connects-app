@@ -67,7 +67,10 @@
                 <option value="member">Member</option>
                 <option value="business_owner">Business Owner</option>
                 <option value="church_admin">Church Admin</option>
-                <option value="sales">Sales Agent</option>
+                <option value="sales_agent">Sales Agent</option>
+            <option value="sales_director">Sales Director</option>
+            <option value="marketing_manager">Marketing Manager</option>
+            <option value="platform_admin">Platform Admin</option>
                 <option value="admin">Admin</option>
               </select>
             </div>
@@ -76,6 +79,9 @@
                 <option value="">All Statuses</option>
                 <option value="active">Active</option>
                 <option value="suspended">Suspended</option>
+            <option value="pending">Pending approval</option>
+            <option value="rejected">Rejected</option>
+            <option value="disabled">Disabled</option>
               </select>
             </div>
             <div class="form-group">
@@ -151,7 +157,10 @@
             <option value="member">Member</option>
             <option value="business_owner">Business Owner</option>
             <option value="church_admin">Church Admin</option>
-            <option value="sales">Sales Agent</option>
+            <option value="sales_agent">Sales Agent</option>
+            <option value="sales_director">Sales Director</option>
+            <option value="marketing_manager">Marketing Manager</option>
+            <option value="platform_admin">Platform Admin</option>
             <option value="admin">Admin</option>
           </select>
         </div>
@@ -166,6 +175,9 @@
           <select id="memberStatus" class="input-dark" required>
             <option value="active">Active</option>
             <option value="suspended">Suspended</option>
+            <option value="pending">Pending approval</option>
+            <option value="rejected">Rejected</option>
+            <option value="disabled">Disabled</option>
           </select>
         </div>
         <div class="form-group">
@@ -198,7 +210,7 @@
         </div>
         <div class="form-group">
           <label class="checkbox-label">
-            <input type="checkbox" id="memberEmailVerified"> Email Verified
+            <input type="checkbox" id="memberEmailVerified" disabled> Email Verified
           </label>
         </div>
         <div class="form-group">

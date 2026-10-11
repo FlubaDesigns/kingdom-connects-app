@@ -1,3 +1,6 @@
+import { escapeHtml } from '../../js/utils.js';
+import { getMemberBusiness } from '../../js/services/member-business.js';
+import { changeHierarchy } from '../../js/services/hierarchy-service.js';
 import { db } from "../../js/firebase-config.js";
 import { collection, getDocs, query, where, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { requireMember } from "../../js/auth/access-control.js";
@@ -26,10 +29,7 @@ async function handleVerificationRedirect(user) {
     
     if (user.emailVerified) {
       try {
-        await updateDoc(doc(db, 'users', user.uid), {
-          email_verified: true,
-          updated_at: new Date()
-        });
+        await changeHierarchy('syncEmailVerification');
       } catch (err) {
         console.error('Error updating email_verified:', err);
       }
@@ -116,7 +116,7 @@ async function loadDashboard(user, roles) {
     await loadStats(user.uid);
     await loadRecentFavorites(user.uid);
     await loadRecentReviews(user.uid);
-    calculateMemberProfileCompletion(userData);
+    calculateMemberProfileCompletion({...userData,email_verified:user.emailVerified});
     await loadChurchBusinesses(userData.home_church_id);
     await loadForYouSection(user.uid, userData.home_church_id);
 
@@ -184,18 +184,18 @@ async function loadRecentFavorites(userId) {
       let itemLocation = '';
       let itemLink = '#';
 
-      const businessDoc = await getDoc(doc(db, "business_listings_public", businessId));
+      const businessDoc = await getMemberBusiness(businessId);
       if (businessDoc.exists()) {
         const itemData = businessDoc.data();
         itemName = itemData.business_name || 'Unknown Business';
         itemLocation = `${itemData.city || ''}, ${itemData.state || ''}`.trim();
-        itemLink = `/business.html?id=${businessId}`;
+        itemLink = `/business.html?id=${encodeURIComponent(businessId)}`;
       }
 
       html += `
         <article class="card card-clickable" onclick="window.location.href='${itemLink}'" style="cursor:pointer;">
-          <h4>💼 ${itemName}</h4>
-          <p class="text-muted">${itemLocation}</p>
+          <h4>💼 ${escapeHtml(itemName)}</h4>
+          <p class="text-muted">${escapeHtml(itemLocation)}</p>
         </article>
       `;
     }
@@ -243,11 +243,11 @@ async function loadRecentReviews(userId) {
       let businessName = 'Unknown Business';
       let businessLink = '#';
 
-      const businessDoc = await getDoc(doc(db, "business_listings_public", businessId));
+      const businessDoc = await getMemberBusiness(businessId);
       if (businessDoc.exists()) {
         const businessData = businessDoc.data();
         businessName = businessData.business_name || 'Unknown Business';
-        businessLink = `/business.html?id=${businessId}`;
+        businessLink = `/business.html?id=${encodeURIComponent(businessId)}`;
       }
 
       const reviewDate = review.created_at?.toDate ? review.created_at.toDate().toLocaleDateString() : 'N/A';
@@ -255,7 +255,7 @@ async function loadRecentReviews(userId) {
 
       html += `
         <article class="card">
-          <h4><a href="${businessLink}">${businessName}</a></h4>
+          <h4><a href="${businessLink}">${escapeHtml(businessName)}</a></h4>
           <div class="mb-sm">${stars}</div>
           <p class="text-sm text-muted">${reviewDate}</p>
           <a href="/member/reviews.html" class="btn btn-gold btn-small">View All Reviews</a>
@@ -337,7 +337,7 @@ async function loadChurchBusinesses(churchId) {
   }
 
   try {
-    const q = query(collection(db, "business_listings_public"), where("church_id", "==", churchId));
+    const q = query(collection(db, "business_listings_public"), where("church_id", "==", churchId), where("is_visible", "==", true));
     const snapshot = await getDocs(q);
 
     countEl.textContent = snapshot.size;
@@ -367,9 +367,9 @@ async function loadChurchBusinesses(churchId) {
     for (const biz of recommended) {
       const location = `${biz.city || ''}, ${biz.state || ''}`.trim().replace(/^,|,$/g, '');
       html += `
-        <article class="card card-clickable" onclick="window.location.href='/business?id=${biz.id}'" style="cursor:pointer;">
-          <h4>${biz.business_name}</h4>
-          <p class="text-sm text-muted">${biz.primary_category || ''} ${location ? '• ' + location : ''}</p>
+        <article class="card card-clickable" onclick="window.location.href='/business?id=${encodeURIComponent(biz.id)}'" style="cursor:pointer;">
+          <h4>${escapeHtml(biz.business_name)}</h4>
+          <p class="text-sm text-muted">${escapeHtml(biz.primary_category || '')} ${location ? '• ' + escapeHtml(location) : ''}</p>
         </article>
       `;
     }
@@ -401,7 +401,7 @@ async function loadForYouSection(userId, churchId) {
 
     const churchBusinessIds = new Set();
     if (churchId) {
-      const churchBizQuery = query(collection(db, "business_listings_public"), where("church_id", "==", churchId));
+      const churchBizQuery = query(collection(db, "business_listings_public"), where("church_id", "==", churchId), where("is_visible", "==", true));
       const churchBizSnapshot = await getDocs(churchBizQuery);
       churchBizSnapshot.forEach(docSnap => {
         churchBusinessIds.add(docSnap.id);
@@ -410,8 +410,8 @@ async function loadForYouSection(userId, churchId) {
 
     const allBusinessIds = new Set([...favoriteIds, ...churchBusinessIds]);
     
-    const proQueryString = query(collection(db, "business_listings_public"), where("pro_status", "==", "pro"));
-    const proQueryBool = query(collection(db, "business_listings_public"), where("pro_status", "==", true));
+    const proQueryString = query(collection(db, "business_listings_public"), where("pro_status", "==", "pro"), where("is_visible", "==", true));
+    const proQueryBool = query(collection(db, "business_listings_public"), where("pro_status", "==", true), where("is_visible", "==", true));
     const [proSnapshotString, proSnapshotBool] = await Promise.all([
       getDocs(proQueryString),
       getDocs(proQueryBool)
@@ -431,7 +431,7 @@ async function loadForYouSection(userId, churchId) {
 
     const businessMap = new Map();
     for (const bizId of allBusinessIds) {
-      const bizDoc = await getDoc(doc(db, "business_listings_public", bizId));
+      const bizDoc = await getMemberBusiness(bizId);
       if (bizDoc.exists()) {
         const data = bizDoc.data();
         if (data.business_name) {
@@ -526,11 +526,11 @@ function renderForYouList(filter) {
     const location = `${biz.city || ''}, ${biz.state || ''}`.trim().replace(/^,|,$/g, '');
 
     html += `
-      <article class="card card-clickable" onclick="window.location.href='/business?id=${biz.id}'" style="cursor:pointer;">
+      <article class="card card-clickable" onclick="window.location.href='/business?id=${encodeURIComponent(biz.id)}'" style="cursor:pointer;">
         <div class="flex-between" style="align-items:flex-start;">
           <div>
-            <h4 style="margin-bottom:4px;">${biz.business_name}</h4>
-            <p class="text-sm text-muted" style="margin-bottom:8px;">${biz.primary_category || ''} ${location ? '• ' + location : ''}</p>
+            <h4 style="margin-bottom:4px;">${escapeHtml(biz.business_name)}</h4>
+            <p class="text-sm text-muted" style="margin-bottom:8px;">${escapeHtml(biz.primary_category || '')} ${location ? '• ' + escapeHtml(location) : ''}</p>
           </div>
           <div style="display:flex;gap:6px;flex-shrink:0;">${badges.join('')}</div>
         </div>

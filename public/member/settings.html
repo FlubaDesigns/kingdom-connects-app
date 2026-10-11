@@ -30,7 +30,7 @@
             <article class="card mt-0" id="myProfile">
               <h3 class="gold">My Profile</h3>
               <p class="text-sm text-muted mb-md">Manage your profile information</p>
-              
+
               <div class="card-highlight p-md">
                 <div class="mb-md">
                   <label class="form-label">Profile Photo</label>
@@ -39,7 +39,7 @@
                       <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     </div>
                     <div class="profile-photo-actions">
-                      <input type="file" id="profilePhotoInput" accept="image/*" class="hidden">
+                      <input type="file" id="profilePhotoInput" accept="image/jpeg,image/png,image/gif,image/webp" class="hidden">
                       <button type="button" id="uploadPhotoBtn" class="btn btn-sm btn-outline">Upload Photo</button>
                       <button type="button" id="removePhotoBtn" class="btn btn-sm btn-outline hidden">Remove</button>
                     </div>
@@ -56,7 +56,7 @@
                 <div>
                   <label class="form-label" for="phoneNumber">Phone Number (optional)</label>
                   <input type="tel" id="phoneNumber" class="input-dark" placeholder="(555) 123-4567">
-                  <p class="help-text mt-sm">For account recovery and optional notifications</p>
+                  <p class="help-text mt-sm">Optional contact number</p>
                 </div>
               </div>
             </article>
@@ -64,7 +64,7 @@
             <article class="card mt-md" id="privacySettings">
               <h3 class="gold">Privacy Settings</h3>
               <p class="text-sm text-muted mb-md">Control your privacy preferences</p>
-              
+
               <div class="card-highlight p-md">
                 <div class="mb-md">
                   <label class="toggle-label">
@@ -90,8 +90,9 @@
           <div class="split-right">
             <article class="card mt-0" id="churchAffiliation">
               <h3 class="gold">My Church Affiliation</h3>
+              <p id="membershipStatus" class="text-sm"></p>
               <p class="text-sm text-muted mb-md">Connect with your faith community (optional)</p>
-              
+
               <div class="form-field">
                 <label for="homeChurchSelect">Home Church</label>
                 <select id="homeChurchSelect" class="input-dark">
@@ -117,6 +118,14 @@
           </div>
         </div>
 
+        <article class="card mt-md">
+          <h3>Close Member Account</h3>
+          <p>This permanently removes your profile, reviews, favorites, and profile photos. Accounts that manage a business or church must transfer those responsibilities first.</p>
+          <label for="closeAccountPassword">Current password</label>
+          <input type="password" id="closeAccountPassword" autocomplete="current-password" class="input-dark">
+          <button type="button" id="closeAccountBtn" class="btn btn-danger">Close My Account</button>
+          <p id="closeAccountStatus" role="status"></p>
+        </article>
         <div class="text-center mt-lg">
           <button type="button" id="saveSettings" class="btn btn-gold">Save Settings</button>
         </div>
@@ -134,7 +143,7 @@
   <script src="/js/footer.js" defer></script>
   <script src="/js/breadcrumbs.js?v=8" defer></script>
   <script type="module" src="/member/js/member-settings.js?v=3"></script>
-  <script src="js/member-auth-guard.js" defer></script>
+
   <script src="/js/feedback-widget.js?v=2" type="module"></script>
 </body>
 </html>

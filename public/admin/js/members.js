@@ -1,3 +1,4 @@
+import { changeHierarchy } from '../../js/services/hierarchy-service.js';
 import { db } from "../../js/firebase-config.js";
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { requireAdmin } from "./admin-auth-guard.js";
@@ -32,7 +33,7 @@ function clearFilters() {
 
 function toggleSalesSection() {
   const role = document.getElementById('memberRole').value;
-  if (role === 'sales') {
+  if (role === 'sales_agent') {
     document.getElementById('salesSection').classList.remove('hidden');
   } else {
     document.getElementById('salesSection').classList.add('hidden');
@@ -116,7 +117,7 @@ function renderMembers() {
     });
   }
   if (filterStatus) {
-    filtered = filtered.filter(m => (m.listing_status || m.account_status || 'active') === filterStatus);
+    filtered = filtered.filter(m => (m.account_status || 'pending') === filterStatus);
   }
 
   if (sortValue) {
@@ -154,7 +155,7 @@ function renderMembers() {
     const displayRole = Array.isArray(member.roles) ? member.roles.join(', ') : (member.role || 'member');
     const roleClass = `role-${member.role || (Array.isArray(member.roles) && member.roles[0]) || 'member'}`;
     
-    const displayStatus = member.listing_status || member.account_status || 'active';
+    const displayStatus = member.account_status || 'pending';
     const statusClass = `status-${displayStatus}`;
     
     const createdDate = member.created_at?.toDate ? member.created_at.toDate().toLocaleDateString() : 'N/A';
@@ -185,6 +186,7 @@ function openCreateModal() {
   editingMemberId = null;
   document.getElementById('modalTitle').textContent = 'Create Member';
   document.getElementById('memberForm').reset();
+  document.getElementById('memberEmail').readOnly=false;
   document.getElementById('memberStatus').value = 'active';
   document.getElementById('memberNotificationsEnabled').checked = true;
   document.getElementById('modalStatus').textContent = '';
@@ -201,17 +203,18 @@ window.editMember = function(memberId) {
   document.getElementById('modalTitle').textContent = 'Edit Member';
   
   document.getElementById('memberEmail').value = member.email || '';
+  document.getElementById('memberEmail').readOnly=true;
   document.getElementById('memberName').value = member.name || '';
   document.getElementById('memberPhone').value = member.phone_number || '';
   document.getElementById('memberPhoto').value = member.profile_photo_url || '';
-  document.getElementById('memberRole').value = member.role || 'member';
-  document.getElementById('memberStatus').value = member.listing_status || 'active';
+  document.getElementById('memberRole').value = member.role || member.roles?.find(role=>role!=='member') || 'member';
+  document.getElementById('memberStatus').value = member.account_status || 'pending';
   document.getElementById('memberReferralCode').value = member.referral_code || '';
   document.getElementById('memberIsPro').checked = member.is_pro_user || false;
   document.getElementById('memberListingCount').value = member.listing_count || 0;
   document.getElementById('memberReviewCount').value = member.review_count || 0;
   document.getElementById('memberNotificationsEnabled').checked = member.notifications_enabled !== false;
-  document.getElementById('memberEmailVerified').checked = member.is_email_verified || false;
+  document.getElementById('memberEmailVerified').checked = member.email_verified || false;
   document.getElementById('memberAdminNotes').value = member.admin_notes || '';
   
   if (member.pro_start_date?.toDate) {
@@ -234,27 +237,8 @@ window.deleteMember = async function(memberId, memberEmail) {
   if (!confirmed) return;
 
   try {
-    await deleteDoc(doc(db, "users", memberId));
-    
-    if (auth.currentUser) {
-      try {
-        const idToken = await auth.currentUser.getIdToken();
-        const response = await fetch(`/api/admin/user/${memberId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${idToken}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        const result = await response.json();
-        if (!response.ok && !result.success) {
-          console.warn('Firebase Auth deletion:', result.error || 'Unknown error');
-        }
-      } catch (authError) {
-        console.warn('Could not delete from Firebase Auth:', authError.message);
-      }
-    }
-    
+    await changeHierarchy('deleteMemberAccount', {memberId});
+
     window.showToast('Member deleted completely', 'success');
     await loadMembers();
   } catch (error) {
@@ -282,17 +266,16 @@ async function saveMember(e) {
     phone_number: document.getElementById('memberPhone').value.trim() || null,
     profile_photo_url: document.getElementById('memberPhoto').value.trim() || null,
     role: document.getElementById('memberRole').value,
-    listing_status: document.getElementById('memberStatus').value,
+    account_status: document.getElementById('memberStatus').value,
     is_pro_user: document.getElementById('memberIsPro').checked,
     listing_count: parseInt(document.getElementById('memberListingCount').value) || 0,
     review_count: parseInt(document.getElementById('memberReviewCount').value) || 0,
     notifications_enabled: document.getElementById('memberNotificationsEnabled').checked,
-    is_email_verified: document.getElementById('memberEmailVerified').checked,
     admin_notes: document.getElementById('memberAdminNotes').value.trim() || null,
     updated_at: serverTimestamp()
   };
 
-  if (document.getElementById('memberRole').value === 'sales') {
+  if (document.getElementById('memberRole').value === 'sales_agent') {
     let referralCode = document.getElementById('memberReferralCode').value.trim();
     if (!referralCode && !editingMemberId) {
       referralCode = memberData.name.substring(0, 4).toUpperCase() + Math.floor(Math.random() * 10000);
@@ -303,26 +286,17 @@ async function saveMember(e) {
   if (memberData.is_pro_user) {
     const startDate = document.getElementById('memberProStart').value;
     const endDate = document.getElementById('memberProEnd').value;
-    memberData.pro_start_date = startDate ? Timestamp.fromDate(new Date(startDate)) : null;
-    memberData.pro_end_date = endDate ? Timestamp.fromDate(new Date(endDate)) : null;
+    memberData.pro_start_date = startDate ? new Date(startDate).toISOString() : null;
+    memberData.pro_end_date = endDate ? new Date(endDate).toISOString() : null;
   } else {
     memberData.pro_start_date = null;
     memberData.pro_end_date = null;
   }
 
   try {
-    if (editingMemberId) {
-      await updateDoc(doc(db, "users", editingMemberId), memberData);
-      statusDiv.className = 'text-success';
-      statusDiv.textContent = 'Member updated successfully!';
-    } else {
-      memberData.created_at = serverTimestamp();
-      memberData.last_login = null;
-      memberData.last_activity = null;
-      await addDoc(collection(db, "users"), memberData);
-      statusDiv.className = 'text-success';
-      statusDiv.textContent = 'Member created successfully!';
-    }
+    await changeHierarchy('saveMemberAdmin', {memberId:editingMemberId,values:memberData});
+    statusDiv.className='text-success';
+    statusDiv.textContent=editingMemberId?'Member updated.':'Member created; password setup email queued.';
 
     setTimeout(() => {
       closeModal();

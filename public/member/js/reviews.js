@@ -1,3 +1,5 @@
+import { changeHierarchy } from '../../js/services/hierarchy-service.js';
+import { getMemberBusiness } from '../../js/services/member-business.js';
 import { db } from "../../js/firebase-config.js";
 import { collection, getDocs, query, where, orderBy, doc, getDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { requireMember } from "../../js/auth/access-control.js";
@@ -38,12 +40,10 @@ async function loadReviews(userId) {
       const review = reviewDoc.data();
       review.id = reviewDoc.id;
 
-      const businessDoc = await getDoc(doc(db, "business_listings_public", review.business_id));
-      if (businessDoc.exists()) {
-        review.businessData = businessDoc.data();
-        review.businessDocId = businessDoc.id;
-        reviews.push(review);
-      }
+      const businessDoc = await getMemberBusiness(review.business_id);
+      review.businessData = businessDoc.exists() ? businessDoc.data() : {business_name:'Business no longer available'};
+      review.businessDocId = review.business_id;
+      reviews.push(review);
     }
 
     // Sort client-side by created_at descending
@@ -167,10 +167,7 @@ async function editReview(reviewId, currentText, currentRating) {
   if (!newText || newText === currentText) return;
 
   try {
-    await updateDoc(doc(db, "reviews", reviewId), {
-      review_text: newText,
-      updated_at: new Date()
-    });
+    await changeHierarchy('saveMemberReview', { reviewId, reviewText:newText, rating:currentRating });
     window.location.reload();
   } catch (error) {
     console.error('Error updating review:', error);
@@ -182,7 +179,7 @@ async function deleteReview(reviewId) {
   if (!confirm('Are you sure you want to delete this review? This cannot be undone.')) return;
 
   try {
-    await deleteDoc(doc(db, "reviews", reviewId));
+    await changeHierarchy('deleteMemberReview', { reviewId });
     window.location.reload();
   } catch (error) {
     console.error('Error deleting review:', error);

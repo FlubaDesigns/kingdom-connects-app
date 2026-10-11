@@ -546,7 +546,7 @@ async function loadReviews(businessId, business) {
     const q = query(
       collection(db, 'reviews'), 
       where('business_id', '==', businessId),
-      orderBy('created_at', 'desc')
+      where('status', '==', 'approved')
     );
     const reviewsSnapshot = await getDocs(q);
     

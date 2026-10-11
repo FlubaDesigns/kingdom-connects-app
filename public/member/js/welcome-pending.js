@@ -41,7 +41,7 @@ async function loadPendingStatus(user) {
         document.getElementById('churchName').textContent = churchData.church_name || churchData.name || 'Your Church';
         document.getElementById('churchInfo').classList.remove('hidden');
         document.getElementById('pendingMessage').textContent = 
-          'Your membership request has been sent to your church for approval. You\'ll receive an email once approved.';
+          churchMembershipStatus === 'rejected' ? 'Your request was not approved. Choose another church in Settings.' : 'Your membership request is awaiting church approval. We will email you when a decision is saved.';
         const findChurchesBtn = document.getElementById('findChurchesBtn');
         if (findChurchesBtn) findChurchesBtn.classList.add('hidden');
       }

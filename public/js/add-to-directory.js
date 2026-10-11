@@ -1261,185 +1261,29 @@ async function handleMemberSubmission() {
   try {
     statusDiv.textContent = 'Creating your account...';
     
-    // Create user account
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    
-    await updateProfile(user, {
-      displayName: name
-    });
-    
-    // Check church approval mode if user selected an existing church
-    let churchData = null;
-    let churchApprovalMode = 'automatic'; // default to automatic
-    let churchName = '';
-    
-    if (churchSelector && churchSelector !== 'none' && churchSelector !== 'nominate') {
-      try {
-        const churchDoc = await getDoc(doc(db, 'churches', churchSelector));
-        if (churchDoc.exists()) {
-          churchData = churchDoc.data();
-          churchApprovalMode = churchData.membership_approval_mode || 'automatic';
-          churchName = churchData.church_name || churchData.name || '';
-        }
-      } catch (churchErr) {
-        console.warn('Could not fetch church data:', churchErr);
-      }
+    // A retry reuses the already-created signed-in identity instead of creating an orphan.
+    let user = auth.currentUser;
+    if (!user || user.email?.toLowerCase() !== email.toLowerCase()) {
+      user = (await createUserWithEmailAndPassword(auth, email, password)).user;
     }
-    
-    // Determine account status based on church approval mode
-    // - automatic: member is approved immediately (status: active)
-    // - manual: member needs church approval (status: pending)
-    // - no church selected: needs platform admin approval (status: pending)
-    const isAutoApproved = churchSelector && churchSelector !== 'none' && churchSelector !== 'nominate' && churchApprovalMode === 'automatic';
-    
-    // Prepare user data
-    const userData = {
-      name: name,
-      email: email,
-      roles: ["member"],
-      account_status: "pending",
-      church_membership_status: "pending",
-      created_at: serverTimestamp(),
-      last_login: serverTimestamp()
-    };
-    
-    // Mark as demo if in demo mode
-    if (isDemoMode()) {
-      userData.is_demo = true;
-      markDemoActive();
-    }
-    
-    // Add home_church_id if user selected an existing church
-    if (churchSelector && churchSelector !== 'none' && churchSelector !== 'nominate') {
-      // Affiliation is assigned by the server after profile creation.
-    }
-    
-    // Add business info if provided
-    if (memberBusiness) {
-      userData.business_name = memberBusiness;
-    }
-    if (memberBusinessPhone) {
-      userData.business_phone = memberBusinessPhone;
-    }
-    
-    // Create user document
-    await setDoc(doc(db, "users", user.uid), userData);
-    await changeHierarchy('setMemberChurch', { churchId: churchSelector && !['none', 'nominate'].includes(churchSelector) ? churchSelector : null }, user);
-    console.log('✅ User account created successfully');
-    
-    // Track demo record for cleanup
-    if (isDemoMode()) {
-      storeDemoRecord('users', user.uid);
-    }
-    
-    // Send appropriate welcome email based on approval status
-    // Pass the user object directly since auth.currentUser may not be ready yet
-    try {
-      if (isAutoApproved) {
-        // Church has automatic approval - send "you're in!" email
-        await sendTemplate('member_welcome_approved', email, {
-          user_name: name,
-          church_name: churchName,
-          dashboard_url: `${window.location.origin}/member/index`,
-          base_url: window.location.origin
-        }, user);
-        console.log('✅ Welcome (approved) email sent to new member');
-      } else if (churchSelector && churchSelector !== 'none' && churchSelector !== 'nominate') {
-        // Church has manual approval - send "pending church approval" email
-        await sendTemplate('member_welcome_pending', email, {
-          user_name: name,
-          church_name: churchName,
-          base_url: window.location.origin
-        }, user);
-        console.log('✅ Welcome (pending church approval) email sent to new member');
-      } else {
-        // No church selected or nominated new church - send generic pending email
-        await sendTemplate('member_welcome_pending', email, {
-          user_name: name,
-          church_name: 'Kingdom Connects',
-          base_url: window.location.origin
-        }, user);
-        console.log('✅ Welcome (pending admin approval) email sent to new member');
-      }
-    } catch (emailError) {
-      console.warn('⚠️ Welcome email error (non-critical):', emailError);
-    }
-    
-    // Link any pending business/church listings
-    const linkResults = await linkPendingListingsByEmail(user, email);
-    
-    // If user selected "nominate", submit church nomination
-    if (churchSelector === 'nominate') {
-      statusDiv.textContent = 'Submitting church nomination...';
-      
-      const churchName = document.getElementById('nomination_church_name').value.trim();
-      const state = document.getElementById('nomination_state').value.trim();
-      const phone = document.getElementById('nomination_phone').value.trim();
-      const churchEmail = document.getElementById('nomination_email').value.trim();
-      const isChurchLeader = document.getElementById('is_leader_yes')?.checked || false;
-      const nominatorPosition = isChurchLeader ? document.getElementById('nomination_position')?.value.trim() : null;
-      
-      const nominationData = {
-        church_name: churchName,
-        state: state,
-        contact_phone: phone,
-        contact_email: churchEmail,
-        submission_type: isChurchLeader ? 'staff_submission' : 'community_nomination',
-        is_church_leader: isChurchLeader,
-        nominator_position: nominatorPosition,
-        nominator_name: name,
-        nominator_business: memberBusiness,
-        listing_status: "pending",
-        submission_date: serverTimestamp(),
-        submitter_uid: user.uid,
-        submitter_email: email
-      };
-      
-      await addDoc(collection(db, "churches"), nominationData);
-      console.log('✅ Church nomination submitted');
-    }
-    
-    // Determine redirect URL based on approval status and linked listings
-    let redirectUrl = '/congratulations.html?type=member';
-    let successMessage = 'Account created successfully!';
-    
-    if (linkResults.businessesLinked > 0) {
-      // User has pending businesses linked - send to business congratulations
-      redirectUrl = '/congratulations.html?type=business';
-      successMessage = `Account created! ${linkResults.businessesLinked} business(es) linked. Redirecting...`;
-    } else if (linkResults.churchesLinked > 0) {
-      // User has pending churches linked - send to church congratulations
-      redirectUrl = '/congratulations.html?type=church';
-      successMessage = `Account created! ${linkResults.churchesLinked} church(es) linked. Redirecting...`;
-    } else if (isAutoApproved) {
-      // Auto-approved by church - go to congratulations (will show dashboard button)
-      redirectUrl = '/congratulations.html?type=member';
-      successMessage = `Welcome to ${churchName}! Redirecting...`;
-    } else if (churchSelector === 'nominate') {
-      // Nominated new church - pending admin approval
-      redirectUrl = '/congratulations.html?type=member';
-      successMessage = 'Account created and church nomination submitted! Check your email for approval updates.';
-    } else if (churchSelector && churchSelector !== 'none') {
-      // Selected existing church with manual approval
-      redirectUrl = '/congratulations.html?type=member';
-      successMessage = `Account created! ${churchName} will review your membership. Check your email.`;
-    } else {
-      // No church selected - pending admin approval
-      redirectUrl = '/congratulations.html?type=member';
-      successMessage = 'Account created! Our team will review your membership. Check your email.';
-    }
-    
+    await updateProfile(user, { displayName:name });
+    const nomination = churchSelector === 'nominate' ? {
+      church_name: document.getElementById('nomination_church_name').value.trim(),
+      contact_email: document.getElementById('nomination_email').value.trim(),
+      contact_phone: document.getElementById('nomination_phone').value.trim(),
+      state: document.getElementById('nomination_state').value.trim()
+    } : null;
+    const result = await changeHierarchy('completeMemberSignup', {
+      name, churchId: churchSelector && !['none','nominate'].includes(churchSelector) ? churchSelector : null,
+      nomination, businessName:memberBusiness, businessPhone:memberBusinessPhone
+    }, user);
+    if (isDemoMode()) storeDemoRecord('users', user.uid);
     spamProtection.recordSubmission();
-    
     statusDiv.classList.remove('status-pending');
     statusDiv.classList.add('status-success');
-    statusDiv.textContent = '✓ ' + successMessage;
-    
-    setTimeout(() => {
-      window.location.href = redirectUrl;
-    }, 2000);
-    
+    statusDiv.textContent = result.status === 'active' ? 'Account ready. Opening your dashboard…' : 'Account created. Opening your membership status…';
+    window.location.href = result.status === 'active' ? '/member/' : '/member/welcome-pending';
+
   } catch (error) {
     console.error('Member signup error:', error);
     handleFormError(error, form);

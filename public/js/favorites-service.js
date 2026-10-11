@@ -1,5 +1,5 @@
 import { db, auth } from "./firebase-config.js";
-import { collection, addDoc, deleteDoc, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { collection, doc, setDoc, deleteDoc, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 export async function checkIfFavorited(userId, businessId) {
   try {
@@ -18,7 +18,7 @@ export async function checkIfFavorited(userId, businessId) {
 
 export async function addToFavorites(userId, businessId) {
   try {
-    await addDoc(collection(db, "favorite_businesses"), {
+    await setDoc(doc(db, "favorite_businesses", `${userId}_${businessId}`), {
       user_id: userId,
       business_id: businessId,
       saved_at: serverTimestamp()
@@ -40,7 +40,7 @@ export async function removeFromFavorites(userId, businessId) {
     const snapshot = await getDocs(q);
     
     if (!snapshot.empty) {
-      await deleteDoc(snapshot.docs[0].ref);
+      await Promise.all(snapshot.docs.map(item => deleteDoc(item.ref)));
     }
     
     return { success: true };

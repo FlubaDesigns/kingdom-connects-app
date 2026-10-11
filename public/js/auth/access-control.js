@@ -70,6 +70,7 @@ export function requireAuth(options = {}, onSuccess) {
         return;
       }
 
+      if (userContext.exists === false) { window.location.href='/add_to_directory?role=member'; return; }
       if (['suspended', 'disabled', 'rejected'].includes(userContext.account_status)) {
         showAccessDenied('Your account access is suspended.');
         redirectTo(HOME_URL);

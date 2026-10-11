@@ -1,7 +1,8 @@
+import { EmailAuthProvider, reauthenticateWithCredential, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import { changeHierarchy } from '../../js/services/hierarchy-service.js';
-import { db, storage } from "../../js/firebase-config.js";
+import { auth, db, storage } from "../../js/firebase-config.js";
 import { collection, getDocs, query, where, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 import { requireMember } from "../../js/auth/access-control.js";
 import { sendVerificationEmail } from "../../js/email/email-service.js";
 import { fetchActiveChurches, populateChurchDropdown } from "../../js/services/church-service.js";
@@ -15,7 +16,10 @@ requireMember(async (userContext, firebaseUser) => {
   await loadSettings(firebaseUser);
   await loadChurches();
   setupPhotoUpload();
+  try { await firebaseUser.reload(); await changeHierarchy('syncEmailVerification'); }
+  catch(error) { console.warn('Verification refresh failed:',error.message); }
   setupEmailVerification(firebaseUser);
+  setupAccountClosure();
   setupSaveSettings();
 }, { allowPending: true });
 
@@ -28,6 +32,8 @@ async function loadSettings(user) {
     const userDoc = await getDoc(doc(db, "users", user.uid));
     userData = userDoc.exists() ? userDoc.data() : {};
 
+    const membershipStatus=document.getElementById('membershipStatus');
+    if(membershipStatus)membershipStatus.textContent='Membership: '+(userData.church_membership_status || 'pending');
     document.getElementById('allowReviewSharing').checked = userData.allow_review_sharing !== false;
     document.getElementById('notificationsEnabled').checked = userData.notifications_enabled !== false;
     
@@ -45,7 +51,7 @@ async function loadSettings(user) {
     const photoPreview = document.getElementById('profilePhotoPreview');
     const removePhotoBtn = document.getElementById('removePhotoBtn');
     if (photoPreview && userData.profile_photo_url) {
-      photoPreview.innerHTML = `<img src="${userData.profile_photo_url}" alt="Profile photo">`;
+      const img=document.createElement("img");img.src=userData.profile_photo_url;img.alt="Profile photo";photoPreview.replaceChildren(img);
       if (removePhotoBtn) removePhotoBtn.classList.remove('hidden');
     }
 
@@ -101,7 +107,7 @@ function setupPhotoUpload() {
       const file = e.target.files[0];
       if (!file || !currentUser) return;
 
-      if (!file.type.startsWith('image/')) {
+      if (!['image/jpeg','image/png','image/gif','image/webp'].includes(file.type)) {
         alert('Please select an image file');
         return;
       }
@@ -119,13 +125,14 @@ function setupPhotoUpload() {
         const storageRef = ref(storage, fileName);
         await uploadBytes(storageRef, file);
         const downloadURL = await getDownloadURL(storageRef);
+        userData.profile_photo_url=downloadURL;
 
         await updateDoc(doc(db, 'users', currentUser.uid), {
           profile_photo_url: downloadURL,
           updated_at: new Date()
         });
 
-        photoPreview.innerHTML = `<img src="${downloadURL}" alt="Profile photo">`;
+        const img=document.createElement("img");img.src=downloadURL;img.alt="Profile photo";photoPreview.replaceChildren(img);
         if (removeBtn) removeBtn.classList.remove('hidden');
 
         uploadBtn.textContent = 'Upload Photo';
@@ -152,6 +159,10 @@ function setupPhotoUpload() {
           updated_at: new Date()
         });
 
+        if (userData?.profile_photo_url) {
+          try { const old=ref(storage,userData.profile_photo_url);if(old.fullPath.startsWith('users/'+currentUser.uid+'/'))await deleteObject(old); } catch(error){console.warn('Photo cleanup:',error.message);}
+        }
+        userData.profile_photo_url=null;
         photoPreview.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
         removeBtn.classList.add('hidden');
         removeBtn.disabled = false;
@@ -177,9 +188,7 @@ function setupEmailVerification(user) {
   if (user.emailVerified) {
     if (emailCard) emailCard.classList.add('hidden');
 
-    updateDoc(doc(db, 'users', user.uid), {
-      email_verified: true
-    }).catch(err => console.error('Error updating email_verified:', err));
+
 
   } else {
     statusEl.innerHTML = '<span class="text-warning">Not verified - check your inbox</span>';
@@ -193,7 +202,7 @@ function setupEmailVerification(user) {
 
           await sendVerificationEmail();
 
-          resendBtn.textContent = 'Sent!';
+          resendBtn.textContent = 'Queued';
           setTimeout(() => {
             resendBtn.textContent = 'Resend Verification';
             resendBtn.disabled = false;
@@ -254,5 +263,25 @@ function setupSaveSettings() {
         btn.disabled = false;
       }, 2000);
     }
+  });
+}
+
+function setupAccountClosure() {
+  const button=document.getElementById('closeAccountBtn');
+  const message=document.getElementById('closeAccountStatus');
+  button.addEventListener('click',async()=>{
+    if(!confirm('Permanently close your member account and remove your profile, reviews, favorites, and uploaded profile photos?'))return;
+    const passwordInput=document.getElementById('closeAccountPassword');
+    const password=passwordInput.value;
+    passwordInput.value='';
+    if(!password)return;
+    button.disabled=true;
+    try {
+      await reauthenticateWithCredential(currentUser,EmailAuthProvider.credential(currentUser.email,password));
+      await currentUser.getIdToken(true);
+      await changeHierarchy('closeMemberAccount');
+      await signOut(auth);
+      window.location.replace('/login?closed=true');
+    }catch(error){message.textContent=error.message || 'Unable to close account. Contact support.';button.disabled=false;}
   });
 }

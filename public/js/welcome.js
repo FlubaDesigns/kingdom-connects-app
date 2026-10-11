@@ -51,9 +51,6 @@ roleSelectionForm.addEventListener('submit', async (e) => {
       });
       window.location.href = '/sales/';
     } else if (role === 'member') {
-      await updateDoc(doc(db, 'users', currentUser.uid), {
-        role: 'member'
-      });
       window.location.href = '/member/';
     } else {
       window.location.href = '/';

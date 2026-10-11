@@ -1,3 +1,4 @@
+import { getMemberBusiness } from '../../js/services/member-business.js';
 import { db } from "../../js/firebase-config.js";
 import { collection, getDocs, query, where, doc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { requireMember } from "../../js/auth/access-control.js";
@@ -39,10 +40,8 @@ async function loadFavorites(userId) {
       const favorite = favoriteDoc.data();
       favorite.id = favoriteDoc.id;
 
-      const businessDoc = await getDoc(doc(db, "business_listings_public", favorite.business_id));
-      if (businessDoc.exists()) {
-        businesses.push({ ...favorite, data: businessDoc.data(), docId: businessDoc.id });
-      }
+      const businessDoc = await getMemberBusiness(favorite.business_id);
+      businesses.push({ ...favorite, data: businessDoc.exists() ? businessDoc.data() : {business_name:'Business no longer available'}, docId:favorite.business_id });
     }
 
     // Sort client-side by saved_at descending

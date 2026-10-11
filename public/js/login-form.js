@@ -68,7 +68,8 @@ setupFormValidation(loginForm, async (e) => {
     const userDoc = await getDoc(userDocRef);
 
     if (!userDoc.exists()) {
-      throw new Error('User profile not found. Please contact support.');
+      window.location.href='/add_to_directory?role=member';
+      return;
     }
 
     await updateDoc(userDocRef, {
@@ -97,7 +98,8 @@ setupFormValidation(loginForm, async (e) => {
 
     setTimeout(() => {
       if (returnUrl) {
-        window.location.href = decodeURIComponent(returnUrl);
+        const destination = new URL(returnUrl, window.location.origin);
+        window.location.href = destination.origin === window.location.origin ? destination.href : '/member/';
       } else {
         // Always go to homepage after login - dashboard buttons shown there
         window.location.href = '/';

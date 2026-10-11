@@ -1,3 +1,4 @@
+import { changeHierarchy } from './services/hierarchy-service.js';
 import { db } from "./firebase-config.js";
 import { collection, addDoc, getDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onAuthChange } from './auth/access-control.js';
@@ -59,14 +60,14 @@ setupFormValidation(form, async (e) => {
     user_id: currentUser.uid,
     user_email: currentUser.email,
     reviewer_name: reviewerNameInput.value.trim() || currentUser.displayName || 'Member',
-    star_rating: parseInt(document.getElementById('starRating').value),
+    rating: parseInt(document.getElementById('starRating').value),
     review_text: document.getElementById('reviewText').value.trim(),
     status: "pending",
-    submitted_at: serverTimestamp()
+    created_at: serverTimestamp()
   };
 
   try {
-    await addDoc(collection(db, "reviews"), reviewData);
+    await changeHierarchy('saveMemberReview', { businessId, rating:reviewData.rating, reviewText:reviewData.review_text });
     window.location.href = '/thank_you_review';
 
   } catch (error) {

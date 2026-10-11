@@ -1,5 +1,6 @@
 'use strict';
 const policy = require('./hierarchy-policy');
+const { queueMemberMail } = require('./member-mail');
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
 const id = value => {
   if (typeof value !== 'string' || !value || value.includes('/') || value.length > 128) fail(400, 'Invalid record ID.');
@@ -50,6 +51,7 @@ function createHierarchyService(db, timestamp) {
         update(userRef, { home_church_id: churchId, church_membership_status: approved ? 'approved' : 'pending',
           account_status: approved ? 'active' : 'pending', membership_approved_by: approved ? churchId : null,
           membership_approved_at: approved ? timestamp() : null });
+        if (approved) queueMemberMail(db, tx, actor.uid, 'approved', timestamp);
         return { ok: true, status: approved ? 'approved' : 'pending' };
       }
 
@@ -65,6 +67,7 @@ function createHierarchyService(db, timestamp) {
         update(targetRef, { church_membership_status: approved ? 'approved' : 'rejected',
           account_status: approved ? 'active' : 'pending', home_church_id: member.home_church_id || null,
           membership_approved_by: approved ? actor.uid : null, membership_approved_at: approved ? timestamp() : null });
+        queueMemberMail(db, tx, input.memberId, approved ? 'approved' : 'rejected', timestamp);
         return { ok: true };
       }
 
