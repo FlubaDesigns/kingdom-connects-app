@@ -1,3 +1,5 @@
+import { escapeHtml } from '../../js/business-presentation.js';
+import { onReady } from '../../js/dom-ready.js';
 import { db } from '../../js/firebase-config.js';
 import { collection, query, orderBy, getDocs, where, limit } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { requireAdmin } from './admin-auth-guard.js';
@@ -9,6 +11,12 @@ requireAdmin(() => {
   loadDonations();
 });
 
+function normalizeDonation(id, data, source) {
+  return {...data, id, collection:source, amount:Number(data.amount) || 0,
+    donor_email:data.donor_email || data.email || '',
+    frequency:data.frequency || (data.recurring === true ? 'recurring' : 'one-time'),
+    status:data.status || (source === 'donations' && data.stripe_session_id ? 'completed' : 'pending_stripe_setup')};
+}
 async function loadDonations() {
   try {
     showLoading(true);
@@ -23,12 +31,12 @@ async function loadDonations() {
 
     // Add completed donations
     donationsQuery.forEach(doc => {
-      allDonations.push({ id: doc.id, ...doc.data(), collection: 'donations' });
+      allDonations.push(normalizeDonation(doc.id, doc.data(), 'donations'));
     });
 
     // Add pending requests
     requestsQuery.forEach(doc => {
-      allDonations.push({ id: doc.id, ...doc.data(), collection: 'donation_requests' });
+      allDonations.push(normalizeDonation(doc.id, doc.data(), 'donation_requests'));
     });
 
     // Sort by date
@@ -76,7 +84,7 @@ function updateStats() {
 
   document.getElementById('totalDonations').textContent = `$${total.toFixed(2)}`;
   document.getElementById('oneTimeDonations').textContent = `$${oneTime.toFixed(2)}`;
-  document.getElementById('recurringDonations').textContent = `$${recurring.toFixed(2)}/mo`;
+  document.getElementById('recurringDonations').textContent = `$${recurring.toFixed(2)}`;
   document.getElementById('totalDonors').textContent = uniqueDonors;
 }
 
@@ -104,13 +112,13 @@ function renderDonations() {
           <div>${dateStr}</div>
           <div class="text-muted text-sm">${timeStr}</div>
         </td>
-        <td>${donation.donor_name || 'Anonymous'}</td>
-        <td>${donation.donor_email || 'N/A'}</td>
+        <td>${escapeHtml(donation.donor_name || 'Anonymous')}</td>
+        <td>${escapeHtml(donation.donor_email || 'N/A')}</td>
         <td class="gold">$${(donation.amount || 0).toFixed(2)}</td>
         <td>${typeBadge}</td>
         <td>${statusBadge}</td>
         <td>
-          <button class="btn btn-small btn-secondary" data-action="view" data-id="${donation.id}">View</button>
+          <button class="btn btn-small btn-secondary" data-action="view" data-id="${escapeHtml(donation.id)}" data-collection="${donation.collection}">View</button>
         </td>
       </tr>
     `;
@@ -137,27 +145,21 @@ function showError(message) {
 }
 
 // Event listeners
-document.addEventListener('DOMContentLoaded', () => {
-  // Search
-  document.getElementById('searchInput')?.addEventListener('input', (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    filteredDonations = allDonations.filter(d => {
-      const name = (d.donor_name || '').toLowerCase();
-      const email = (d.donor_email || '').toLowerCase();
-      return name.includes(searchTerm) || email.includes(searchTerm);
-    });
-    renderDonations();
-  });
-
-  // Status filter
-  document.getElementById('statusFilter')?.addEventListener('change', (e) => {
-    const status = e.target.value;
-    if (status) {
-      filteredDonations = allDonations.filter(d => d.status === status);
-    } else {
-      filteredDonations = [...allDonations];
-    }
-    renderDonations();
+function applyFilters() {
+  const search = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
+  const status = document.getElementById('statusFilter')?.value || '';
+  filteredDonations = allDonations.filter(donation => (!status || donation.status === status) &&
+    (!search || `${donation.donor_name || ''} ${donation.donor_email || ''}`.toLowerCase().includes(search)));
+  renderDonations();
+}
+onReady(() => {
+  document.getElementById('searchInput')?.addEventListener('input', applyFilters);
+  document.getElementById('statusFilter')?.addEventListener('change', applyFilters);
+  document.addEventListener('click', event => {
+    const button = event.target.closest('[data-action="view"]');
+    if (!button) return;
+    const donation = allDonations.find(item => item.id === button.dataset.id && item.collection === button.dataset.collection);
+    if (donation) alert(`${donation.donor_name || 'Anonymous'}\n${donation.donor_email || 'No email'}\nAmount: $${donation.amount.toFixed(2)}\nType: ${donation.frequency || 'one-time'}\nStatus: ${donation.status || 'unknown'}`);
   });
 
   // Export CSV
@@ -183,11 +185,16 @@ function exportCSV() {
     ];
   });
 
-  const csv = [headers, ...rows].map(row => row.join(',')).join('\n');
+  const csv = [headers, ...rows].map(row => row.map(value => {
+    let text = String(value ?? '');
+    if (/^[\s]*[=+@-]/.test(text)) text = "'" + text;
+    return '"' + text.replace(/"/g, '""') + '"';
+  }).join(',')).join('\n');
   const blob = new Blob([csv], { type: 'text/csv' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
   a.download = `donations-${new Date().toISOString().split('T')[0]}.csv`;
   a.click();
+  URL.revokeObjectURL(url);
 }

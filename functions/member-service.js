@@ -64,7 +64,7 @@ function createMemberService(db,auth,bucket,timestamp) {
     if (input.action === 'setAdminUserRoles') {
      const roles = policy.validateRoles(input.roles);
      if (input.memberId === actor.uid && !policy.isAdmin({roles})) fail(409, 'You cannot remove your own administrator access.');
-     changes = {roles, role: roles.includes(target.role) ? target.role : roles.find(role => role !== 'member') || 'member'};
+     changes = {roles, is_sales_director:roles.includes('sales_director'), role: roles.includes(target.role) ? target.role : roles.find(role => role !== 'member') || 'member'};
     } else {
      if (!['active','pending','suspended','disabled','rejected'].includes(input.status)) fail(400, 'Invalid account status.');
      if (input.memberId === actor.uid && input.status !== 'active') fail(409, 'You cannot disable your own administrator access.');

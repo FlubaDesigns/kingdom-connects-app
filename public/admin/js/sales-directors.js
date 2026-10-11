@@ -1,3 +1,6 @@
+import { changeHierarchy } from '../../js/services/hierarchy-service.js';
+import { normalizeUserRoles } from '../../js/role-utils.js';
+import { escapeHtml } from '../../js/business-presentation.js';
 import { db } from "../../js/firebase-config.js";
 import { 
   collection, 
@@ -21,30 +24,12 @@ requireAdmin((userContext, firebaseUser) => {
 
 async function loadDirectors() {
   try {
-    const directorsQuery = query(
-      collection(db, "users"),
-      where("is_sales_director", "==", true)
-    );
-    
-    const directorsSnapshot = await getDocs(directorsQuery);
-    directors = [];
-    
-    directorsSnapshot.forEach(docSnap => {
-      directors.push({
-        id: docSnap.id,
-        ...docSnap.data()
-      });
-    });
-    
+    const snapshot = await getDocs(collection(db, 'users'));
+    const users = snapshot.docs.map(item => ({...item.data(), id:item.id}));
+    directors = users.filter(user => normalizeUserRoles(user).includes('sales_director'));
     document.getElementById('totalDirectors').textContent = directors.length;
-    
-    const agentsQuery = query(
-      collection(db, "users"),
-      where("role", "==", "sales_agent")
-    );
-    const agentsSnapshot = await getDocs(agentsQuery);
-    document.getElementById('totalAgents').textContent = agentsSnapshot.size;
-    
+    document.getElementById('totalAgents').textContent = users.filter(user => normalizeUserRoles(user).includes('sales_agent')).length;
+
     renderDirectorsList();
     
   } catch (error) {
@@ -78,11 +63,11 @@ function renderDirectorsList() {
     card.className = 'card-list-item flex-between';
     card.innerHTML = `
       <div>
-        <div class="text-lg font-bold">${director.display_name || 'No Name'}</div>
-        <div class="text-muted">${director.email || 'No email'}</div>
-        <div class="text-sm text-muted">Role: ${director.role || 'user'}</div>
+        <div class="text-lg font-bold">${escapeHtml(director.display_name || 'No Name')}</div>
+        <div class="text-muted">${escapeHtml(director.email || 'No email')}</div>
+        <div class="text-sm text-muted">Role: ${escapeHtml(director.role || 'user')}</div>
       </div>
-      <button class="btn btn-danger btn-small" data-id="${director.id}">Remove</button>
+      <button class="btn btn-danger btn-small" data-id="${escapeHtml(director.id)}">Remove</button>
     `;
     listEl.appendChild(card);
   });
@@ -126,14 +111,12 @@ async function addDirector() {
     const userDoc = snapshot.docs[0];
     const userData = userDoc.data();
     
-    if (userData.is_sales_director === true) {
+    if (normalizeUserRoles(userData).includes('sales_director')) {
       showMessage(messageEl, 'This user is already a Sales Director.', 'warning');
       return;
     }
     
-    await updateDoc(doc(db, "users", userDoc.id), {
-      is_sales_director: true
-    });
+    await changeHierarchy('setAdminUserRoles', {memberId:userDoc.id, roles:[...normalizeUserRoles(userData), 'sales_director']});
     
     showMessage(messageEl, `${userData.display_name || email} is now a Sales Director!`, 'success');
     emailInput.value = '';
@@ -150,9 +133,9 @@ async function removeDirector(userId) {
   if (!confirm('Remove this person as a Sales Director?')) return;
   
   try {
-    await updateDoc(doc(db, "users", userId), {
-      is_sales_director: false
-    });
+    const director = directors.find(user => user.id === userId);
+    if (!director) throw new Error('Director not found. Refresh and retry.');
+    await changeHierarchy('setAdminUserRoles', {memberId:userId, roles:['member', ...normalizeUserRoles(director).filter(role => role !== 'sales_director')]});
     
     await loadDirectors();
     

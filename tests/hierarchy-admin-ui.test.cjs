@@ -1,10 +1,10 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-const source=file=>fs.readFileSync(file,'utf8').replace(/^\s*import .*;\n/gm,'').replace(/export /g,'');
+const source=file=>fs.readFileSync(file,'utf8').replace(/^\s*import[\s\S]*?from ['"][^'"]+['"];\n/gm,'').replace(/export /g,'');
 function page(file, overrides={}) {
  const nodes=new Map(), notices=[], writes=[];
  const el=id=>{if(!nodes.has(id))nodes.set(id,{value:'',textContent:'',innerHTML:'',disabled:false,handlers:{},
-  classList:{add(){},remove(){},toggle(){}},addEventListener(event,fn){this.handlers[event]=fn;},querySelector(){return el(id+'-child');},appendChild(){}});return nodes.get(id);};
+  classList:{add(){},remove(){},toggle(){}},addEventListener(event,fn){this.handlers[event]=fn;},querySelector(){return el(id+'-child');},querySelectorAll:()=>[],appendChild(){}});return nodes.get(id);};
  const context=vm.createContext({document:{getElementById:el,querySelectorAll:()=>[],addEventListener(){},createElement:()=>el('new')},
   window:{showToast:(...v)=>notices.push(v),showConfirmDialog:async()=>true,addEventListener(){}},console:{error(){},warn(){}},
   db:{},requireAdmin(){},doc:(db,...parts)=>parts.join('/'),collection:(db,path)=>path,query:q=>q,where(){},orderBy(){},
@@ -70,4 +70,19 @@ test('pricing settings persist zero-day trials with actor identity and reject fr
  await p.run('loadPricingSettings()');p.el('monthlyPrice').value='8.99';p.el('annualPrice').value='74.99';p.el('freeTrialDays').value='0';
  await p.el('savePricingBtn').handlers.click();assert.equal(saved[0].free_trial_days,0);assert.equal(saved[0].updated_by,'admin');
  p.el('freeTrialDays').value='1.5';await p.el('savePricingBtn').handlers.click();assert.equal(saved.length,1);
+});
+test('sales director management uses canonical roles and the member authority service',async()=>{
+ let record={roles:['member'],is_sales_director:true,email:'target@example.test'};
+ const p=page('public/admin/js/sales-directors.js',{getDocs:async()=>snap([['target',record]]),confirm:()=>true});
+ await p.run('loadDirectors()');assert.equal(p.el('totalDirectors').textContent,0);
+ p.el('directorEmail').value='target@example.test';await p.run('addDirector()');
+ assert.equal(p.writes[0][0],'setAdminUserRoles');assert(p.writes[0][1].roles.includes('sales_director'));
+ record={roles:['sales_director'],email:'target@example.test'};await p.run('loadDirectors()');assert.equal(p.el('totalDirectors').textContent,1);
+ await p.run("removeDirector('target')");assert.equal(JSON.stringify(p.writes[1][1].roles),'["member"]');
+});
+test('donation oversight reads existing webhook records and keeps pending requests separate',()=>{
+ const p=page('public/admin/js/donations.js',{onReady(){}});
+ const recorded=p.run("normalizeDonation('receipt',{email:'donor@example.test',amount:25,recurring:true,stripe_session_id:'session'},'donations')");
+ assert.equal(recorded.donor_email,'donor@example.test');assert.equal(recorded.status,'completed');assert.equal(recorded.frequency,'recurring');
+ const pending=p.run("normalizeDonation('request',{donor_email:'donor@example.test',amount:25},'donation_requests')");assert.equal(pending.status,'pending_stripe_setup');
 });
