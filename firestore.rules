@@ -549,6 +549,29 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // Private platform work list. Existing canonical administrator authority applies.
+    match /admin_tasks/{taskId} {
+      function validTask() {
+        let d = request.resource.data;
+        return d.keys().hasAll(['title','notes','link','priority','status','created_at','updated_at','created_by'])
+          && d.keys().hasOnly(['title','notes','link','priority','status','created_at','updated_at','created_by'])
+          && d.title is string && d.title.size() > 0 && d.title.size() <= 160
+          && d.notes is string && d.notes.size() <= 5000
+          && d.link is string && d.link.size() <= 2000
+          && (d.link == '' || d.link.matches('https://.*'))
+          && d.priority in ['high','normal','low']
+          && d.status in ['open','in_progress','blocked','deferred','done','archived']
+          && d.created_at is timestamp && d.updated_at is timestamp
+          && d.created_by is string;
+      }
+      allow read: if isAdmin();
+      allow create: if isAdmin() && validTask() && request.resource.data.created_by == request.auth.uid;
+      allow update: if isAdmin() && validTask()
+        && request.resource.data.created_by == resource.data.created_by
+        && request.resource.data.created_at == resource.data.created_at;
+      allow delete: if false;
+    }
+
     // ========================================
     // FALLBACK - DENY ALL
     // ========================================

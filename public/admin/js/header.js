@@ -65,6 +65,7 @@
           <ul class="nav-links" id="navMenu">
             <li><a href="#" id="logoutLink">Logout</a></li>
             <li><a href="/admin/index.html">Dashboard</a></li>
+            <li><a href="/admin/todo">To-Do List</a></li>
             <li class="has-dropdown">
               <span class="dropdown-toggle">Directories ▼</span>
               <ul class="dropdown-menu">
