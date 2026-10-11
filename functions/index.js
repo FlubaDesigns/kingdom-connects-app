@@ -22,6 +22,8 @@ const { createMemberMailDelivery, queueMemberMail } = require('./member-mail');
 const memberService = createMemberService(admin.firestore(), admin.auth(), admin.storage().bucket('kingdom-commerce.firebasestorage.app'), () => admin.firestore.FieldValue.serverTimestamp());
 const resendApiKey = defineSecret('RESEND_API_KEY');
 const presentations = require('./presentation-service').createPresentationService(admin.firestore());
+const { createEmailTemplateService, renderTemplate } = require('./email-template-service');
+const emailTemplates = createEmailTemplateService(admin.firestore());
 
 exports.hierarchyAction = onRequest((req, res) => cors(req, res, async () => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Use POST.' });
@@ -118,32 +120,17 @@ exports.sendTemplate = onRequest({ secrets: [resendApiKey] }, (req, res) => {
     }
     if (isRateLimited(req, res, 15, 60000)) return;
     try {
-      const { userData } = await verifyAuth(req);
+      const { user, userData } = await verifyAuth(req);
       checkRole(userData, ['admin', 'platform_admin']);
       const { templateName, templateSlug, to, variables } = req.body;
       const template_name = templateName || templateSlug;
-      if (!template_name || !to) {
-        return res.status(400).json({ error: 'Missing required fields: templateName, to' });
+      if (req.body.preview === true) {
+        const preview = req.body.draft ? renderTemplate(req.body.draft, variables || {}) : await emailTemplates.prepare(template_name, variables || {});
+        return res.json(preview);
       }
-      const templateDoc = await admin.firestore()
-        .collection('email_templates')
-        .where('template_name', '==', template_name)
-        .where('is_active', '==', true)
-        .limit(1)
-        .get();
-      if (templateDoc.empty) {
-        return res.status(404).json({ error: `Template not found: ${template_name}` });
-      }
-      const template = templateDoc.docs[0].data();
-      let subject = template.subject || 'Welcome to Kingdom Connects';
-      let htmlBody = template.html_body || template.body || '';
-      if (variables) {
-        Object.keys(variables).forEach(key => {
-          const regex = new RegExp(`{{${key}}}`, 'g');
-          subject = subject.replace(regex, variables[key]);
-          htmlBody = htmlBody.replace(regex, variables[key]);
-        });
-      }
+      if (!template_name || !to) return res.status(400).json({error:'Choose a template and recipient.'});
+      const prepared = await emailTemplates.prepare(template_name, variables || {});
+      const subject = prepared.subject, htmlBody = prepared.html;
       const { client, fromEmail } = getResendClient();
       console.log('Sending template email from:', fromEmail, 'to:', to, 'subject:', subject);
       const { data, error } = await client.emails.send({
@@ -156,6 +143,9 @@ exports.sendTemplate = onRequest({ secrets: [resendApiKey] }, (req, res) => {
         console.error('Resend API error:', JSON.stringify(error));
         return res.status(400).json({ error: 'Email send failed', details: error.message || error });
       }
+      try {
+        await admin.firestore().collection('email_logs').add({type:'template',slug:template_name,email:to,message_id:data?.id || null,status:'sent',sent_by:user.uid,timestamp:admin.firestore.FieldValue.serverTimestamp()});
+      } catch (logError) { console.error('Template sent; history could not be recorded.'); }
       console.log('Template email sent successfully:', JSON.stringify(data));
       res.json({ success: true, messageId: data?.id });
     } catch (error) {

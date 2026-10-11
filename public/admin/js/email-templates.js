@@ -1,7 +1,7 @@
 import { auth, db } from '../../js/firebase-config.js';
 import { doc, getDoc, setDoc, deleteDoc, collection, getDocs, query, where, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { showStatusMessage, showConfirmDialog, showSuccessAnimation, escapeHtml } from '../../js/utils.js';
-import { sendTemplate, sendCustomEmail } from '../../js/email/email-service.js';
+import { sendTemplate, sendCustomEmail, previewEmailTemplate } from '../../js/email/email-service.js';
 import { requireAdmin } from './admin-auth-guard.js';
 
 const EVENT_LABELS = {
@@ -158,7 +158,7 @@ async function loadAllTemplates() {
     
     allTemplates = [];
     snapshot.forEach(doc => {
-      allTemplates.push({ id: doc.id, ...doc.data() });
+      allTemplates.push({ ...doc.data(), id: doc.id, slug: doc.data().slug || doc.data().template_name || doc.id });
     });
     
     allTemplates.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
@@ -246,8 +246,7 @@ async function previewTemplateBySlug(slug) {
   const template = allTemplates.find(t => t.slug === slug);
   if (!template) return;
   
-  const html = generateEmailHtml(template, getSampleVariables());
-  showPreview(template.subject, html);
+  await showTemplatePreview(template.id);
 }
 
 function getSampleVariables() {
@@ -260,61 +259,12 @@ function getSampleVariables() {
     church_admin_name: 'Pastor Johnson',
     business_category: 'Home Services',
     submission_date: new Date().toLocaleDateString(),
-    dashboard_url: 'https://kingdomconnects.com/business-admin',
-    base_url: 'https://kingdomconnects.com',
-    login_url: 'https://kingdomconnects.com/login'
+    dashboard_url: window.location.origin + '/business-admin',
+    base_url: window.location.origin,
+    login_url: window.location.origin + '/login'
   };
 }
 
-function generateEmailHtml(template, vars = {}) {
-  let subject = template.subject || '';
-  let headline = '';
-  let intro = '';
-  let cta = '';
-  let buttonText = '';
-  let buttonUrl = '';
-  let highlights = [];
-  
-  if (template.html_body) {
-    return replaceVariables(template.html_body, vars);
-  }
-  
-  headline = template.headline || '';
-  intro = template.intro || '';
-  cta = template.cta || '';
-  buttonText = template.button_text || '';
-  buttonUrl = template.button_url || '';
-  highlights = template.highlights || [];
-  
-  headline = replaceVariables(headline, vars);
-  intro = replaceVariables(intro, vars);
-  cta = replaceVariables(cta, vars);
-  buttonText = replaceVariables(buttonText, vars);
-  buttonUrl = replaceVariables(buttonUrl, vars);
-  
-  const highlightsHtml = highlights.length > 0 
-    ? `<div style="background: #f8f6f0; padding: 16px; border-radius: 8px; margin: 20px 0;">
-        <ul style="margin: 0; padding-left: 20px;">
-          ${highlights.map(h => `<li style="margin-bottom: 8px;">${escapeHtml(replaceVariables(h, vars))}</li>`).join('')}
-        </ul>
-      </div>`
-    : '';
-  
-  const buttonHtml = buttonText 
-    ? `<p><a href="${escapeHtml(buttonUrl)}" style="display: inline-block; padding: 12px 24px; background: #C5A572; color: white; text-decoration: none; border-radius: 4px;">${escapeHtml(buttonText)}</a></p>`
-    : '';
-  
-  return `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      ${headline ? `<h2 style="color: #C5A572;">${escapeHtml(headline)}</h2>` : ''}
-      ${intro ? `<p>${escapeHtml(intro)}</p>` : ''}
-      ${highlightsHtml}
-      ${cta ? `<p>${escapeHtml(cta)}</p>` : ''}
-      ${buttonHtml}
-      <p style="margin-top: 30px;">Blessings,<br>The Kingdom Connects Team</p>
-    </div>
-  `;
-}
 
 function replaceVariables(text, vars) {
   if (!text) return '';
@@ -334,9 +284,7 @@ function showPreview(subject, html) {
     <div class="preview-subject mb-md">
       <strong>Subject:</strong> ${escapeHtml(replaceVariables(subject, getSampleVariables()))}
     </div>
-    <div class="email-preview-frame" style="background: white; padding: 20px; border-radius: 8px;">
-      ${html}
-    </div>
+    <iframe class="email-preview-frame" title="Email preview" sandbox="" srcdoc="${escapeHtml(html)}" style="background:white;width:100%;min-height:420px;border:0"></iframe>
   `;
   
   previewContainer.classList.remove('hidden');
@@ -357,6 +305,7 @@ async function handleEventChange(e) {
     return;
   }
   
+  sendTemplateSelect.value = '';
   const versions = allTemplates.filter(t => t.slug === slug || t.slug.startsWith(slug + '_v'));
   
   if (versions.length > 1) {
@@ -377,7 +326,7 @@ async function handleSendTest(e) {
   e.preventDefault();
   
   const statusMsg = document.getElementById('status-message');
-  const slug = document.getElementById('event-select').value;
+  const slug = selectedTemplateKey();
   const email = document.getElementById('recipient-email').value;
   
   if (!slug || !email) {
@@ -393,7 +342,7 @@ async function handleSendTest(e) {
     showStatusMessage(statusMsg, 'Test email sent!', 'success');
     showSuccessAnimation('Email sent!');
     
-    addToRecentActivity(slug, email);
+    await loadRecentActivity();
     
   } catch (error) {
     console.error('Error sending test:', error);
@@ -401,15 +350,20 @@ async function handleSendTest(e) {
   }
 }
 
-function handlePreview() {
-  const slug = document.getElementById('event-select').value;
-  if (!slug) return;
-  
-  const template = allTemplates.find(t => t.slug === slug);
-  if (template) {
-    const html = generateEmailHtml(template, getSampleVariables());
-    showPreview(template.subject, html);
+function selectedTemplateKey() {
+  return document.getElementById('send-template-select').value || document.getElementById('event-select').value;
+}
+async function showTemplatePreview(key, draft = null) {
+  try {
+    const result = await previewEmailTemplate(key, getSampleVariables(), draft);
+    showPreview(result.subject, result.html);
+  } catch (error) {
+    showStatusMessage(document.getElementById('status-message'), error.message || 'Unable to preview template', 'error');
   }
+}
+async function handlePreview() {
+  const key = selectedTemplateKey();
+  if (key) await showTemplatePreview(key);
 }
 
 function toggleEditor() {
@@ -545,6 +499,8 @@ async function handleSaveTemplate() {
   
   const templateData = {
     slug,
+    html_body: null,
+    body: null,
     name: document.getElementById('template-name').value.trim() || slug,
     category: document.getElementById('template-category').value,
     subject: document.getElementById('edit-subject').value.trim(),
@@ -557,7 +513,7 @@ async function handleSaveTemplate() {
     is_active: document.getElementById('template-active').checked,
     description: document.getElementById('template-description').value.trim(),
     updated_at: serverTimestamp(),
-    updated_by: currentUser?.email || 'unknown'
+    updated_by: currentUser?.uid || 'unknown'
   };
   
   try {
@@ -630,7 +586,7 @@ async function handleResetTemplate() {
   }
 }
 
-function handleEditorPreview() {
+async function handleEditorPreview() {
   const highlights = document.getElementById('edit-highlights').value
     .split('\n')
     .map(h => h.trim())
@@ -646,8 +602,7 @@ function handleEditorPreview() {
     button_url: document.getElementById('edit-button-url').value
   };
   
-  const html = generateEmailHtml(template, getSampleVariables());
-  showPreview(template.subject, html);
+  await showTemplatePreview(null, template);
 }
 
 function handleCreateCustom() {
@@ -663,20 +618,16 @@ function handleCreateCustom() {
   document.getElementById('edit-templates').scrollIntoView({ behavior: 'smooth' });
 }
 
-function addToRecentActivity(slug, email) {
-  const activity = JSON.parse(localStorage.getItem('emailTemplateActivity') || '[]');
-  activity.unshift({
-    slug,
-    email,
-    timestamp: new Date().toISOString()
-  });
-  localStorage.setItem('emailTemplateActivity', JSON.stringify(activity.slice(0, 20)));
-  renderRecentActivity(activity);
-}
-
-function loadRecentActivity() {
-  const activity = JSON.parse(localStorage.getItem('emailTemplateActivity') || '[]');
-  renderRecentActivity(activity);
+async function loadRecentActivity() {
+  try {
+    const snapshot = await getDocs(query(collection(db, 'email_logs'), where('type', '==', 'template')));
+    const activity = snapshot.docs.map(record => record.data());
+    activity.sort((a,b) => (b.timestamp?.toMillis?.() || 0) - (a.timestamp?.toMillis?.() || 0));
+    renderRecentActivity(activity);
+  } catch (error) {
+    const container = document.getElementById('activity-list');
+    if (container) container.textContent = 'Unable to load email history.';
+  }
 }
 
 function renderRecentActivity(activity) {
@@ -692,7 +643,7 @@ function renderRecentActivity(activity) {
     <div class="activity-item mb-sm">
       <strong>${escapeHtml(EVENT_LABELS[a.slug] || a.slug)}</strong>
       <span class="text-muted"> → ${escapeHtml(a.email)}</span>
-      <span class="text-xs text-muted"> (${new Date(a.timestamp).toLocaleString()})</span>
+      <span class="text-xs text-muted"> (${a.timestamp?.toDate?.().toLocaleString() || ''})</span>
     </div>
   `).join('');
 }

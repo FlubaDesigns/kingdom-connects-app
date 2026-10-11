@@ -188,3 +188,7 @@ export async function loadPresentationTemplate(role, templateId = null) {
   if (!response.ok) throw new Error(data.error || 'Unable to load presentation');
   return data.template;
 }
+
+export async function previewEmailTemplate(templateName, variables = {}, draft = null) {
+  return apiCall('/api/send-template', {preview:true,templateName,variables,...(draft?{draft}:{})});
+}

@@ -122,3 +122,10 @@ test('published manuals still load when protected commission settings are unavai
   await p.run('loadSettings()');assert.equal(p.el('heroTitle').textContent,'Saved manual title');assert.equal(p.el('heroDescription').innerHTML,'Saved manual description');
  }
 });
+test('email preview and send select the same saved version; saved history loads from the server ledger',async()=>{
+ const calls=[];
+ const p=page('public/admin/js/email-templates.js',{console:{log(){},error(){}},previewEmailTemplate:async key=>{calls.push(['preview',key]);return {subject:'Saved',html:'Saved content'};},sendTemplate:async key=>calls.push(['send',key]),showStatusMessage(){},showSuccessAnimation(){},getDocs:async path=>{calls.push(['read',path]);return snap([]);}});
+ p.context.window.location={origin:'https://kingdom-commerce.web.app'};p.el('preview-container').scrollIntoView=()=>{};p.el('event-select').value='welcome';p.el('send-template-select').value='welcome_v2';p.el('recipient-email').value='fixture@example.invalid';
+ await p.run('handlePreview()');await p.run('handleSendTest({preventDefault(){}})');
+ assert(calls.some(([kind,key])=>kind==='preview'&&key==='welcome_v2'));assert(calls.some(([kind,key])=>kind==='send'&&key==='welcome_v2'));assert(calls.some(([kind,key])=>kind==='read'&&key==='email_logs'));
+});

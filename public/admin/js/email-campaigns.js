@@ -258,7 +258,7 @@ async function sendCampaign(campaignData) {
     }
   }
   
-  return { success: true, sent: sentCount, errors, total: recipients.length };
+  return { success: sentCount > 0, sent: sentCount, errors, total: recipients.length };
 }
 
 saveDraftBtn.addEventListener('click', async () => {
@@ -325,16 +325,18 @@ campaignForm.addEventListener('submit', async (e) => {
     if (result.success) {
       await addDoc(collection(db, 'email_campaigns'), {
         ...campaignData,
-        status: 'sent',
+        status: result.errors ? 'partial' : 'sent',
         sent_at: serverTimestamp(),
         created_at: serverTimestamp(),
         sent_count: result.sent,
         error_count: result.errors || 0
       });
       
-      showToast(`Campaign sent! ${result.sent} of ${result.total} emails delivered.`, 'success');
+      showToast(`${result.sent} of ${result.total} emails accepted by the email provider.${result.errors ? ' ' + result.errors + ' failed.' : ''}`, result.errors ? 'warning' : 'success');
       closeModal();
       loadCampaigns();
+    } else {
+      showToast('No emails were sent. Check the reported errors before retrying.', 'error');
     }
   } catch (error) {
     console.error('Error sending campaign:', error);
