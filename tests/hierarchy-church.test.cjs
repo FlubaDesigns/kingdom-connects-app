@@ -101,5 +101,6 @@ test('shared church context honors selected admin church, rejects another owner,
   assert.equal((await context.getChurchForUser('platform','',{roles:['admin']})).id,'one');
   assert(chosen.endsWith('?id=one'));
   const link={href:'https://kingdom-commerce.web.app/church-admin/members'};click({target:{closest:()=>link}});assert(link.href.endsWith('?id=one'));
+  const footer={href:'https://kingdom-commerce.web.app/church-admin'};click({target:{closest:()=>footer}});assert(footer.href.endsWith('?id=one'));
   await assert.rejects(context.getChurchForUser('other','',{roles:['church_admin']}),/authority/);
 });

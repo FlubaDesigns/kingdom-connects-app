@@ -263,7 +263,7 @@ async function getChurchForUser(uid, email, userContext = null) {
   document.addEventListener('click', event => {
     const link = event.target.closest('a[href]'); if (!link) return;
     const url = new URL(link.href, window.location.href);
-    if (url.origin === window.location.origin && url.pathname.startsWith('/church-admin/')) {
+    if (url.origin === window.location.origin && (url.pathname === '/church-admin' || url.pathname.startsWith('/church-admin/'))) {
       url.searchParams.set('id', church.id); link.href = url.href;
     }
   }, true);

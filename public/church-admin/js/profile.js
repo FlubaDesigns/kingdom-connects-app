@@ -78,7 +78,13 @@
       document.getElementById('address_line1').value = church.address_line1 || '';
       document.getElementById('address_line2').value = church.address_line2 || '';
       document.getElementById('city').value = church.city || '';
-      document.getElementById('state').value = church.state || '';
+      const stateSelect = document.getElementById('state');
+      if (church.state && !Array.from(stateSelect.options).some(option => option.value === church.state)) {
+        const option = document.createElement('option');
+        option.value = church.state; option.textContent = church.state;
+        stateSelect.append(option);
+      }
+      stateSelect.value = church.state || '';
       document.getElementById('zip_code').value = church.zip_code || '';
       document.getElementById('country').value = church.country || 'USA';
       document.getElementById('contact_phone').value = church.contact_phone || '';
@@ -139,15 +145,12 @@
       }
     }
 
-    // Generate friendly slug directory link
+    // Use the live origin and stable ID so renamed churches keep a working link.
     function generateDirectoryLink(churchName, id) {
-      if (!churchName) return '';
-      const slug = churchName.toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .trim();
-      return `https://kingdomconnects.org/church/${slug}`;
+      if (!id) return '';
+      const url = new URL('/church', window.location.origin);
+      url.searchParams.set('id', id);
+      return url.href;
     }
 
     // Populate service times from array

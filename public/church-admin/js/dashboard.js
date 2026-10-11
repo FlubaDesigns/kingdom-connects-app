@@ -661,11 +661,11 @@ function calculateChurchProfileCompletion(church) {
   }
 
   const tasks = [
-    { key: 'church_name', label: 'Add church name', link: 'profile.html', check: c => !!c.church_name },
-    { key: 'description', label: 'Add description', link: 'profile.html', check: c => c.description && c.description.length >= 50 },
-    { key: 'phone', label: 'Add phone number', link: 'profile.html', check: c => !!c.contact_phone },
-    { key: 'address', label: 'Add address', link: 'profile.html', check: c => !!c.address_line1 },
-    { key: 'website', label: 'Add website URL', link: 'profile.html', check: c => !!c.website }
+    { key: 'church_name', label: 'Add church name', link: '/church-admin/profile', check: c => !!c.church_name },
+    { key: 'description', label: 'Add description', link: '/church-admin/profile', check: c => c.description && c.description.length >= 50 },
+    { key: 'phone', label: 'Add phone number', link: '/church-admin/profile', check: c => !!c.contact_phone },
+    { key: 'address', label: 'Add address', link: '/church-admin/profile', check: c => !!c.address_line1 },
+    { key: 'website', label: 'Add website URL', link: '/church-admin/profile', check: c => !!c.website }
   ];
 
   let completed = 0;
