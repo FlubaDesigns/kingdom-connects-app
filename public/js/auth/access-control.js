@@ -119,12 +119,8 @@ export function requireAuth(options = {}, onSuccess) {
         console.log('🔒 User home_church_id:', userContext.home_church_id);
         churchContext = await getChurchForUser(firebaseUser.uid, firebaseUser.email, userContext);
         console.log('🔒 churchContext result:', churchContext ? churchContext.id : 'null');
-        if (!churchContext && !isAdmin) {
-          console.log('🔒 No church found, redirecting');
-          showAccessDenied('No church found for your account.');
-          redirectTo(HOME_URL);
-          return;
-        }
+        if (!churchContext) return;
+
       }
 
       if (churchContext && ['suspended', 'rejected'].includes(churchContext.listing_status) && !isAdmin) {
@@ -237,25 +233,41 @@ export function getAuthState() {
 }
 
 async function getChurchForUser(uid, email, userContext = null) {
-  console.log('🏛️ getChurchForUser called:', uid, email);
-  try {
-    // THIRD: Try by admin_uid (legacy/fallback)
-    const q = query(
-      collection(db, 'churches'),
-      where('admin_uid', '==', uid)
-    );
-    const snapshot = await getDocs(q);
-    console.log('🏛️ admin_uid query result:', snapshot.size);
-    if (!snapshot.empty) {
-      const docSnap = snapshot.docs[0];
-      return { id: docSnap.id, ...docSnap.data() };
+  const isAdmin = userContext?.roles?.some(role => ['admin','platform_admin'].includes(role));
+  const requested = new URLSearchParams(window.location.search).get('id');
+  let church;
+  if (requested) {
+    const snapshot = await getDoc(doc(db, 'churches', requested));
+    if (!snapshot.exists()) throw Error('Church not found.');
+    church = { ...snapshot.data(), id: snapshot.id };
+    if (!isAdmin && church.admin_uid !== uid) throw Error('This church is not under your authority.');
+  } else {
+    const snapshot = await getDocs(isAdmin ? collection(db, 'churches') : query(collection(db, 'churches'), where('admin_uid', '==', uid)));
+    if (snapshot.size === 1) church = { ...snapshot.docs[0].data(), id: snapshot.docs[0].id };
+    else {
+      if (document.getElementById('churchContextSelector')) return null;
+      const section = document.createElement('section'); section.id = 'churchContextSelector'; section.className = 'card p-lg';
+      const heading = document.createElement('h2'); heading.textContent = snapshot.empty ? 'No church is connected to this account.' : 'Choose a church';
+      section.append(heading);
+      for (const item of snapshot.docs.sort((a,b) => (a.data().church_name || '').localeCompare(b.data().church_name || ''))) {
+        const link = document.createElement('a'); link.className = 'btn btn-secondary m-sm';
+        const url = new URL(window.location.href); url.searchParams.set('id', item.id); link.href = url.href;
+        link.textContent = (item.data().church_name || 'Unnamed church') + ' (' + (item.data().listing_status || 'pending') + ')'; section.append(link);
+      }
+      const loading = document.getElementById('loadingMessage'); if (loading) loading.classList.add('hidden');
+      (document.querySelector('main') || document.body).append(section);
+      return null;
     }
-    
-    return null;
-  } catch (error) {
-    console.error('🏛️ Error getting church for user:', error);
-    return null;
   }
+  const current = new URL(window.location.href); current.searchParams.set('id', church.id); window.history.replaceState(null, '', current);
+  document.addEventListener('click', event => {
+    const link = event.target.closest('a[href]'); if (!link) return;
+    const url = new URL(link.href, window.location.href);
+    if (url.origin === window.location.origin && (url.pathname === '/church-admin' || url.pathname.startsWith('/church-admin/'))) {
+      url.searchParams.set('id', church.id); link.href = url.href;
+    }
+  }, true);
+  return church;
 }
 
 async function checkIsSalesDirector(uid) {

@@ -1,3 +1,4 @@
+import { fetchChurchTithes } from '../../js/services/church-tithes.js';
 /* Kingdom Connects - Church Admin Tithings Dashboard */
 import { db } from '../../js/firebase-config.js';
 import { collection, query, where, getDocs, getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
@@ -17,50 +18,14 @@ requireAuth({ requireChurch: true }, async (userContext, firebaseUser, churchCon
 
 async function loadEarnings() {
   try {
-    const churchDoc = await getDoc(doc(db, 'churches', currentChurchId));
-    
-    if (churchDoc.exists()) {
-      const data = churchDoc.data();
-      document.getElementById('monthlyEarnings').textContent = `$${(data.monthly_commission_total || 0).toFixed(2)}`;
-      document.getElementById('ytdEarnings').textContent = `$${(data.ytd_commission_total || 0).toFixed(2)}`;
-      document.getElementById('lifetimeEarnings').textContent = `$${(data.total_commission_earned || 0).toFixed(2)}`;
-      document.getElementById('unpaidBalance').textContent = `$${(data.unpaid_commission_balance || 0).toFixed(2)}`;
-    }
-
-    const ledgerQuery = query(
-      collection(db, 'commission_ledger'),
-      where('recipient_type', '==', 'church'),
-      where('recipient_id', '==', currentChurchId)
-    );
-    
-    const ledgerSnapshot = await getDocs(ledgerQuery);
-    
-    if (ledgerSnapshot.empty) {
+    const tithes = await fetchChurchTithes(currentChurchId);
+    for (const [id,key] of [['monthlyEarnings','month'],['ytdEarnings','year'],['lifetimeEarnings','total'],['unpaidBalance','notPaid']]) document.getElementById(id).textContent = '$' + tithes[key].toFixed(2);
+    allCommissions = tithes.rows;
+    if (!allCommissions.length) {
       document.getElementById('loading').classList.add('hidden');
       document.getElementById('emptyState').classList.remove('hidden');
       return;
     }
-
-    allCommissions = await Promise.all(ledgerSnapshot.docs.map(async (ledgerDoc) => {
-      const data = ledgerDoc.data();
-      
-      let businessName = 'Unknown Business';
-      if (data.business_id) {
-        const businessDoc = await getDoc(doc(db, 'business_listings_public', data.business_id));
-        if (businessDoc.exists()) {
-          businessName = businessDoc.data().business_name || 'Unknown Business';
-        }
-      }
-      
-      return {
-        date: data.billing_date?.toDate() || new Date(),
-        businessName: businessName,
-        proAmount: data.pro_amount || 0,
-        churchAmount: data.amount || 0,
-        status: data.status || 'pending'
-      };
-    }));
-
     renderTable();
 
   } catch (error) {
@@ -79,13 +44,9 @@ function renderTable() {
       ? '<span class="status-badge status-paid">Paid</span>'
       : '<span class="status-badge status-pending">Pending</span>';
 
-    row.innerHTML = `
-      <td>${comm.date.toLocaleDateString()}</td>
-      <td>${comm.businessName}</td>
-      <td>$${comm.proAmount.toFixed(2)}</td>
-      <td>$${comm.churchAmount.toFixed(2)}</td>
-      <td>${statusBadge}</td>
-    `;
+    for (const text of [comm.date.toLocaleDateString(),comm.businessName,'$'+comm.proAmount.toFixed(2),'$'+comm.churchAmount.toFixed(2),comm.status === 'paid' ? 'Paid' : 'Recorded']) {
+      const cell = document.createElement('td'); cell.textContent = text; row.append(cell);
+    }
     tbody.appendChild(row);
   });
 
@@ -102,7 +63,7 @@ document.getElementById('exportBtn').addEventListener('click', () => {
   const headers = ['Date', 'Business', 'Pro Payment', 'Church 10%', 'Status'];
   const rows = allCommissions.map(c => [
     c.date.toLocaleDateString(),
-    `"${c.businessName.replace(/"/g, '""')}"`,
+    `"${c.businessName.replace(/^[=+@-]/, "'$&").replace(/"/g, '""')}"`,
     c.proAmount.toFixed(2),
     c.churchAmount.toFixed(2),
     c.status

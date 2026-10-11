@@ -277,7 +277,7 @@
               <input type="radio" name="payout_method" id="payout_electronic" value="electronic" checked>
               <span><strong>Electronic (Recommended)</strong></span>
             </label>
-            <p class="help-text ml-lg">Fast, secure direct deposit to your bank account via Stripe. Typically arrives within 2-3 business days.</p>
+            <p class="help-text ml-lg">Electronic payout setup is deferred. Recorded tithes can be viewed in Tithings.</p>
             
             <label class="radio-label mt-md">
               <input type="radio" name="payout_method" id="payout_check" value="check">
@@ -290,18 +290,18 @@
             <div id="stripeConnectStatus" class="card-highlight p-md">
               <div id="stripeNotConnected">
                 <p class="mb-sm"><strong>Bank Account Not Connected</strong></p>
-                <p class="help-text mb-md">Complete a quick secure setup to receive electronic payments directly to your church bank account.</p>
-                <button type="button" id="setupStripeBtn" class="btn btn-gold">Set Up Electronic Payments</button>
+                <p class="help-text mb-md">Electronic payout setup is deferred. No bank setup is needed now.</p>
+                <button type="button" id="setupStripeBtn" class="btn btn-gold" disabled>Electronic Payments — Coming Later</button>
               </div>
               <div id="stripeConnected" class="hidden">
                 <p class="text-success mb-sm"><strong>Bank Account Connected</strong></p>
                 <p class="help-text">Your church is set up to receive electronic tithe payments.</p>
-                <button type="button" id="manageStripeBtn" class="btn btn-secondary mt-sm">Manage Payout Settings</button>
+                <button type="button" id="manageStripeBtn" disabled class="btn btn-secondary mt-sm">Manage Payout Settings</button>
               </div>
               <div id="stripePending" class="hidden">
                 <p class="text-warning mb-sm"><strong>Setup In Progress</strong></p>
                 <p class="help-text">Please complete the verification process to start receiving payments.</p>
-                <button type="button" id="continueStripeBtn" class="btn btn-gold mt-sm">Continue Setup</button>
+                <button type="button" id="continueStripeBtn" class="btn btn-gold mt-sm" disabled>Electronic Payments — Coming Later</button>
               </div>
             </div>
           </div>

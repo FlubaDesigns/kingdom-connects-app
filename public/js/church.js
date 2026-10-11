@@ -78,6 +78,8 @@ async function initChurchProfile() {
       actualChurchId = churchId;
     }
 
+    if (church.listing_status !== 'active') throw new Error('This church listing is not currently available.');
+
     // Store for share URLs
     currentChurchId = actualChurchId;
     currentChurchSlug = church.slug || null;
@@ -257,6 +259,7 @@ async function loadPeriodicMessage(churchId) {
     
     const q = query(
       collection(db, 'church_messages'),
+      where('audience', 'in', ['both','social']),
       where('church_id', '==', churchId),
       where('active', '==', true)
     );
@@ -300,7 +303,7 @@ async function loadAnnouncements(churchId) {
   try {
     const now = new Date();
     
-    const q = query(collection(db, `churches/${churchId}/announcements`));
+    const q = query(collection(db, `churches/${churchId}/announcements`), where('status', '==', 'published'));
     const snapshot = await getDocs(q);
     
     const announcements = snapshot.docs
@@ -348,7 +351,7 @@ async function loadEvents(churchId) {
   try {
     const now = new Date();
     
-    const q = query(collection(db, `churches/${churchId}/events`));
+    const q = query(collection(db, `churches/${churchId}/events`), where('visibility', '==', 'visible'));
     const snapshot = await getDocs(q);
     
     const events = snapshot.docs

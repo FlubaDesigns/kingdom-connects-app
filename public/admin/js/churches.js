@@ -17,7 +17,7 @@ import { changeHierarchy } from '../../js/services/hierarchy-service.js';
       const addBtn = document.getElementById('btnAddChurch');
       if (addBtn) {
         addBtn.addEventListener('click', () => {
-          window.location.href = '/submit-church';
+          window.location.href = '/add_to_directory?role=church';
         });
       }
     }
@@ -194,7 +194,7 @@ import { changeHierarchy } from '../../js/services/hierarchy-service.js';
                 `<button class="btn btn-small btn-gold" data-action="grantChurchPro" data-id="${church.id}" title="Grant Pro status to all ${businessCount} businesses affiliated with this church">Bulk Pro (${businessCount})</button>` : 
                 ''}
               <button class="btn btn-small btn-secondary" data-action="editChurch" data-id="${church.id}">Edit</button>
-              <button class="btn btn-small btn-danger" data-action="deleteChurch" data-id="${church.id}">Delete</button>
+              <button class="btn btn-small btn-danger" data-action="deleteChurch" data-id="${church.id}">Archive / Suspend</button>
             </div>
           </td>
         `;
@@ -353,7 +353,7 @@ import { changeHierarchy } from '../../js/services/hierarchy-service.js';
             await sendTemplate('church_approved', contactEmail, {
               recipient_name: recipientName,
               church_name: churchData.church_name || 'Your Church',
-              dashboard_url: `${dashboardDomain}/church-admin/dashboard.html`,
+              dashboard_url: `${dashboardDomain}/church-admin/index`,
               approval_date: new Date().toLocaleDateString()
             });
             console.log('Approval email sent to:', contactEmail);
@@ -403,32 +403,14 @@ import { changeHierarchy } from '../../js/services/hierarchy-service.js';
     };
 
     window.editChurch = (id) => {
-      window.location.href = `edit_church?id=${id}`;
+      window.location.href = `/church-admin/profile?id=${encodeURIComponent(id)}`;
     };
 
     window.deleteChurch = async (id) => {
-      const businessCount = getBusinessCountForChurch(id);
-      
-      let confirmed;
-      if (businessCount > 0) {
-        confirmed = window.showConfirmDialog 
-          ? await window.showConfirmDialog('Delete Church', `This church has ${businessCount} associated business(es). If you delete this church, those businesses will lose their church association. Delete permanently?`, 'Delete Forever', 'danger')
-          : confirm(`⚠️ WARNING: This church has ${businessCount} associated business(es). If you delete this church, those businesses will lose their church association.\n\nAre you sure you want to DELETE this church permanently?`);
-      } else {
-        confirmed = window.showConfirmDialog 
-          ? await window.showConfirmDialog('Delete Church', 'DELETE this church permanently? This cannot be undone.', 'Delete Forever', 'danger')
-          : confirm('⚠️ DELETE this church permanently? This cannot be undone.');
-      }
+      const confirmed = confirm('Suspend this church? Its records and affiliations will be retained, and you can reactivate it later.');
       if (!confirmed) return;
-      
-      try {
-        await deleteDoc(doc(db, "churches", id));
-        window.showToast('Church deleted!', 'success');
-        await loadChurches();
-      } catch (error) {
-        console.error('Error deleting church:', error);
-        window.showToast('Error deleting church: ' + error.message, 'error');
-      }
+      try { await changeHierarchy('setChurchStatus', {churchId:id,status:'suspended'}); window.showToast('Church suspended. Records retained.', 'success'); await loadChurches(); }
+      catch (error) { window.showToast(error.message, 'error'); }
     };
 
     window.grantChurchPro = async (id) => {

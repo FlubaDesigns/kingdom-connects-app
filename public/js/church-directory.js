@@ -38,7 +38,7 @@ async function initChurchDirectory() {
   try {
     // Load churches and businesses in parallel
     const [churchesSnapshot, businessesSnapshot] = await Promise.all([
-      getDocs(collection(db, "churches")),
+      getDocs(query(collection(db, "churches"), where("listing_status", "==", "active"))),
       getDocs(query(collection(db, "business_listings_public"), where("is_visible", "==", true)))
     ]);
 

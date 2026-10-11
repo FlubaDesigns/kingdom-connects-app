@@ -117,6 +117,7 @@ async function checkDuplicateChurchSlug(slug) {
   try {
     const q = query(
       collection(db, 'churches'),
+      where('listing_status', '==', 'active'),
       where('slug', '==', slug)
     );
     
@@ -209,6 +210,7 @@ export async function getChurchBySlug(slug) {
   try {
     const q = query(
       collection(db, 'churches'),
+      where('listing_status', '==', 'active'),
       where('slug', '==', slug)
     );
     

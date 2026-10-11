@@ -1,3 +1,4 @@
+import { fetchChurchTithes } from '../../js/services/church-tithes.js';
     import { db } from "../../js/firebase-config.js";
     import { collection, getDocs, query, where, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { requireAuth } from "../../js/auth/access-control.js";
@@ -72,40 +73,10 @@
           }
         });
 
-        // Only query businesses affiliated with this church
-        const churchBusinessesSnapshot = await getDocs(q);
-        
-        for (const bizDoc of churchBusinessesSnapshot.docs) {
-          try {
-            const commissionQ = query(
-              collection(db, "business_listings_public", bizDoc.id, "commissions"),
-              where("church_id", "==", churchId)
-            );
-            const commissionSnapshot = await getDocs(commissionQ);
-            
-            commissionSnapshot.forEach((commDoc) => {
-              const commission = commDoc.data();
-              const titheAmount = commission.tithe_amount || 0;
-              totalTithe += titheAmount;
-
-              if (commission.payment_date) {
-                const paymentDate = commission.payment_date.toDate ? commission.payment_date.toDate() : new Date(commission.payment_date);
-                const monthKey = `${paymentDate.getFullYear()}-${paymentDate.getMonth()}`;
-                
-                if (!monthlyTithes[monthKey]) {
-                  monthlyTithes[monthKey] = 0;
-                }
-                monthlyTithes[monthKey] += titheAmount;
-
-                if (paymentDate.getMonth() === thisMonth && paymentDate.getFullYear() === thisYear) {
-                  thisMonthTithe += titheAmount;
-                }
-              }
-            });
-          } catch (error) {
-            console.error('Error loading commissions for business:', bizDoc.id, error);
-          }
-        }
+        const tithes = await fetchChurchTithes(churchId);
+        totalTithe = tithes.total;
+        thisMonthTithe = tithes.month;
+        Object.assign(monthlyTithes, tithes.monthly);
 
         const monthCount = Object.keys(monthlyTithes).length || 1;
         const avgMonthlyTithe = totalTithe / monthCount;
@@ -147,6 +118,7 @@
 
       } catch (error) {
         console.error('Error loading analytics:', error);
+        throw error;
       }
     }
 

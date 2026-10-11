@@ -121,7 +121,7 @@ const CHURCH_ADMIN_MANIFEST = {
       jsFile: 'js/tithings.js',
       requiresAuth: true,
       requiresRole: 'church_admin',
-      firestoreCollections: ['churches', 'commission_ledger', 'business_listings_public'],
+      firestoreCollections: ['churches', 'tithes', 'business_listings_public'],
       criticalElements: ['#header', '#main']
     },
     {
