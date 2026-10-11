@@ -1,3 +1,4 @@
+import { watchAdminTasks } from '../../js/services/admin-tasks.js';
     import { db } from "../../js/firebase-config.js";
     import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { requireAdmin } from "../../js/auth/access-control.js";
@@ -5,6 +6,11 @@
 
     requireAdmin(() => {
       loadStats();
+      const unsubscribe = watchAdminTasks(tasks => {
+        const count = tasks.filter(task => ['open','in_progress','blocked'].includes(task.status)).length;
+        document.getElementById('adminTodoCount').textContent = count + ' active tasks — open your list';
+      }, () => { document.getElementById('adminTodoCount').textContent = 'Open your list'; });
+      window.addEventListener('pagehide', unsubscribe, {once:true});
     });
 
     async function loadStats() {

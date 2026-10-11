@@ -115,57 +115,85 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           </div>
           <div class="action-card-title">Categories</div>
-        …4171 tokens truncated….filter(task => ['open','in_progress','blocked'].includes(task.status)).length;
-        document.getElementById('adminTodoCount').textContent = count + ' active tasks — open your list';
-      }, () => { document.getElementById('adminTodoCount').textContent = 'Open your list'; });
-      window.addEventListener('pagehide', unsubscribe, {once:true});
-    });
+        </a>
 
-    async function loadStats() {
-      try {
-        const [usersSnap, businessesSnap, reviewsSnap, commissionsSnap] = await Promise.all([
-          getDocs(collection(db, "users")),
-          getDocs(collection(db, "business_listings_public")),
-          getDocs(query(collection(db, "reviews"), where("status", "==", "pending"))),
-          getDocs(collection(db, "commission_ledger"))
-        ]);
+        <a href="/admin/factoids.html" class="action-card">
+          <div class="action-card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="action-card-title">Factoids</div>
+        </a>
 
-        const totalUsers = usersSnap.size;
-        
-        let proBusinesses = 0;
-        let unchurchedBusinesses = 0;
-        businessesSnap.forEach(doc => {
-          const data = doc.data();
-          if (isBusinessPro(data)) proBusinesses++;
-          if (!data.church_id) unchurchedBusinesses++;
-        });
+        <a href="/admin/email-templates.html" class="action-card">
+          <div class="action-card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div class="action-card-title">Email Templates</div>
+        </a>
 
-        const pendingReviews = reviewsSnap.size;
+        <a href="/admin/pricing-settings.html" class="action-card">
+          <div class="action-card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="action-card-title">Pricing</div>
+        </a>
 
-        let totalRevenue = 0;
-        let charitableFund = 0;
-        commissionsSnap.forEach(doc => {
-          const data = doc.data();
-          totalRevenue += (data.platform_share || 0);
-          
-          // If church_id is null, the tithe goes to charitable fund
-          if (!data.church_id) {
-            charitableFund += (data.church_tithe || 0);
-          }
-        });
+        <a href="/admin/commission-settings.html" class="action-card">
+          <div class="action-card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="14.31" y1="8" x2="20.05" y2="17.94"/><line x1="9.69" y1="8" x2="21.17" y2="8"/><line x1="7.38" y1="12" x2="13.12" y2="2.06"/><line x1="9.69" y1="16" x2="3.95" y2="6.06"/><line x1="14.31" y1="16" x2="2.83" y2="16"/><line x1="16.62" y1="12" x2="10.88" y2="21.94"/></svg>
+          </div>
+          <div class="action-card-title">Commissions</div>
+        </a>
 
-        document.getElementById('totalRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
-        document.getElementById('proBusinesses').textContent = proBusinesses;
-        document.getElementById('totalUsers').textContent = totalUsers;
-        document.getElementById('pendingReviews').textContent = pendingReviews;
-        document.getElementById('charitableFund').textContent = `$${charitableFund.toFixed(2)}`;
-        document.getElementById('unchurchedBusinesses').textContent = unchurchedBusinesses;
+        <a href="/admin/presentations.html" class="action-card">
+          <div class="action-card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
+          </div>
+          <div class="action-card-title">Presentations</div>
+        </a>
 
-        document.getElementById('statsLoading').classList.add('hidden');
-        document.getElementById('statsContent').classList.remove('hidden');
+        <a href="/admin/sales-directors.html" class="action-card">
+          <div class="action-card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="action-card-title">Sales Directors</div>
+        </a>
 
-      } catch (error) {
-        console.error('Error loading stats:', error);
-        document.getElementById('statsLoading').textContent = 'Error loading statistics';
-      }
-    }
+        <a href="/admin/activity_log.html" class="action-card">
+          <div class="action-card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div class="action-card-title">Activity Log</div>
+        </a>
+
+        <a href="/admin/demo-invitations.html" class="action-card action-card-gold">
+          <div class="action-card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </div>
+          <div class="action-card-title">Send Demo</div>
+        </a>
+
+              <a href="/admin/tools/nexus.html" class="action-card action-card-gold">
+                <div class="action-card-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                </div>
+                <div class="action-card-title">Nexus Dashboard</div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <!-- Admin header/footer -->
+  <script src="/admin/js/header.js?v=20241220" defer></script>
+  <script src="/admin/js/footer.js" defer></script>
+  <script src="/js/breadcrumbs.js" defer></script>
+
+  <script type="module" src="/admin/js/index.js"></script>
+  </div>
+  <script src="/js/feedback-widget.js" type="module"></script>
+</body>
+</html>
