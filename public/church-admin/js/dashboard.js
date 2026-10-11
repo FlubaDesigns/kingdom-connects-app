@@ -1,3 +1,4 @@
+import { fetchChurchTithes } from '../../js/services/church-tithes.js';
 import { changeHierarchy } from '../../js/services/hierarchy-service.js';
 import { db } from "../../js/firebase-config.js";
 import { collection, getDocs, query, where, doc, updateDoc, deleteDoc, getDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -316,60 +317,17 @@ async function loadChurch(userEmail) {
 }
 
 async function loadStats() {
-  console.log('📈 Loading stats for church ID:', churchId);
   try {
-    const q = query(collection(db, "business_listings_public"), where("church_id", "==", churchId));
-    const querySnapshot = await getDocs(q);
-    console.log('💼 Found', querySnapshot.size, 'businesses');
-
-    const totalBusinesses = querySnapshot.size;
-    let proMembers = 0;
-    let totalTithe = 0;
-    let thisMonthTithe = 0;
-
-    const now = new Date();
-    const thisMonth = now.getMonth();
-    const thisYear = now.getFullYear();
-
-    for (const bizDoc of querySnapshot.docs) {
-      const business = bizDoc.data();
-      
-      if (isBusinessPro(business)) {
-        proMembers++;
-      }
-
-      try {
-        const commissionQ = query(
-          collection(db, "business_listings_public", bizDoc.id, "commissions"),
-          where("church_id", "==", churchId)
-        );
-        const commissionSnapshot = await getDocs(commissionQ);
-        
-        commissionSnapshot.forEach((commDoc) => {
-          const commission = commDoc.data();
-          const titheAmount = commission.tithe_amount || 0;
-          totalTithe += titheAmount;
-
-          if (commission.payment_date) {
-            const paymentDate = commission.payment_date.toDate ? commission.payment_date.toDate() : new Date(commission.payment_date);
-            if (paymentDate.getMonth() === thisMonth && paymentDate.getFullYear() === thisYear) {
-              thisMonthTithe += titheAmount;
-            }
-          }
-        });
-      } catch (commErr) {
-        console.warn(`Could not load commissions for business ${bizDoc.id}:`, commErr);
-      }
-    }
-
-    document.getElementById('totalBusinesses').textContent = totalBusinesses;
-    document.getElementById('thisMonthTithe').textContent = '$' + thisMonthTithe.toFixed(2);
-    document.getElementById('proMembers').textContent = proMembers;
-    document.getElementById('totalTithe').textContent = '$' + totalTithe.toFixed(2);
-    console.log('✅ Stats updated:', { totalBusinesses, thisMonthTithe, proMembers, totalTithe });
-
+    const [businesses, tithes] = await Promise.all([
+      getDocs(query(collection(db, 'business_listings_public'), where('church_id', '==', churchId))), fetchChurchTithes(churchId)
+    ]);
+    document.getElementById('totalBusinesses').textContent = businesses.size;
+    document.getElementById('proMembers').textContent = businesses.docs.filter(item => isBusinessPro(item.data())).length;
+    document.getElementById('thisMonthTithe').textContent = '$' + tithes.month.toFixed(2);
+    document.getElementById('totalTithe').textContent = '$' + tithes.total.toFixed(2);
   } catch (error) {
-    console.error('❌ Error loading stats:', error);
+    for (const id of ['totalBusinesses','proMembers','thisMonthTithe','totalTithe']) document.getElementById(id).textContent = 'Unavailable';
+    window.showToast('Could not load church statistics: ' + error.message, 'error');
   }
 }
 
@@ -793,28 +751,8 @@ async function loadWeeklyActivity() {
         } catch (e) { /* skip invalid date */ }
       }
 
-      try {
-        const commissionQ = query(
-          collection(db, "business_listings_public", bizDoc.id, "commissions"),
-          where("church_id", "==", churchId)
-        );
-        const commissionSnapshot = await getDocs(commissionQ);
-        
-        commissionSnapshot.forEach((commDoc) => {
-          const commission = commDoc.data();
-          if (commission.payment_date) {
-            try {
-              const paymentDate = commission.payment_date.toDate ? commission.payment_date.toDate() : new Date(commission.payment_date);
-              if (paymentDate >= oneWeekAgo) {
-                weekTithe += commission.tithe_amount || 0;
-              }
-            } catch (e) { /* skip invalid date */ }
-          }
-        });
-      } catch (e) {
-        // Skip commission errors
-      }
     }
+    weekTithe = (await fetchChurchTithes(churchId)).week;
 
     newBizEl.textContent = newBusinesses;
     proUpEl.textContent = proUpgrades;

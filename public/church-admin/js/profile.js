@@ -383,7 +383,7 @@
       try {
         await updateDoc(doc(db, "churches", churchId), updateData);
         showToast('Church profile updated!', 'success');
-        setTimeout(() => window.location.href = 'index', 1500);
+        setTimeout(() => window.location.href = '/church-admin/index?id=' + encodeURIComponent(churchId), 1500);
       } catch (error) {
         console.error('Error updating church:', error);
         showToast('Error updating church: ' + error.message, 'error');
@@ -585,27 +585,14 @@ function updateCheckMailingAddress() {
 }
 
 function loadStripeConnectStatus(church) {
-  const notConnected = document.getElementById('stripeNotConnected');
-  const connected = document.getElementById('stripeConnected');
-  const pending = document.getElementById('stripePending');
-  
-  // Hide all first
-  notConnected?.classList.add('hidden');
-  connected?.classList.add('hidden');
-  pending?.classList.add('hidden');
-  
-  const status = church.stripe_connect_status;
-  
-  if (status === 'active') {
-    connected?.classList.remove('hidden');
-  } else if (status === 'pending' || church.stripe_connect_id) {
-    pending?.classList.remove('hidden');
-  } else {
-    notConnected?.classList.remove('hidden');
-  }
+  document.getElementById('stripeNotConnected')?.classList.remove('hidden');
+  document.getElementById('stripeConnected')?.classList.add('hidden');
+  document.getElementById('stripePending')?.classList.add('hidden');
 }
 
 async function startStripeOnboarding() {
+  showToast('Electronic payouts are not available yet. This setup is deferred.', 'info');
+  return;
   const btn = document.getElementById('setupStripeBtn') || document.getElementById('continueStripeBtn');
   if (btn) {
     btn.disabled = true;
@@ -709,6 +696,8 @@ function showStripeOnboardingModal(connectInstance) {
 }
 
 async function openStripeDashboard() {
+  showToast('Electronic payouts are not available yet. This setup is deferred.', 'info');
+  return;
   try {
     const response = await fetch('/api/stripe-connect/dashboard-link', {
       method: 'POST',

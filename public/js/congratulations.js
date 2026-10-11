@@ -121,7 +121,7 @@ async function getChurchStatus(uid, email) {
     if (snapshot.empty && email) {
       q = query(
         collection(db, 'churches'),
-        where('contact_email', '==', email)
+        where('admin_uid', '==', uid)
       );
       snapshot = await getDocs(q);
     }

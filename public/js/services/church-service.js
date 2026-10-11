@@ -55,7 +55,7 @@ export async function fetchActiveChurches(options = {}) {
 }
 
 export async function fetchAllChurches(options = {}) {
-  const { forceRefresh = false, includeStatuses = ['active', 'pending'] } = options;
+  const { forceRefresh = false, includeStatuses = ['active'] } = options;
 
   if (!forceRefresh && cachedAllChurches && allCacheTimestamp && (Date.now() - allCacheTimestamp < CACHE_DURATION_MS)) {
     return cachedAllChurches;
@@ -64,7 +64,7 @@ export async function fetchAllChurches(options = {}) {
   try {
     const churchesQuery = query(
       collection(db, 'churches'),
-      where('listing_status', 'in', includeStatuses)
+      where('listing_status', '==', ACTIVE_STATUS)
     );
     
     const snapshot = await getDocs(churchesQuery);

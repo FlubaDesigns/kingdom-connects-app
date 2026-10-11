@@ -91,6 +91,12 @@ service cloud.firestore {
       return url == null || url == '' || (url is string && (url.matches('^https?://.*') || url.size() == 0));
     }
 
+    function churchProfileFields() { return ['church_name', 'denomination', 'description', 'welcome_message', 'hero_media_url', 'livestream_url', 'address_line1', 'address_line2', 'city', 'state', 'zip_code', 'country', 'contact_phone', 'contact_email', 'website', 'service_times', 'parishioner_count', 'directory_link', 'updated_at', 'show_social_media', 'social_media', 'allow_reviews_for_church', 'allow_social_sharing', 'allow_review_sharing', 'profile_image_url', 'profile_image_path', 'payout_method', 'page_settings', 'auto_approve_businesses', 'membership_approval_mode', 'last_page_update']; }
+    function approvedChurchMember(churchId) {
+      return accountEnabled() && getUserData().get('home_church_id', '') == churchId &&
+        getUserData().get('church_membership_status', '') == 'approved';
+    }
+
     // Prevent changing protected fields
     function notChanging(field) {
       return !request.resource.data.diff(resource.data).affectedKeys().hasAny([field]);
@@ -211,46 +217,45 @@ service cloud.firestore {
     // CHURCHES
     // ========================================
     match /churches/{churchId} {
-      allow read: if true;
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.admin_uid == request.auth.uid) || resource.data.listing_status == 'active';
 
       allow create: if accountEnabled()
                     && isValidString(request.resource.data.church_name, 2, 200)
                     && isValidEmail(request.resource.data.contact_email)
                     && request.resource.data.listing_status in ['pending', 'draft']
-                    && request.resource.data.admin_uid == request.auth.uid;
+                    && request.resource.data.admin_uid == request.auth.uid
+                    && request.resource.data.keys().hasOnly(churchProfileFields().concat(['admin_uid','listing_status','created_at','submission_date','submission_type','representative_name','representative_title','submitter_email','is_demo']));
 
       allow update: if isAdmin() || (
                       isOwnerOfChurch(churchId)
-                      && notChanging('admin_uid')
-                      && notChanging('listing_status')
-                      && notChanging('created_at')
+                      && request.resource.data.diff(resource.data).affectedKeys().hasOnly(churchProfileFields())
                     );
 
       allow delete: if isAdmin();
 
       // Church subcollections
       match /announcements/{announcementId} {
-        allow read: if true;
+        allow read: if isAdmin() || managesChurch(churchId) || (churchActive(churchId) && resource.data.status == 'published');
         allow write: if isAdmin() || managesChurch(churchId);
       }
 
       match /events/{eventId} {
-        allow read: if true;
+        allow read: if isAdmin() || managesChurch(churchId) || (churchActive(churchId) && resource.data.visibility == 'visible');
         allow write: if isAdmin() || managesChurch(churchId);
       }
 
       match /activities/{activityId} {
-        allow read: if true;
+        allow read: if isAdmin() || managesChurch(churchId) || (churchActive(churchId) && resource.data.get('active', false) == true);
         allow write: if isAdmin() || managesChurch(churchId);
       }
 
       match /media/{mediaId} {
-        allow read: if true;
+        allow read: if isAdmin() || managesChurch(churchId) || (churchActive(churchId) && resource.data.get('visibility', '') == 'visible');
         allow write: if isAdmin() || managesChurch(churchId);
       }
 
       match /resources/{resourceId} {
-        allow read: if true;
+        allow read: if isAdmin() || managesChurch(churchId) || (churchActive(churchId) && resource.data.get('visibility', '') == 'visible');
         allow write: if isAdmin() || managesChurch(churchId);
       }
     }
@@ -448,26 +453,22 @@ service cloud.firestore {
     // CHURCH ACTIVITIES (Top-level)
     // ========================================
     match /church_activities/{activityId} {
-      allow read: if true;
-      allow create: if isAuthenticated() &&
-        request.resource.data.church_id != null &&
-        isOwnerOfChurch(request.resource.data.church_id);
-      allow update, delete: if isAuthenticated() &&
-        resource.data.church_id != null &&
-        isOwnerOfChurch(resource.data.church_id);
+      allow read: if isAdmin() || managesChurch(resource.data.church_id) ||
+        (churchActive(resource.data.church_id) && resource.data.active == true);
+      allow create: if isAdmin() || managesChurch(request.resource.data.church_id);
+      allow update: if (isAdmin() || managesChurch(resource.data.church_id)) && notChanging('church_id');
+      allow delete: if isAdmin() || managesChurch(resource.data.church_id);
     }
 
     // ========================================
     // CHURCH MESSAGES
     // ========================================
     match /church_messages/{messageId} {
-      allow read: if true;
-      allow create: if isAuthenticated() &&
-        request.resource.data.church_id != null &&
-        isOwnerOfChurch(request.resource.data.church_id);
-      allow update, delete: if isAuthenticated() &&
-        resource.data.church_id != null &&
-        isOwnerOfChurch(resource.data.church_id);
+      allow read: if isAdmin() || managesChurch(resource.data.church_id) ||
+        (churchActive(resource.data.church_id) && resource.data.active == true && (resource.data.audience in ['both','social'] || (resource.data.audience == 'members' && approvedChurchMember(resource.data.church_id))));
+      allow create: if isAdmin() || managesChurch(request.resource.data.church_id);
+      allow update: if (isAdmin() || managesChurch(resource.data.church_id)) && notChanging('church_id');
+      allow delete: if isAdmin() || managesChurch(resource.data.church_id);
     }
 
     // ========================================
@@ -481,16 +482,10 @@ service cloud.firestore {
     // ========================================
     // CHURCH INSIGHTS
     // ========================================
-    match /church_insights/{insightId} {
-      allow read: if isAdmin() ||
-                     (isAuthenticated() && resource.data.church_id != null &&
-                      isOwnerOfChurch(resource.data.church_id));
-      allow create: if isAuthenticated() &&
-        request.resource.data.church_id != null &&
-        isOwnerOfChurch(request.resource.data.church_id);
-      allow update: if isAdmin() ||
-        (isAuthenticated() && resource.data.church_id != null &&
-         isOwnerOfChurch(resource.data.church_id));
+    match /church_insights/{churchId} {
+      allow read: if isAdmin() || managesChurch(churchId);
+      allow create: if (isAdmin() || managesChurch(churchId)) && request.resource.data.church_id == churchId;
+      allow update: if (isAdmin() || managesChurch(churchId)) && request.resource.data.church_id == churchId && notChanging('church_id');
       allow delete: if isAdmin();
     }
 

@@ -390,7 +390,7 @@ async function loadData() {
     // Load businesses, churches, and categories in parallel
     const [bizSnapshot, churchSnapshot, categories] = await Promise.all([
       getDocs(query(collection(db, "business_listings_public"), where("is_visible", "==", true))),
-      getDocs(collection(db, "churches")),
+      getDocs(query(collection(db, "churches"), where("listing_status", "==", "active"))),
       loadCategories()
     ]);
     
