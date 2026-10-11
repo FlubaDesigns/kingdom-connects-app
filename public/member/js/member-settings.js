@@ -13,7 +13,7 @@ let userData = null;
 
 requireMember(async (userContext, firebaseUser) => {
   currentUser = firebaseUser;
-  await loadSettings(firebaseUser);
+  if (!await loadSettings(firebaseUser)) return;
   await loadChurches();
   setupPhotoUpload();
   try { await firebaseUser.reload(); await changeHierarchy('syncEmailVerification'); }
@@ -62,17 +62,20 @@ async function loadSettings(user) {
 
     loadingMessage.classList.add('hidden');
     settingsContent.classList.remove('hidden');
+    return true;
 
   } catch (error) {
     console.error('Error loading settings:', error);
     loadingMessage.classList.add('hidden');
     errorMessage.classList.remove('hidden');
+    return false;
   }
 }
 
 async function loadChurches() {
   const homeChurchSelect = document.getElementById('homeChurchSelect');
   if (!homeChurchSelect) return;
+  homeChurchSelect.disabled = true;
 
   try {
     const churches = await fetchActiveChurches();
@@ -85,12 +88,18 @@ async function loadChurches() {
     });
 
     const selectedId = homeChurchSelect.getAttribute('data-selected');
-    if (selectedId) {
-      homeChurchSelect.value = selectedId;
+    if (selectedId && !churches.some(church => church.id === selectedId)) {
+      const currentOption = document.createElement('option');
+      currentOption.value = selectedId;
+      currentOption.textContent = 'Current church (not currently listed)';
+      homeChurchSelect.appendChild(currentOption);
     }
+    homeChurchSelect.value = selectedId || 'none';
+    homeChurchSelect.disabled = false;
 
   } catch (error) {
     console.error('Error loading churches:', error);
+    document.getElementById('churchLoadStatus').textContent = 'Church choices could not load. Your current affiliation will be kept when you save your profile. Refresh to try again.';
   }
 }
 
@@ -236,11 +245,18 @@ function setupSaveSettings() {
 
       const displayName = document.getElementById('displayName').value.trim();
       const phoneNumber = document.getElementById('phoneNumber').value.replace(/\D/g, '');
-      const homeChurchId = document.getElementById('homeChurchSelect').value;
+      const churchSelect = document.getElementById('homeChurchSelect');
+      const homeChurchId = churchSelect.value;
       const allowReviewSharing = document.getElementById('allowReviewSharing').checked;
       const notificationsEnabled = document.getElementById('notificationsEnabled').checked;
 
-      await changeHierarchy('setMemberChurch', { churchId: homeChurchId === 'none' ? null : homeChurchId || null });
+      const churchId = homeChurchId === 'none' ? null : homeChurchId;
+      if (!churchSelect.disabled && homeChurchId && churchId !== (userData.home_church_id || null)) {
+        const result = await changeHierarchy('setMemberChurch', { churchId });
+        userData.home_church_id = churchId;
+        userData.church_membership_status = result.status;
+        document.getElementById('membershipStatus').textContent = 'Membership: ' + result.status;
+      }
       await updateDoc(doc(db, 'users', currentUser.uid), {
         display_name: displayName || null,
         phone_number: phoneNumber || null,

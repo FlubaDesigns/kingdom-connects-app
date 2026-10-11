@@ -95,10 +95,11 @@
 
               <div class="form-field">
                 <label for="homeChurchSelect">Home Church</label>
-                <select id="homeChurchSelect" class="input-dark">
+                <select id="homeChurchSelect" class="input-dark" disabled>
                   <option value="">Not Affiliated</option>
                   <option value="loading" disabled>Loading churches...</option>
                 </select>
+                <p id="churchLoadStatus" class="text-sm" role="status"></p>
                 <small class="helper-text-small">Your home church receives 10% of Pro business subscriptions from their members</small>
               </div>
             </article>
