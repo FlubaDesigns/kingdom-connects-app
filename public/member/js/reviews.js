@@ -1,4 +1,5 @@
 import { changeHierarchy } from '../../js/services/hierarchy-service.js';
+import { showToast } from '../../js/utils.js';
 import { getMemberBusiness } from '../../js/services/member-business.js';
 import { db } from "../../js/firebase-config.js";
 import { collection, getDocs, query, where, orderBy, doc, getDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -171,7 +172,7 @@ async function editReview(reviewId, currentText, currentRating) {
     window.location.reload();
   } catch (error) {
     console.error('Error updating review:', error);
-    window.showToast('Error updating review. Please try again.', 'error');
+    showToast('Error updating review. Please try again.', 'error');
   }
 }
 
@@ -183,6 +184,6 @@ async function deleteReview(reviewId) {
     window.location.reload();
   } catch (error) {
     console.error('Error deleting review:', error);
-    window.showToast('Error deleting review. Please try again.', 'error');
+    showToast('Error deleting review. Please try again.', 'error');
   }
 }

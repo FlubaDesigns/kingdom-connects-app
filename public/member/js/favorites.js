@@ -1,4 +1,5 @@
 import { getMemberBusiness } from '../../js/services/member-business.js';
+import { showToast } from '../../js/utils.js';
 import { db } from "../../js/firebase-config.js";
 import { collection, getDocs, query, where, doc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { requireMember } from "../../js/auth/access-control.js";
@@ -82,6 +83,7 @@ function renderBusinesses(businesses) {
     const business = favorite.data;
     const card = document.createElement('article');
     card.className = 'card mb-md business-border';
+    card.dataset.favoriteId = favorite.id;
 
     const businessName = document.createElement('h3');
     businessName.className = 'gold-metallic mb-sm';
@@ -121,7 +123,7 @@ function renderBusinesses(businesses) {
     const unsaveBtn = document.createElement('button');
     unsaveBtn.className = 'btn btn-danger';
     unsaveBtn.textContent = 'Unsave';
-    unsaveBtn.addEventListener('click', () => handleUnsave(favorite.id, favorite.docId));
+    unsaveBtn.addEventListener('click', () => handleUnsave(favorite.id, card, unsaveBtn));
     btnContainer.appendChild(unsaveBtn);
 
     card.appendChild(btnContainer);
@@ -129,29 +131,30 @@ function renderBusinesses(businesses) {
   });
 }
 
-async function handleUnsave(favoriteId, businessId) {
+async function handleUnsave(favoriteId, card, button) {
   const confirmed = window.showConfirmDialog 
     ? await window.showConfirmDialog('Remove Favorite', 'Remove this business from your favorites?', 'Remove', 'warning')
     : confirm('Remove this business from your favorites?');
   
   if (!confirmed) return;
 
+  button.disabled = true;
   try {
     await deleteDoc(doc(db, "favorite_businesses", favoriteId));
     
-    const card = document.querySelector(`[data-favorite-id="${favoriteId}"]`)?.closest('.card');
-    if (card) {
-      card.remove();
-    } else {
-      location.reload();
+    card.remove();
+    if (!document.getElementById('businessFavorites').children.length) {
+      document.getElementById('contentArea').classList.add('hidden');
+      document.getElementById('emptyState').classList.remove('hidden');
     }
     
     if (window.showSuccessAnimation) {
       window.showSuccessAnimation('Removed!');
     }
-    window.showToast('Business removed from favorites!', 'success');
+    showToast('Business removed from favorites!', 'success');
   } catch (error) {
+    button.disabled = false;
     console.error('Error removing favorite:', error);
-    window.showToast('Error removing favorite. Please try again.', 'error');
+    showToast('Error removing favorite. Please try again.', 'error');
   }
 }
