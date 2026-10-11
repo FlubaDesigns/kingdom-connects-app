@@ -372,7 +372,7 @@ async function loadCampaigns() {
           <span class="status-badge status-${campaign.status}">${campaign.status.toUpperCase()}</span>
         </div>
         <p class="text-sm"><strong>Subject:</strong> ${campaign.subject}</p>
-        ${campaign.status === 'sent' ? `
+        ${['sent','partial'].includes(campaign.status) ? `
           <div class="campaign-stats">
             <div class="stat-item">
               <div class="stat-value">${campaign.sent_count || 0}</div>
