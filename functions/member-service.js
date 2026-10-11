@@ -1,10 +1,11 @@
 'use strict';
 const policy=require('./hierarchy-policy');
+const { writeReview } = require('./review-service');
 const {queueMemberMail}=require('./member-mail');
 const fail=(status,message)=>{throw Object.assign(new Error(message),{status})};
 const id=value=>{if(typeof value!=='string'||!value||value.includes('/')||value.length>128)fail(400,'Invalid record ID.');return value};
 const text=(value,min,max,label)=>{if(typeof value!=='string'||value.trim().length<min||value.trim().length>max)fail(400,'Invalid '+label+'.');return value.trim()};
-const actions=['completeMemberSignup','saveMemberReview','deleteMemberReview','syncEmailVerification','saveMemberAdmin','closeMemberAccount','deleteMemberAccount'];
+const actions=['completeMemberSignup','saveMemberReview','deleteMemberReview','syncEmailVerification','saveMemberAdmin','closeMemberAccount','deleteMemberAccount','setAdminUserRoles','setAdminUserStatus','moderateMemberReview'];
 function createMemberService(db,auth,bucket,timestamp) {
  async function execute(actor,input) {
   if(!actions.includes(input?.action))fail(400,'Unknown member action.');
@@ -40,6 +41,40 @@ function createMemberService(db,auth,bucket,timestamp) {
   const user=(await db.doc('users/'+id(actor.uid)).get()).data();
   if(!user||policy.isBlocked(user))fail(403,'Account access is suspended.');
   const isAdmin=policy.isAdmin(user);
+  if (['setAdminUserRoles','setAdminUserStatus','moderateMemberReview'].includes(input.action)) {
+   if (!isAdmin) fail(403, 'Administrator access required.');
+   return db.runTransaction(async tx => {
+    const latest = (await tx.get(db.doc('users/'+actor.uid))).data();
+    if (!latest || policy.isBlocked(latest) || !policy.isAdmin(latest)) fail(403, 'Administrator access required.');
+    if (input.action === 'moderateMemberReview') {
+     const ref = db.doc('reviews/'+id(input.reviewId)), review = (await tx.get(ref)).data();
+     if (!review) fail(404, 'Review not found.');
+     if (!['approved','flagged','pending','delete','notes'].includes(input.decision)) fail(400, 'Invalid moderation decision.');
+     const next = input.decision === 'delete' ? null : { ...review,
+      ...(input.decision === 'notes' ? {} : {status: input.decision}),
+      ...(input.notes === undefined ? {} : {admin_notes: text(input.notes,0,5000,'notes')}),
+      moderated_by: actor.uid, moderated_at: timestamp() };
+     await writeReview(tx, db, ref, review, next, timestamp);
+     tx.create(db.collection('activity_log').doc(), {user_id:actor.uid, activity_type:'review_moderation', details:'Review decision: '+input.decision, target_id:input.reviewId, target_type:'review', timestamp:timestamp()});
+     return {ok:true};
+    }
+    const ref = db.doc('users/'+id(input.memberId)), target = (await tx.get(ref)).data();
+    if (!target) fail(404, 'Member not found.');
+    let changes;
+    if (input.action === 'setAdminUserRoles') {
+     const roles = policy.validateRoles(input.roles);
+     if (input.memberId === actor.uid && !policy.isAdmin({roles})) fail(409, 'You cannot remove your own administrator access.');
+     changes = {roles, role: roles.includes(target.role) ? target.role : roles.find(role => role !== 'member') || 'member'};
+    } else {
+     if (!['active','pending','suspended','disabled','rejected'].includes(input.status)) fail(400, 'Invalid account status.');
+     if (input.memberId === actor.uid && input.status !== 'active') fail(409, 'You cannot disable your own administrator access.');
+     changes = {account_status: input.status, ...(input.status === 'active' ? {church_membership_status:'approved'} : {})};
+    }
+    tx.update(ref, {...changes, updated_at:timestamp()});
+    tx.create(db.collection('activity_log').doc(), {user_id:actor.uid, activity_type:input.action, details:input.action === 'setAdminUserRoles' ? 'Account roles updated' : 'Account status changed to '+input.status, target_id:input.memberId, target_type:'user', timestamp:timestamp()});
+    return {ok:true};
+   });
+  }
   if(input.action==='syncEmailVerification') {
    const record=await auth.getUser(actor.uid);
    await db.doc('users/'+actor.uid).update({email_verified:record.emailVerified,updated_at:timestamp()});return {ok:true,emailVerified:record.emailVerified};
@@ -52,14 +87,14 @@ function createMemberService(db,auth,bucket,timestamp) {
     if(!latest || latest.account_status!=='active')fail(403,'Approved membership is required to manage reviews.');
     const current=(await tx.get(reviewRef)).data();
     if(input.reviewId&&(!current||current.user_id!==actor.uid))fail(403,'This is not your review.');
-    if(input.action==='deleteMemberReview'){tx.delete(reviewRef);return {ok:true};}
+    if(input.action==='deleteMemberReview'){await writeReview(tx,db,reviewRef,current,null,timestamp);return {ok:true};}
     const businessId=current?.business_id||id(input.businessId);
     const business=(await tx.get(db.doc('business_listings_public/'+businessId))).data();
     if(!business?.is_visible)fail(409,'This business is not available for reviews.');
     const rating=Number(input.rating);if(!Number.isInteger(rating)||rating<1||rating>5)fail(400,'Choose a rating from 1 to 5.');
     const reviewText=text(input.reviewText,10,2000,'review text');
-    tx.set(reviewRef,{business_id:businessId,user_id:actor.uid,reviewer_name:String(user.display_name||user.name||'Member').slice(0,100),
-     rating,review_text:reviewText,status:'pending',created_at:current?.created_at||timestamp(),updated_at:timestamp()});
+    await writeReview(tx,db,reviewRef,current,{business_id:businessId,user_id:actor.uid,reviewer_name:String(user.display_name||user.name||'Member').slice(0,100),
+     rating,review_text:reviewText,status:'pending',created_at:current?.created_at||timestamp(),updated_at:timestamp()},timestamp);
     return {ok:true,reviewId:reviewRef.id,status:'pending'};
    });
   }
@@ -68,7 +103,7 @@ function createMemberService(db,auth,bucket,timestamp) {
    const values=input.values||{};const name=text(values.name,2,100,'name');
    const status=values.account_status;if(!['active','pending','suspended','disabled','rejected'].includes(status))fail(400,'Invalid account status.');
    const role=values.role==='sales'?'sales_agent':values.role;
-   if(!['member','business_owner','church_admin','sales_agent','sales_director','marketing_manager','admin','platform_admin'].includes(role))fail(400,'Invalid role.');
+   policy.validateRoles([role]);
    let uid=input.memberId? id(input.memberId):null,created=false;
    if(!uid){const record=await auth.createUser({email:text(values.email,3,254,'email'),displayName:name});uid=record.uid;created=true;}
    try {
@@ -77,7 +112,7 @@ function createMemberService(db,auth,bucket,timestamp) {
     if(uid===actor.uid&&(status!=='active'||!['admin','platform_admin'].includes(role)))fail(409,'You cannot remove your own administrator access.');
     await db.runTransaction(async tx=>{
      const ref=db.doc('users/'+uid),old=(await tx.get(ref)).data();
-     const payload={name,email:record.email,role,roles:[...new Set(['member',role])],account_status:status,
+     const payload={name,email:record.email,role,roles:[...new Set(['member', ...(old && role === (old.role || policy.roles(old).find(r=>r!=='member') || 'member') ? policy.roles(old) : [role])])],account_status:status,
       email_verified:record.emailVerified,phone_number:String(values.phone_number||'').slice(0,30),
       notifications_enabled:values.notifications_enabled!==false,
       profile_photo_url:typeof values.profile_photo_url==='string'&&/^https:\/\//.test(values.profile_photo_url)?values.profile_photo_url:null,
@@ -106,7 +141,7 @@ function createMemberService(db,auth,bucket,timestamp) {
   try{await auth.updateUser(uid,{disabled:true});await auth.revokeRefreshTokens(uid);}catch(e){if(e.code!=='auth/user-not-found')throw e;}
   if(profile)await db.doc('users/'+uid).update({account_status:'disabled'});
   for(const [collection,field]of [['favorite_businesses','user_id'],['reviews','user_id'],['member_mail','uid']]) {
-   while(true){const page=await db.collection(collection).where(field,'==',uid).limit(100).get();if(page.empty)break;const batch=db.batch();page.docs.forEach(d=>batch.delete(d.ref));await batch.commit();}
+   while(true){const page=await db.collection(collection).where(field,'==',uid).limit(100).get();if(page.empty)break;if(collection==='reviews'){for(const review of page.docs)await db.runTransaction(async tx=>{const latest=await tx.get(review.ref);if(latest.exists)await writeReview(tx,db,review.ref,latest.data(),null,timestamp)});}else{const batch=db.batch();page.docs.forEach(d=>batch.delete(d.ref));await batch.commit();}}
   }
   await bucket.deleteFiles({prefix:'users/'+uid+'/'});
   await db.recursiveDelete(db.doc('users/'+uid));

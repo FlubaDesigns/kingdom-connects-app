@@ -1,3 +1,5 @@
+import { adminReady } from './admin-auth-guard.js';
+await adminReady;
 import { db, auth } from '../../js/firebase-config.js';
 import { collection, addDoc, getDocs, getDoc, query, where, orderBy, serverTimestamp, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { sendCustomEmail } from '../../js/email/email-service.js';

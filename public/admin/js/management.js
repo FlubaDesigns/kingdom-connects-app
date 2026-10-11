@@ -1,14 +1,10 @@
+import { escapeHtml } from '../../js/business-presentation.js';
+import { mergeBusiness } from '../../js/services/business-service.js';
 import { changeHierarchy } from '../../js/services/hierarchy-service.js';
 import { db } from "../../js/firebase-config.js";
-import { collection, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy, arrayUnion, arrayRemove, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { collection, getDoc, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy, arrayUnion, arrayRemove, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { requireAdmin } from "./admin-auth-guard.js";
 import { normalizeUserRoles } from "../../js/role-utils.js";
-
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
 
 function debounce(func, wait) {
   let timeout;
@@ -50,15 +46,20 @@ btnClearFilters.addEventListener('click', clearFilters);
 async function loadAllData() {
   try {
     const [usersSnapshot, churchesSnapshot, businessesSnapshot] = await Promise.all([
-      getDocs(query(collection(db, "users"), orderBy("created_at", "desc"))),
+      getDocs(collection(db, "users")),
       getDocs(query(collection(db, "churches"), where("listing_status", "==", "pending"))),
       getDocs(query(collection(db, "business_listings_public"), where("listing_status", "==", "pending")))
     ]);
 
-    allUsers = usersSnapshot.docs.map(doc => ({ id: doc.id, type: 'user', ...doc.data() }));
-    allChurchSubmissions = churchesSnapshot.docs.map(doc => ({ id: doc.id, type: 'church_submission', ...doc.data() }));
-    allBusinessSubmissions = businessesSnapshot.docs.map(doc => ({ id: doc.id, type: 'business_submission', ...doc.data() }));
+    allUsers = usersSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id, type: 'user' }));
+    allChurchSubmissions = churchesSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id, type: 'church_submission' }));
+    allBusinessSubmissions = businessesSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id, type: 'business_submission' })).filter(business => business.platform_approved !== true && business.platform_review_status !== 'rejected');
 
+    allBusinessSubmissions = await Promise.all(allBusinessSubmissions.map(async business => {
+      const privateDoc = await getDoc(doc(db, 'business_listings_private', business.id));
+      return { ...mergeBusiness(business.id, business, privateDoc.data()), type:'business_submission' };
+    }));
+    allUsers.sort((a,b) => (b.created_at?.seconds || 0) - (a.created_at?.seconds || 0));
     updateStats();
     updateStatusOptions();
     renderResults();
@@ -74,9 +75,9 @@ async function loadAllData() {
 }
 
 function updateStats() {
-  const activeUsers = allUsers.filter(u => (u.listing_status || u.account_status || 'active') === 'active').length;
-  const pendingChurches = allChurchSubmissions.filter(s => s.status === 'pending').length;
-  const pendingBusinesses = allBusinessSubmissions.filter(s => s.status === 'pending').length;
+  const activeUsers = allUsers.filter(u => (u.account_status || 'active') === 'active').length;
+  const pendingChurches = allChurchSubmissions.filter(s => s.listing_status === 'pending').length;
+  const pendingBusinesses = allBusinessSubmissions.filter(s => s.listing_status === 'pending').length;
   const pendingUsers = allUsers.filter(u => u.account_status === 'pending').length;
   const totalPending = pendingChurches + pendingBusinesses + pendingUsers;
   
@@ -122,11 +123,11 @@ function renderResults() {
   
   if (status === 'pending') {
     // Include pending church and business submissions
-    if (!role || role === 'church-admin') {
-      results = results.concat(allChurchSubmissions.filter(s => s.status === 'pending'));
+    if (!role || role === 'church_admin') {
+      results = results.concat(allChurchSubmissions.filter(s => s.listing_status === 'pending'));
     }
-    if (!role || role === 'business-admin') {
-      results = results.concat(allBusinessSubmissions.filter(s => s.status === 'pending'));
+    if (!role || role === 'business_owner') {
+      results = results.concat(allBusinessSubmissions.filter(s => s.listing_status === 'pending'));
     }
     // Also include pending USERS (members awaiting approval)
     if (!role || role === 'member') {
@@ -135,7 +136,7 @@ function renderResults() {
     }
   } else {
     results = allUsers.filter(u => {
-      const userStatus = u.listing_status || u.account_status || 'active';
+      const userStatus = u.account_status || 'active';
       if (userStatus !== status) return false;
       
       if (role) {
@@ -180,7 +181,7 @@ function renderResults() {
 
 function renderUserCard(user) {
   const displayRole = Array.isArray(user.roles) ? user.roles.join(', ') : (user.role || 'member');
-  const displayStatus = user.listing_status || user.account_status || 'active';
+  const displayStatus = user.account_status || 'active';
   const createdDate = user.created_at?.toDate ? user.created_at.toDate().toLocaleDateString() : 'N/A';
   const proIcon = user.is_pro_user ? '⭐ PRO' : '';
   
@@ -188,7 +189,7 @@ function renderUserCard(user) {
     <div class="card">
       <div class="flex-between-center mb-sm">
         <h3 class="gold m-0">${escapeHtml(user.name || 'Unnamed User')}</h3>
-        <span class="badge-gold">${displayRole}</span>
+        <span class="badge-gold">${escapeHtml(displayRole)}</span>
       </div>
       
       <div class="grid-2 gap-sm mb-md">
@@ -242,15 +243,15 @@ function renderChurchSubmissionCard(sub) {
       <div class="mb-md">
         <p class="text-sm opacity-70 mb-xs"><strong>Type:</strong> ${submissionType}</p>
         ${sub.submission_type === 'pastor_registration' 
-          ? `<p class="text-sm opacity-70"><strong>${sub.representative_title}:</strong> ${escapeHtml(sub.representative_name)}</p>`
+          ? `<p class="text-sm opacity-70"><strong>${escapeHtml(sub.representative_title)}:</strong> ${escapeHtml(sub.representative_name)}</p>`
           : `<p class="text-sm opacity-70"><strong>Nominated by:</strong> ${escapeHtml(sub.nominator_name)}${sub.nominator_business ? ' (' + escapeHtml(sub.nominator_business) + ')' : ''}</p>`
         }
       </div>
       
       <div class="card-highlight mb-md">
         <p class="text-sm mb-xs"><strong>📞 Contact Info:</strong></p>
-        <p class="text-sm"><strong>Phone:</strong> <a href="tel:${sub.phone}">${escapeHtml(sub.phone)}</a></p>
-        <p class="text-sm"><strong>Email:</strong> <a href="mailto:${sub.email}">${escapeHtml(sub.email)}</a></p>
+        <p class="text-sm"><strong>Phone:</strong> <a href="tel:${escapeHtml(sub.contact_phone || sub.phone_number || sub.phone || '')}">${escapeHtml(sub.contact_phone || sub.phone_number || sub.phone || '')}</a></p>
+        <p class="text-sm"><strong>Email:</strong> <a href="mailto:${escapeHtml(sub.contact_email || sub.email || sub.owner_email || '')}">${escapeHtml(sub.contact_email || sub.email || sub.owner_email || '')}</a></p>
       </div>
       
       <div class="mb-md">
@@ -279,7 +280,7 @@ function renderBusinessSubmissionCard(sub) {
       <div class="grid-2 gap-sm mb-md">
         <div>
           <p class="text-sm opacity-70 mb-xs"><strong>Owner:</strong></p>
-          <p class="text-md">${escapeHtml(sub.owner_name || 'Unknown')}</p>
+          <p class="text-md">${escapeHtml(sub.your_name || sub.owner_name || 'Unknown')}</p>
         </div>
         <div>
           <p class="text-sm opacity-70 mb-xs"><strong>Submitted:</strong></p>
@@ -296,9 +297,9 @@ function renderBusinessSubmissionCard(sub) {
       
       <div class="card-highlight mb-md">
         <p class="text-sm mb-xs"><strong>📞 Contact Info:</strong></p>
-        <p class="text-sm"><strong>Phone:</strong> <a href="tel:${sub.phone}">${escapeHtml(sub.phone)}</a></p>
-        <p class="text-sm"><strong>Email:</strong> <a href="mailto:${sub.email}">${escapeHtml(sub.email)}</a></p>
-        ${sub.website ? `<p class="text-sm"><strong>Website:</strong> <a href="${escapeHtml(sub.website)}" target="_blank" rel="noopener">${escapeHtml(sub.website)}</a></p>` : ''}
+        <p class="text-sm"><strong>Phone:</strong> <a href="tel:${escapeHtml(sub.contact_phone || sub.phone_number || sub.phone || '')}">${escapeHtml(sub.contact_phone || sub.phone_number || sub.phone || '')}</a></p>
+        <p class="text-sm"><strong>Email:</strong> <a href="mailto:${escapeHtml(sub.contact_email || sub.email || sub.owner_email || '')}">${escapeHtml(sub.contact_email || sub.email || sub.owner_email || '')}</a></p>
+        ${sub.website_url || sub.website ? `<p class="text-sm"><strong>Website:</strong> ${escapeHtml(sub.website_url || sub.website)}</p>` : ''}
       </div>
       
       <div class="mb-md">
@@ -350,7 +351,7 @@ async function editUserRoles(userId) {
   
   const newRolesInput = await window.showInputDialog(
     'Edit User Roles',
-    `Update roles for ${user.email}\n\nAvailable roles: member, business-admin, church-admin, sales, admin`,
+    `Update roles for ${user.email}\n\nAvailable roles: member, business_owner, church_admin, sales_agent, sales_director, admin, platform_admin`,
     rolesStr,
     { placeholder: 'Enter roles (comma-separated)', confirmText: 'Update Roles' }
   );
@@ -360,7 +361,7 @@ async function editUserRoles(userId) {
   const newRoles = newRolesInput.split(',').map(r => r.trim()).filter(r => r);
   
   try {
-    await updateDoc(doc(db, 'users', userId), { roles: newRoles });
+    await changeHierarchy('setAdminUserRoles', { memberId: userId, roles: newRoles });
     window.showToast('Roles updated!', 'success');
     await loadAllData();
   } catch (error) {
@@ -383,10 +384,7 @@ async function toggleUserStatus(userId, currentStatus) {
   if (!confirmed) return;
   
   try {
-    await updateDoc(doc(db, 'users', userId), { 
-      account_status: newStatus,
-      listing_status: newStatus  
-    });
+    await changeHierarchy('setAdminUserStatus', { memberId: userId, status: newStatus });
     window.showToast(`User ${newStatus}`, 'success');
     await loadAllData();
   } catch (error) {
@@ -405,27 +403,8 @@ async function deleteUser(userId) {
   if (!confirmed) return;
   
   try {
-    await deleteDoc(doc(db, 'users', userId));
-    
-    if (currentUser) {
-      try {
-        const idToken = await currentUser.getIdToken();
-        const response = await fetch(`/api/deleteUser/${userId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${idToken}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        const result = await response.json();
-        if (!response.ok && !result.success) {
-          console.warn('Firebase Auth deletion:', result.error || 'Unknown error');
-        }
-      } catch (authError) {
-        console.warn('Could not delete from Firebase Auth:', authError.message);
-      }
-    }
-    
+    await changeHierarchy('deleteMemberAccount', { memberId: userId });
+
     window.showToast('User deleted completely', 'success');
     await loadAllData();
   } catch (error) {
@@ -436,7 +415,7 @@ async function deleteUser(userId) {
 
 async function approveChurch(id) {
   try {
-    await changeHierarchy('setChurchStatus', { churchId: id, status: 'active' });
+    await changeHierarchy('setChurchStatus', { churchId: id, status: 'active', notes: document.getElementById(`notes-${id}`).value });
     window.showToast('Church approved.', 'success');
     await loadAllData();
   } catch (error) { window.showToast(error.message, 'error'); }
@@ -444,7 +423,7 @@ async function approveChurch(id) {
 
 async function approveBusiness(id) {
   try {
-    await changeHierarchy('reviewBusiness', { businessId: id, decision: 'approve' });
+    await changeHierarchy('reviewBusiness', { businessId: id, decision: 'approve', notes: document.getElementById(`notes-${id}`).value });
     window.showToast('Platform approval saved. Church approval is also required for publication.', 'success');
     await loadAllData();
   } catch (error) { window.showToast(error.message, 'error'); }
@@ -458,9 +437,9 @@ async function rejectSubmission(submissionId, collectionName) {
   
   try {
     if (collectionName === 'churches') {
-      await changeHierarchy('setChurchStatus', { churchId: submissionId, status: 'rejected' });
+      await changeHierarchy('setChurchStatus', { churchId: submissionId, status: 'rejected', notes: document.getElementById(`notes-${submissionId}`).value });
     } else {
-      await changeHierarchy('reviewBusiness', { businessId: submissionId, decision: 'reject' });
+      await changeHierarchy('reviewBusiness', { businessId: submissionId, decision: 'reject', notes: document.getElementById(`notes-${submissionId}`).value });
     }
     window.showToast('Submission rejected', 'success');
     await loadAllData();

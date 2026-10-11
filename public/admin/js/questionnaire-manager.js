@@ -1,3 +1,7 @@
+import { escapeHtml } from '../../js/business-presentation.js';
+import { loadQuestionnaireQuestions, moveQuestionInAudience } from '../../js/services/questionnaire-service.js';
+import { adminReady } from './admin-auth-guard.js';
+await adminReady;
     import { db } from '../../js/firebase-config.js';
     import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy, Timestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
@@ -39,9 +43,7 @@
     // Load questions
     async function loadQuestions() {
       try {
-        const q = query(collection(db, 'questionnaire_questions'), orderBy('order', 'asc'));
-        const snapshot = await getDocs(q);
-        allQuestions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        allQuestions = await loadQuestionnaireQuestions();
         renderQuestions();
       } catch (error) {
         console.error('Error loading questions:', error);
@@ -62,7 +64,7 @@
         <div class="question-card" data-id="${q.id}">
           <div class="question-header">
             <div class="question-number">${index + 1}</div>
-            <div class="question-text">${q.question_text}</div>
+            <div class="question-text">${escapeHtml(q.question_text)}</div>
             <div class="order-controls">
               <button class="order-btn" data-action="moveQuestion" data-id="${q.id}" data-direction="up" ${index === 0 ? 'disabled' : ''}>↑</button>
               <button class="order-btn" data-action="moveQuestion" data-id="${q.id}" data-direction="down" ${index === filtered.length - 1 ? 'disabled' : ''}>↓</button>
@@ -70,10 +72,10 @@
           </div>
           
           <div class="question-meta">
-            <span class="question-type-badge">${q.question_type}</span>
+            <span class="question-type-badge">${escapeHtml(q.question_type)}</span>
             ${q.required ? '<span>✓ Required</span>' : '<span>Optional</span>'}
             <span class="status-active ${q.active ? 'status-active' : 'status-inactive'}">${q.active ? 'Active' : 'Inactive'}</span>
-            ${q.options && q.options.length ? `<span>Options: ${q.options.join(', ')}</span>` : ''}
+            ${q.options && q.options.length ? `<span>Options: ${escapeHtml(q.options.join(', '))}</span>` : ''}
           </div>
 
           <div class="question-actions">
@@ -120,6 +122,7 @@
         });
 
         addForm.reset();
+        currentAudienceInput.value = currentAudience;
         document.querySelector('input[name="questionType"][value="text"]').checked = true;
         optionsField.classList.add('hidden');
         await loadQuestions();
@@ -167,8 +170,7 @@
       const swap = filtered[swapIndex];
 
       try {
-        await updateDoc(doc(db, 'questionnaire_questions', current.id), { order: swap.order });
-        await updateDoc(doc(db, 'questionnaire_questions', swap.id), { order: current.order });
+        await moveQuestionInAudience(filtered, id, direction);
         await loadQuestions();
       } catch (error) {
         console.error('Error reordering questions:', error);
@@ -189,16 +191,16 @@
           <form id="editForm-${id}">
             <div class="form-field">
               <label class="">Question Text</label>
-              <textarea class="" rows="2" required>${question.question_text}</textarea>
+              <textarea class="" rows="2" required>${escapeHtml(question.question_text)}</textarea>
             </div>
             <div class="form-field">
               <label class="">Placeholder</label>
-              <input type="text" class="" value="${question.placeholder || ''}">
+              <input type="text" class="" value="${escapeHtml(question.placeholder || '')}">
             </div>
             ${question.options && question.options.length ? `
             <div class="form-field">
               <label class="">Options (one per line)</label>
-              <textarea class="" rows="4">${question.options.join('\n')}</textarea>
+              <textarea class="" rows="4">${escapeHtml(question.options.join('\n'))}</textarea>
             </div>
             ` : ''}
             <div class="flex gap-sm">

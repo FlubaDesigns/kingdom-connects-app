@@ -4,7 +4,7 @@ import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase
 async function checkMaintenanceMode() {
   const currentPage = window.location.pathname;
   
-  if (currentPage === '/maintenance' || currentPage === '/maintenance.html' || currentPage.startsWith('/admin/')) {
+  if (currentPage === '/maintenance' || currentPage === '/maintenance.html' || currentPage.startsWith('/admin/') || ['/login','/login.html'].includes(currentPage)) {
     return;
   }
   

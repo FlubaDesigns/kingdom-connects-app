@@ -51,19 +51,12 @@ function toggleProFields() {
 
 async function loadMembers() {
   try {
-    const membersQuery = query(collection(db, "users"), orderBy("created_at", "desc"));
+    const membersQuery = collection(db, "users");
     const membersSnapshot = await getDocs(membersQuery);
 
-    if (membersSnapshot.empty) {
-      document.getElementById('loadingMessage').classList.add('hidden');
-      document.getElementById('emptyState').classList.remove('hidden');
-      return;
-    }
-
-    allMembers = membersSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    allMembers = membersSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))
+      .sort((a,b) => (b.created_at?.seconds || 0) - (a.created_at?.seconds || 0));
+    document.getElementById('emptyState').classList.toggle('hidden', allMembers.length > 0);
 
     updateStats();
     renderMembers();

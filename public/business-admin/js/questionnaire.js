@@ -1,3 +1,4 @@
+import { loadQuestionnaireQuestions, moveQuestionInAudience } from '../../js/services/questionnaire-service.js';
 import { escapeHtml } from '../../js/business-presentation.js';
 import { db } from "../../js/firebase-config.js";
 import { collection, getDocs, query, where, orderBy, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -17,12 +18,7 @@ const form = document.getElementById('questionnaireForm');
 
     async function loadQuestions() {
       try {
-        const q = query(
-          collection(db, 'questionnaire_questions'), 
-          where('audience', '==', 'business')
-        );
-        const snapshot = await getDocs(q);
-        questions = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })).filter(q => q.active !== false).sort((a,b) => (a.order ?? a.order_index ?? 0) - (b.order ?? b.order_index ?? 0));
+        questions = await loadQuestionnaireQuestions({audience:'business', activeOnly:true});
         return questions;
       } catch (error) {
         console.error('Error loading questions:', error);

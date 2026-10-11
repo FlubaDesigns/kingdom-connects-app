@@ -1,3 +1,4 @@
+import { changeHierarchy } from '../../js/services/hierarchy-service.js';
     import { db } from "../../js/firebase-config.js";
     import { collection, getDocs, updateDoc, deleteDoc, doc, query, orderBy, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { requireAdmin } from "./admin-auth-guard.js";
@@ -47,14 +48,8 @@
 
     async function loadReviews() {
       try {
-        const reviewsQuery = query(collection(db, "reviews"), orderBy("submitted_at", "desc"));
+        const reviewsQuery = collection(db, "reviews");
         const reviewsSnapshot = await getDocs(reviewsQuery);
-
-        if (reviewsSnapshot.empty) {
-          document.getElementById('loadingMessage').classList.add('hidden');
-          document.getElementById('emptyState').classList.remove('hidden');
-          return;
-        }
 
         const reviewPromises = reviewsSnapshot.docs.map(async (reviewDoc) => {
           const review = reviewDoc.data();
@@ -73,14 +68,17 @@
           }
 
           return {
+            ...review,
+            submitted_at: review.submitted_at || review.created_at,
+            rating: review.rating ?? review.star_rating,
             id: reviewDoc.id,
-            businessName,
-            ...review
+            businessName
           };
         });
 
         allReviews = await Promise.all(reviewPromises);
 
+        document.getElementById('emptyState').classList.toggle('hidden', allReviews.length > 0);
         updateStats();
         renderReviews();
 
@@ -122,9 +120,9 @@
         } else if (sortBy === 'oldest') {
           return (a.submitted_at?.toDate() || new Date(0)) - (b.submitted_at?.toDate() || new Date(0));
         } else if (sortBy === 'rating-high') {
-          return (b.star_rating || 0) - (a.star_rating || 0);
+          return (b.rating || 0) - (a.rating || 0);
         } else if (sortBy === 'rating-low') {
-          return (a.star_rating || 0) - (b.star_rating || 0);
+          return (a.rating || 0) - (b.rating || 0);
         }
         return 0;
       });
@@ -144,7 +142,7 @@
         const statusClass = `status-${review.status || 'pending'}`;
         const createdDate = review.submitted_at?.toDate ? review.submitted_at.toDate().toLocaleString() : 'Unknown';
         const moderatedDate = review.moderated_at?.toDate ? review.moderated_at.toDate().toLocaleString() : '';
-        const stars = '⭐'.repeat(review.star_rating || 0);
+        const stars = '⭐'.repeat(Math.max(0, Math.min(5, Number(review.rating) || 0)));
 
         let adminNotesHTML = '';
         if (review.admin_notes) {
@@ -207,11 +205,7 @@
       if (!confirmed) return;
       
       try {
-        await updateDoc(doc(db, "reviews", reviewId), {
-          status: 'approved',
-          moderated_by: currentUser.email,
-          moderated_at: serverTimestamp()
-        });
+        await changeHierarchy('moderateMemberReview', {reviewId, decision:'approved'});
         window.showToast('Review approved!', 'success');
         await loadReviews();
       } catch (error) {
@@ -225,11 +219,7 @@
       if (!confirmed) return;
       
       try {
-        await updateDoc(doc(db, "reviews", reviewId), {
-          status: 'flagged',
-          moderated_by: currentUser.email,
-          moderated_at: serverTimestamp()
-        });
+        await changeHierarchy('moderateMemberReview', {reviewId, decision:'flagged'});
         window.showToast('Review flagged!', 'success');
         await loadReviews();
       } catch (error) {
@@ -243,11 +233,7 @@
       if (!confirmed) return;
       
       try {
-        await updateDoc(doc(db, "reviews", reviewId), {
-          status: 'pending',
-          moderated_by: currentUser.email,
-          moderated_at: serverTimestamp()
-        });
+        await changeHierarchy('moderateMemberReview', {reviewId, decision:'pending'});
         window.showToast('Review returned to pending!', 'success');
         await loadReviews();
       } catch (error) {
@@ -272,7 +258,7 @@
       if (!confirmed) return;
       
       try {
-        await deleteDoc(doc(db, "reviews", reviewId));
+        await changeHierarchy('moderateMemberReview', {reviewId, decision:'delete'});
         window.showToast('Review deleted!', 'success');
         await loadReviews();
       } catch (error) {
@@ -295,11 +281,7 @@
       const sendEmail = document.getElementById('sendEmailCheckbox').checked;
 
       try {
-        await updateDoc(doc(db, "reviews", currentReviewId), {
-          admin_notes: notes || null,
-          moderated_by: currentUser.email,
-          moderated_at: serverTimestamp()
-        });
+        await changeHierarchy('moderateMemberReview', {reviewId:currentReviewId, decision:'notes', notes});
 
         if (sendEmail) {
           await sendReviewNotificationEmail();
@@ -353,7 +335,7 @@
       await sendCustomEmail(
         toEmail,
         subject,
-        `<p>Hello ${recipientName},</p><p>${message.replace(/\n/g, '<br>')}</p><p>Kingdom Connects Team</p>`
+        `<p>Hello ${escapeHtml(recipientName)},</p><p>${escapeHtml(message).replace(/\n/g, '<br>')}</p><p>Kingdom Connects Team</p>`
       );
     }
 

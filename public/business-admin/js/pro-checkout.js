@@ -93,7 +93,7 @@ async function loadPricingSettings() {
 function displayPricing() {
   const monthlyPrice = parseFloat(pricingSettings.monthly_price) || 8.99;
   const annualPrice = parseFloat(pricingSettings.annual_price) || 74.99;
-  const trialDays = parseInt(pricingSettings.free_trial_days) || 30;
+  const trialDays = Number(pricingSettings.free_trial_days ?? 30);
   
   // Calculate monthly equivalent for annual plan
   const annualMonthly = (annualPrice / 12).toFixed(2);

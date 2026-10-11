@@ -1,3 +1,5 @@
+import { adminReady } from './admin-auth-guard.js';
+await adminReady;
 /* Kingdom Connects - Admin Factoid Manager */
 import { db } from '../../js/firebase-config.js';
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";

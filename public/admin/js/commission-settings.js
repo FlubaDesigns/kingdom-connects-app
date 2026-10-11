@@ -1,3 +1,5 @@
+import { adminReady } from './admin-auth-guard.js';
+await adminReady;
 import { db } from '../../js/firebase-config.js';
 import { doc, getDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
@@ -71,13 +73,15 @@ async function loadSettings() {
     updateTierPreviews();
   } catch (error) {
     console.error('Error loading settings:', error);
+    document.getElementById('saveSettingsBtn').disabled = true;
+    window.showToast('Unable to load commission settings. Refresh before saving.', 'error');
   }
 }
 
 function updateCalculations() {
-  const church = parseFloat(churchInput.value) || 0;
-  const salesperson = parseFloat(salespersonInput.value) || 0;
-  const director = parseFloat(directorInput.value) || 0;
+  const church = Number(churchInput.value);
+  const salesperson = Number(salespersonInput.value);
+  const director = Number(directorInput.value);
   const kc = 100 - church - salesperson - director;
   
   kcPercentDisplay.textContent = kc.toFixed(1) + '%';
@@ -90,7 +94,7 @@ function updateCalculations() {
   const total = church + salesperson + director + kc;
   totalPercentDisplay.textContent = total.toFixed(1);
   
-  if (Math.abs(total - 100) < 0.01) {
+  if ([church, salesperson, director, kc].every(value => Number.isFinite(value) && value >= 0)) {
     totalCheck.classList.remove('invalid');
     totalCheck.querySelector('.validation-message').innerHTML = `✓ Total: ${total.toFixed(1)}%`;
   } else {
@@ -141,9 +145,9 @@ directorInput.addEventListener('input', updateCalculations);
 });
 
 document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
-  const church = parseFloat(churchInput.value) || 0;
-  const salesperson = parseFloat(salespersonInput.value) || 0;
-  const director = parseFloat(directorInput.value) || 0;
+  const church = Number(churchInput.value);
+  const salesperson = Number(salespersonInput.value);
+  const director = Number(directorInput.value);
   const kc = 100 - church - salesperson - director;
   
   const total = church + salesperson + director + kc;
@@ -153,11 +157,21 @@ document.getElementById('saveSettingsBtn').addEventListener('click', async () =>
     return;
   }
   
-  if (church < 0 || salesperson < 0 || director < 0 || kc < 0) {
+  if (![church, salesperson, director, kc].every(value => Number.isFinite(value) && value >= 0)) {
     window.showToast('All percentages must be 0 or greater', 'error');
     return;
   }
   
+  const tierInputs = [originationFeeInput, agentTier1Threshold, agentTier1Bonus, agentTier2Threshold, agentTier2Bonus, agentTier3Threshold, agentTier3Bonus, directorTier1Threshold, directorTier1Bonus, directorTier2Threshold, directorTier2Bonus, directorTier3Threshold, directorTier3Bonus];
+  if (tierInputs.some(input => !input || input.value.trim() === '' || !Number.isFinite(Number(input.value)) || Number(input.value) < 0)) {
+    window.showToast('Enter a valid nonnegative amount or threshold in every field.', 'error'); return;
+  }
+  for (const tiers of [[agentTier1Threshold, agentTier2Threshold, agentTier3Threshold], [directorTier1Threshold, directorTier2Threshold, directorTier3Threshold]]) {
+    const values = tiers.map(input => Number(input.value));
+    if (values.some(value => !Number.isInteger(value)) || values[0] >= values[1] || values[1] >= values[2]) {
+      window.showToast('Tier thresholds must be whole numbers in increasing order.', 'error'); return;
+    }
+  }
   const saveBtn = document.getElementById('saveSettingsBtn');
   saveBtn.disabled = true;
   saveBtn.textContent = 'Saving...';
@@ -169,19 +183,19 @@ document.getElementById('saveSettingsBtn').addEventListener('click', async () =>
       salesperson_percentage: salesperson,
       sales_director_percentage: director,
       kingdom_connect_percentage: kc,
-      origination_fee: parseInt(originationFeeInput?.value) || 20,
-      agent_tier1_threshold: parseInt(agentTier1Threshold?.value) || 5,
-      agent_tier1_bonus: parseInt(agentTier1Bonus?.value) || 25,
-      agent_tier2_threshold: parseInt(agentTier2Threshold?.value) || 10,
-      agent_tier2_bonus: parseInt(agentTier2Bonus?.value) || 75,
-      agent_tier3_threshold: parseInt(agentTier3Threshold?.value) || 20,
-      agent_tier3_bonus: parseInt(agentTier3Bonus?.value) || 200,
-      director_tier1_threshold: parseInt(directorTier1Threshold?.value) || 25,
-      director_tier1_bonus: parseInt(directorTier1Bonus?.value) || 100,
-      director_tier2_threshold: parseInt(directorTier2Threshold?.value) || 50,
-      director_tier2_bonus: parseInt(directorTier2Bonus?.value) || 250,
-      director_tier3_threshold: parseInt(directorTier3Threshold?.value) || 100,
-      director_tier3_bonus: parseInt(directorTier3Bonus?.value) || 500,
+      origination_fee: Number(originationFeeInput.value),
+      agent_tier1_threshold: Number(agentTier1Threshold.value),
+      agent_tier1_bonus: Number(agentTier1Bonus.value),
+      agent_tier2_threshold: Number(agentTier2Threshold.value),
+      agent_tier2_bonus: Number(agentTier2Bonus.value),
+      agent_tier3_threshold: Number(agentTier3Threshold.value),
+      agent_tier3_bonus: Number(agentTier3Bonus.value),
+      director_tier1_threshold: Number(directorTier1Threshold.value),
+      director_tier1_bonus: Number(directorTier1Bonus.value),
+      director_tier2_threshold: Number(directorTier2Threshold.value),
+      director_tier2_bonus: Number(directorTier2Bonus.value),
+      director_tier3_threshold: Number(directorTier3Threshold.value),
+      director_tier3_bonus: Number(directorTier3Bonus.value),
       active: true,
       updated_at: serverTimestamp()
     }, { merge: true });

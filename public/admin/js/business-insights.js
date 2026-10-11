@@ -1,3 +1,6 @@
+import { escapeHtml } from '../../js/business-presentation.js';
+import { adminReady } from './admin-auth-guard.js';
+await adminReady;
     import { db } from '../../js/firebase-config.js';
     import { collection, getDocs, query, onSnapshot, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
@@ -103,8 +106,8 @@
           const value = Array.isArray(answers[key]) ? answers[key].join(', ') : answers[key];
           return `
             <div class="answer-item">
-              <div class="answer-question">${getQuestionText(questionId)}</div>
-              <div class="answer-value">${value || 'No answer'}</div>
+              <div class="answer-question">${escapeHtml(getQuestionText(questionId))}</div>
+              <div class="answer-value">${escapeHtml(value || 'No answer')}</div>
             </div>
           `;
         }).join('');
@@ -114,19 +117,19 @@
         return `
           <div class="response-card">
             <div class="response-header">
-              <div class="response-name">${response.business_name}</div>
+              <div class="response-name">${escapeHtml(response.business_name)}</div>
               <div class="response-meta">
                 <span class="badge ${response.completed ? 'badge-complete' : 'badge-draft'}">
                   ${response.completed ? 'Complete' : 'Draft'}
                 </span>
-                <span>ID: ${response.id}</span>
+                <span>ID: ${escapeHtml(response.id)}</span>
                 ${response.updated_at ? `<span>Updated: ${new Date(response.updated_at.seconds * 1000).toLocaleDateString()}</span>` : ''}
-                <button class="toggle-btn" data-action="toggleAnswers" data-id="${response.id}">
+                <button class="toggle-btn" data-action="toggleAnswers" data-id="${escapeHtml(response.id)}">
                   ${answerCount} Answers
                 </button>
               </div>
             </div>
-            <div id="answers-${response.id}" class="answers-grid answers-collapsed">
+            <div id="answers-${escapeHtml(response.id)}" class="answers-grid answers-collapsed">
               ${answersHTML || '<p class="text-muted">No answers submitted yet.</p>'}
             </div>
           </div>

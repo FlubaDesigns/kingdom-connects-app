@@ -133,7 +133,7 @@
           </div>
           <div class="mt-sm pt-sm border-top-divider text-xs opacity-70">
             <strong>User:</strong> ${escapeHtml(activity.user_id || 'System')} | 
-            <strong>Target:</strong> ${targetTypeLabel} (${escapeHtml(activity.target_id || 'N/A')}) 
+            <strong>Target:</strong> ${escapeHtml(targetTypeLabel)} (${escapeHtml(activity.target_id || 'N/A')})
             ${activity.ip_address ? `| <strong>IP:</strong> ${escapeHtml(activity.ip_address)}` : ''}
           </div>
         `;

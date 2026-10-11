@@ -6,3 +6,5 @@
 import { requireAdmin } from "../../js/auth/access-control.js";
 
 export { requireAdmin };
+
+export const adminReady = new Promise(resolve => requireAdmin((context, user) => resolve({ context, user })));

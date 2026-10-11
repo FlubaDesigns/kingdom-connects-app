@@ -1,3 +1,5 @@
+import { adminReady } from './admin-auth-guard.js';
+await adminReady;
     import { db } from '../../js/firebase-config.js';
     import { doc, getDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
@@ -53,14 +55,14 @@
     document.getElementById('savePricingBtn').addEventListener('click', async () => {
       const monthly = parseFloat(monthlyInput.value);
       const annual = parseFloat(annualInput.value);
-      const trial = parseInt(trialInput.value);
+      const trial = Number(trialInput.value);
       
       if (!Number.isFinite(monthly) || !Number.isFinite(annual) || !Number.isFinite(trial)) {
         showMessage('❌ Please fill in all required fields with valid numbers', 'error');
         return;
       }
       
-      if (monthly <= 0 || annual <= 0 || trial < 0) {
+      if (monthly <= 0 || annual <= 0 || trial < 0 || !Number.isInteger(trial) || trial > 730) {
         showMessage('❌ Prices must be greater than 0, trial must be 0 or more', 'error');
         return;
       }
@@ -75,7 +77,7 @@
           annual_price: annual,
           free_trial_days: trial,
           updated_at: serverTimestamp(),
-          updated_by: 'admin'
+          updated_by: (await adminReady).user.uid
         }, { merge: true });
         
         showMessage('✅ Pricing settings saved successfully! Changes are live on pricing.html', 'success');

@@ -65,7 +65,7 @@
           <ul class="nav-links" id="navMenu">
             <li><a href="#" id="logoutLink">Logout</a></li>
             <li><a href="/admin/index.html">Dashboard</a></li>
-            <li><a href="/admin/todo">To-Do List</a></li>
+            <li><a href="/admin/todo">To-Do List</a></li><li><a href="/admin/members.html">Members</a></li><li><a href="/admin/management.html">Approvals &amp; Access</a></li><li><a href="/admin/review_moderation.html">Review Moderation</a></li><li><a href="/admin/payments.html">Payments</a></li>
             <li class="has-dropdown">
               <span class="dropdown-toggle">Directories ▼</span>
               <ul class="dropdown-menu">
@@ -78,7 +78,7 @@
               <ul class="dropdown-menu">
                 <li><a href="/admin/business-insights.html">Business Insights</a></li>
                 <li><a href="/admin/church-insights.html">Church Insights</a></li>
-                <li><a href="/admin/church-questionnaire.html">Church Questionnaire</a></li>
+                <li><a href="/admin/questionnaire-manager.html">Questionnaires</a></li><li><a href="/admin/church-questionnaire.html">Church Responses</a></li>
               </ul>
             </li>
             <li><a href="/admin/pricing-settings.html">Pricing Settings</a></li>
@@ -98,7 +98,7 @@
             <li class="has-dropdown">
               <span class="dropdown-toggle">Tools ▼</span>
               <ul class="dropdown-menu">
-                <li><a href="/admin/tools/nexus.html">Nexus Dashboard</a></li>
+                <li><a href="/admin/activity-log.html">Activity Log</a></li><li><a href="/admin/contact-submissions.html">Contact Submissions</a></li>
               </ul>
             </li>
             <li><a href="/admin/settings.html">Settings</a></li>

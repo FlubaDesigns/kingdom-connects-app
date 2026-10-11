@@ -24,12 +24,12 @@
       <div id="breadcrumbs" class="breadcrumb-container"></div>
 
       <h2 class="gold-metallic">Payment Oversight</h2>
-      <p>Monitor all Pro subscriptions, commission payments, and platform revenue.</p>
+      <p>Read commission and payout status from the shared commission ledger. Monthly recurring revenue will be available after Stripe billing is configured. Payout status is recorded by the payment processor.</p>
 
       <div class="stat-grid">
         <div class="stat-card">
           <div class="stat-value" id="totalRevenue">$0</div>
-          <div class="stat-label">Total Revenue</div>
+          <div class="stat-label">Platform Allocation</div>
         </div>
         <div class="stat-card">
           <div class="stat-value" id="activeProBusiness">0</div>
@@ -75,13 +75,12 @@
               <thead>
                 <tr>
                   <th>Business</th>
-                  <th>Sales Agent</th>
-                  <th>Pro Payment</th>
-                  <th>Commission</th>
-                  <th>Church Tithe</th>
+                  <th>Recipient</th>
+                  <th>Type</th>
+                  <th>Amount</th>
                   <th>Status</th>
                   <th>Date</th>
-                  <th>Actions</th>
+                  <th>Paid Date</th>
                 </tr>
               </thead>
               <tbody id="commissionsTableBody"></tbody>

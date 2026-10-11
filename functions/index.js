@@ -433,7 +433,7 @@ exports.createCheckoutSession = onRequest({ secrets: [stripeSecretKey] }, (req, 
         const pricing = pricingDoc.exists ? pricingDoc.data() : {};
         const monthlyPrice = pricing.monthly_price || 8.99;
         const annualPrice = pricing.annual_price || 74.99;
-        const trialDays = pricing.free_trial_days || 30;
+        const trialDays = pricing.free_trial_days ?? 30;
         
         const isMonthly = billingCycle === 'monthly';
         const priceAmount = isMonthly ? Math.round(monthlyPrice * 100) : Math.round(annualPrice * 100);
@@ -1135,10 +1135,10 @@ exports.deleteUser = onRequest((req, res) => {
       }
       
       // Delete from Firebase Auth
-      await admin.auth().deleteUser(userId);
+      await memberService.execute(user, {action:'deleteMemberAccount', memberId:userId});
       console.log('Deleted user from Firebase Auth:', userId);
       
-      res.json({ success: true, message: 'User deleted from Firebase Auth' });
+      res.json({ success: true, message: 'User account deleted' });
       
     } catch (error) {
       console.error('Delete user error:', error);

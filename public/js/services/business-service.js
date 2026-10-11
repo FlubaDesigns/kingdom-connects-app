@@ -121,7 +121,7 @@ export async function getBusinessPublicOnly(id) {
   }
 }
 
-export async function getAllBusinessesMerged() {
+export async function getAllBusinessesMerged({ throwOnError = false } = {}) {
   try {
     const [publicSnapshot, privateSnapshot] = await Promise.all([
       getDocs(collection(db, "business_listings_public")),
@@ -140,6 +140,7 @@ export async function getAllBusinessesMerged() {
     return results;
   } catch (error) {
     console.error("Error fetching all businesses:", error);
+    if (throwOnError) throw error;
     return [];
   }
 }

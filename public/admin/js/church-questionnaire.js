@@ -1,3 +1,6 @@
+import { loadQuestionnaireQuestions, moveQuestionInAudience } from '../../js/services/questionnaire-service.js';
+import { adminReady } from './admin-auth-guard.js';
+await adminReady;
 import { db } from '../../js/firebase-config.js';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, onSnapshot, getDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
@@ -50,13 +53,7 @@ async function loadQuestions() {
     document.getElementById('questionsList').classList.add('hidden');
     document.getElementById('questionsEmpty').classList.add('hidden');
 
-    const q = query(collection(db, 'questionnaire_questions'), orderBy('order_index', 'asc'));
-    const snapshot = await getDocs(q);
-    
-    allQuestions = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    allQuestions = await loadQuestionnaireQuestions({audience:'church'});
 
     document.getElementById('questionsLoading').classList.add('hidden');
 
@@ -80,9 +77,9 @@ function renderQuestions() {
       text: 'Short Text',
       textarea: 'Long Text',
       number: 'Number',
-      yes_no: 'Yes/No',
-      multiple_choice: 'Multiple Choice',
-      checkboxes: 'Checkboxes'
+      yesno: 'Yes/No',
+      select: 'Multiple Choice',
+      multiselect: 'Checkboxes'
     }[q.question_type] || q.question_type;
 
     return `
@@ -90,7 +87,7 @@ function renderQuestions() {
         <div class="card-header">
           <div>
             <strong>Q${index + 1}:</strong> ${escapeHtml(q.question_text)}
-            ${q.is_required ? '<span class="badge badge-required">Required</span>' : ''}
+            ${q.required ? '<span class="badge badge-required">Required</span>' : ''}
           </div>
           <div class="flex-gap">
             <button class="btn btn-small btn-secondary" data-action="edit" data-id="${q.id}">Edit</button>
@@ -126,8 +123,8 @@ function openEditModal(questionId) {
   
   document.getElementById('questionText').value = question.question_text || '';
   document.getElementById('questionType').value = question.question_type || 'text';
-  document.getElementById('isRequired').checked = question.is_required || false;
-  document.getElementById('helpText').value = question.help_text || '';
+  document.getElementById('isRequired').checked = question.required || false;
+  document.getElementById('helpText').value = question.placeholder || '';
 
   handleTypeChange();
 
@@ -152,7 +149,7 @@ function handleTypeChange() {
   const type = document.getElementById('questionType').value;
   const optionsContainer = document.getElementById('optionsContainer');
   
-  if (type === 'multiple_choice' || type === 'checkboxes') {
+  if (type === 'select' || type === 'multiselect') {
     optionsContainer.classList.remove('hidden');
     if (document.getElementById('optionsList').children.length === 0) {
       addOption('');
@@ -194,7 +191,7 @@ async function saveQuestion(e) {
   const helpText = document.getElementById('helpText').value.trim();
 
   let options = [];
-  if (questionType === 'multiple_choice' || questionType === 'checkboxes') {
+  if (questionType === 'select' || questionType === 'multiselect') {
     const optionInputs = document.querySelectorAll('.option-input');
     options = Array.from(optionInputs)
       .map(input => input.value.trim())
@@ -207,10 +204,11 @@ async function saveQuestion(e) {
   }
 
   const questionData = {
+    audience: 'church',
     question_text: questionText,
     question_type: questionType,
-    is_required: isRequired,
-    help_text: helpText,
+    required: isRequired,
+    placeholder: helpText,
     options: options,
     updated_at: serverTimestamp()
   };
@@ -219,7 +217,8 @@ async function saveQuestion(e) {
     if (editingQuestionId) {
       await updateDoc(doc(db, 'questionnaire_questions', editingQuestionId), questionData);
     } else {
-      questionData.order_index = allQuestions.length;
+      questionData.order = Math.max(-1, ...allQuestions.map(q => q.order)) + 1;
+      questionData.active = true;
       questionData.created_at = serverTimestamp();
       await addDoc(collection(db, 'questionnaire_questions'), questionData);
     }
@@ -252,13 +251,7 @@ async function moveQuestion(questionId, direction) {
   if (newIndex < 0 || newIndex >= allQuestions.length) return;
 
   try {
-    const currentQuestion = allQuestions[currentIndex];
-    const swapQuestion = allQuestions[newIndex];
-
-    await Promise.all([
-      updateDoc(doc(db, 'questionnaire_questions', currentQuestion.id), { order_index: newIndex }),
-      updateDoc(doc(db, 'questionnaire_questions', swapQuestion.id), { order_index: currentIndex })
-    ]);
+    await moveQuestionInAudience(allQuestions, questionId, direction);
 
     loadQuestions();
   } catch (error) {

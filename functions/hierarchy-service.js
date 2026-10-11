@@ -76,7 +76,7 @@ function createHierarchyService(db, timestamp) {
         if (!['active', 'suspended', 'rejected'].includes(input.status)) fail(400, 'Invalid church status.');
         const churchRef = ref('churches', input.churchId);
         if (!data(await tx.get(churchRef))) fail(404, 'Church not found.');
-        update(churchRef, { listing_status: input.status });
+        update(churchRef, { listing_status: input.status, ...(input.notes === undefined ? {} : {admin_notes: String(input.notes).slice(0,5000)}) });
         return { ok: true, churchId: input.churchId };
       }
 
@@ -148,8 +148,10 @@ function createHierarchyService(db, timestamp) {
         if (!['approve', 'suspend', 'activate', 'reject'].includes(input.decision)) fail(400, 'Invalid business decision.');
         const prefix = admin ? 'platform' : 'church';
         const changes = { [`${prefix}_suspended`]: input.decision === 'suspend' };
+        if (admin) changes.platform_review_status = input.decision === 'reject' ? 'rejected' : input.decision === 'suspend' ? 'suspended' : 'approved';
         if (['approve', 'activate', 'reject'].includes(input.decision)) changes[`${prefix}_approved`] = input.decision !== 'reject';
         saveBusiness(changes);
+        if (admin && input.notes !== undefined) update(privateRef, {admin_notes: String(input.notes).slice(0,5000)});
         if (input.decision === 'approve') update(privateRef, { approved_at: timestamp(), approved_by: actor.uid });
       } else fail(400, 'Unsupported hierarchy action.');
       return { ok: true };

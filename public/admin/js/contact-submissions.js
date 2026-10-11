@@ -1,3 +1,6 @@
+import { onReady } from '../../js/dom-ready.js';
+import { adminReady } from './admin-auth-guard.js';
+await adminReady;
 import { db, auth } from '../../js/firebase-config.js';
 import { 
   collection, 
@@ -44,7 +47,7 @@ const DASHBOARD_LABELS = {
   unknown: 'Unknown'
 };
 
-document.addEventListener('DOMContentLoaded', () => {
+onReady(() => {
   loadSubmissions();
   setupFilters();
   setupModal();

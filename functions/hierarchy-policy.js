@@ -3,6 +3,11 @@
 // Canonical identity and lifecycle policy. Names, emails and slugs are display data.
 const ENTITY_TYPES = ['member', 'business', 'church'];
 const roles = data => [...new Set([...(Array.isArray(data.roles) ? data.roles : []), data.role].filter(Boolean))];
+const USER_ROLES = ['member','business_owner','church_admin','sales_agent','sales_director','marketing_manager','admin','platform_admin'];
+function validateRoles(values) {
+  if (!Array.isArray(values) || !values.length || values.some(role => !USER_ROLES.includes(role))) throw Object.assign(new Error('Invalid role. Use the supported account roles.'), { status: 400 });
+  return [...new Set(['member', ...values])];
+}
 const isAdmin = data => roles(data).some(role => ['admin', 'platform_admin'].includes(role));
 const isBlocked = data => ['suspended', 'disabled', 'rejected'].includes(data.account_status);
 const activeChurch = church => !!church && church.listing_status === 'active';
@@ -44,4 +49,4 @@ function assertStoreAllowed({ type, entity, church, settings }) {
   }
 }
 
-module.exports = { roles, isAdmin, isBlocked, activeChurch, entityIdentity, businessState, assertStoreAllowed };
+module.exports = { validateRoles, roles, isAdmin, isBlocked, activeChurch, entityIdentity, businessState, assertStoreAllowed };

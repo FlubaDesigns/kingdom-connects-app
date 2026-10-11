@@ -102,3 +102,36 @@ test('mail retries reuse the saved content and idempotency key; recipients come 
  await assert.rejects(deliver(ref));await deliver(ref);await deliver(ref);
  assert.equal(attempts.length,2);assert.deepEqual(attempts[0],attempts[1]);assert.equal(attempts[0].payload.to,'new@example.test');assert.equal((await ref.get()).data().status,'sent');
 });
+
+test('admin role and status actions share canonical membership and protect self access', async () => {
+ await db.doc('users/other').update({role:'admin',roles:['admin']});
+ await assert.rejects(change('member','setAdminUserRoles',{memberId:'other',roles:['admin']}),{status:403});
+ await assert.rejects(change('platform','setAdminUserRoles',{memberId:'other',roles:['super_admin']}),{status:400});
+ await assert.rejects(change('platform','setAdminUserRoles',{memberId:'platform',roles:['member']}),{status:409});
+ await assert.rejects(change('platform','setAdminUserStatus',{memberId:'platform',status:'disabled'}),{status:409});
+ await change('platform','setAdminUserRoles',{memberId:'other',roles:['church_admin','business_owner']});
+ const profile=(await db.doc('users/other').get()).data();
+ assert.deepEqual(profile.roles,['member','church_admin','business_owner']);assert.equal(profile.role,'church_admin');
+ await change('platform','saveMemberAdmin',{memberId:'other',values:{name:'Other Member',email:'other@example.test',role:'church_admin',account_status:'active'}});
+ assert.deepEqual((await db.doc('users/other').get()).data().roles,profile.roles);
+ await change('platform','setAdminUserStatus',{memberId:'other',status:'suspended'});
+ await assert.rejects(change('other','saveMemberReview',{businessId:'business',rating:5,reviewText:'A sufficiently long review.'}),{status:403});
+ await change('platform','setAdminUserStatus',{memberId:'other',status:'active'});
+ assert.equal((await db.doc('users/other').get()).data().church_membership_status,'approved');
+ assert.equal((await db.collection('activity_log').where('target_id','==','other').get()).size,3);
+});
+
+test('moderation, member edits and deletions keep the directory rating projection consistent', async () => {
+ const first=await change('member','saveMemberReview',{businessId:'business',rating:5,reviewText:'First detailed business review.'});
+ const second=await change('other','saveMemberReview',{businessId:'business',rating:3,reviewText:'Second detailed business review.'});
+ await assert.rejects(change('member','moderateMemberReview',{reviewId:first.reviewId,decision:'approved'}),{status:403});
+ await assertFails(updateDoc(doc(client('platform'),'reviews/'+first.reviewId),{status:'approved'}));
+ await Promise.all([first,second].map(review=>change('platform','moderateMemberReview',{reviewId:review.reviewId,decision:'approved'})));
+ let business=(await db.doc('business_listings_public/business').get()).data();assert.equal(business.review_count,2);assert.equal(business.average_rating,4);
+ await change('member','saveMemberReview',{reviewId:first.reviewId,rating:4,reviewText:'Edited detailed business review.'});
+ business=(await db.doc('business_listings_public/business').get()).data();assert.equal(business.review_count,1);assert.equal(business.average_rating,3);
+ await change('platform','moderateMemberReview',{reviewId:second.reviewId,decision:'notes',notes:'Follow up later'});
+ assert.equal((await db.doc('reviews/'+second.reviewId).get()).data().admin_notes,'Follow up later');
+ await change('platform','moderateMemberReview',{reviewId:second.reviewId,decision:'delete'});
+ business=(await db.doc('business_listings_public/business').get()).data();assert.equal(business.review_count,0);assert.equal(business.average_rating,0);
+});

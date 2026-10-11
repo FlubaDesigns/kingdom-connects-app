@@ -1,3 +1,5 @@
+import { escapeHtml } from '../../js/business-presentation.js';
+import { loadQuestionnaireQuestions, moveQuestionInAudience } from '../../js/services/questionnaire-service.js';
 /* Kingdom Connects - Church Admin Insights */
 import { db } from '../../js/firebase-config.js';
 import { collection, doc, getDoc, getDocs, setDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
@@ -59,9 +61,7 @@ function displayLastUpdated(timestamp) {
 
 async function loadQuestions() {
   try {
-    const snapshot = await getDocs(collection(db, 'questionnaire_questions'));
-    questions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    questions.sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+    questions = await loadQuestionnaireQuestions({audience:'church', activeOnly:true});
     return questions;
   } catch (error) {
     console.error('Error loading questions:', error);
@@ -84,22 +84,22 @@ function renderQuestions() {
 
     switch (q.question_type) {
       case 'text':
-        inputHTML = `<input type="text" class="input-dark" id="${fieldName}" name="${fieldName}" placeholder="${placeholder}" ${isRequired}>`;
+        inputHTML = `<input type="text" class="input-dark" id="${escapeHtml(fieldName)}" name="${escapeHtml(fieldName)}" placeholder="${escapeHtml(placeholder)}" ${isRequired}>`;
         break;
       
       case 'number':
-        inputHTML = `<input type="number" class="input-dark" id="${fieldName}" name="${fieldName}" placeholder="${placeholder}" ${isRequired} min="0">`;
+        inputHTML = `<input type="number" class="input-dark" id="${escapeHtml(fieldName)}" name="${escapeHtml(fieldName)}" placeholder="${escapeHtml(placeholder)}" ${isRequired} min="0">`;
         break;
       
       case 'textarea':
-        inputHTML = `<textarea class="input-dark" id="${fieldName}" name="${fieldName}" rows="4" placeholder="${placeholder}" ${isRequired}></textarea>`;
+        inputHTML = `<textarea class="input-dark" id="${escapeHtml(fieldName)}" name="${escapeHtml(fieldName)}" rows="4" placeholder="${escapeHtml(placeholder)}" ${isRequired}></textarea>`;
         break;
       
       case 'select':
         inputHTML = `
-          <select class="input-dark" id="${fieldName}" name="${fieldName}" ${isRequired}>
+          <select class="input-dark" id="${escapeHtml(fieldName)}" name="${escapeHtml(fieldName)}" ${isRequired}>
             <option value="">Select an option...</option>
-            ${q.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+            ${q.options.map(opt => `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`).join('')}
           </select>
         `;
         break;
@@ -109,8 +109,8 @@ function renderQuestions() {
           <div class="checkbox-group">
             ${q.options.map(opt => `
               <label class="checkbox-label">
-                <input type="checkbox" name="${fieldName}" value="${opt}">
-                <span>${opt}</span>
+                <input type="checkbox" name="${escapeHtml(fieldName)}" value="${escapeHtml(opt)}">
+                <span>${escapeHtml(opt)}</span>
               </label>
             `).join('')}
           </div>
@@ -119,7 +119,7 @@ function renderQuestions() {
       
       case 'yesno':
         inputHTML = `
-          <select class="input-dark" id="${fieldName}" name="${fieldName}" ${isRequired}>
+          <select class="input-dark" id="${escapeHtml(fieldName)}" name="${escapeHtml(fieldName)}" ${isRequired}>
             <option value="">Select...</option>
             <option value="yes">Yes</option>
             <option value="no">No</option>
@@ -131,8 +131,8 @@ function renderQuestions() {
 
     return `
       <div class="form-group">
-        <label for="${fieldName}">
-          ${index + 1}. ${q.question_text}${q.required ? '<span class="req">*</span>' : ''}
+        <label for="${escapeHtml(fieldName)}">
+          ${index + 1}. ${escapeHtml(q.question_text)}${q.required ? '<span class="req">*</span>' : ''}
         </label>
         ${inputHTML}
       </div>
@@ -185,7 +185,7 @@ async function saveQuestionnaire(isComplete) {
     const fieldName = `q_${q.id}`;
     
     if (q.question_type === 'multiselect') {
-      const checkboxes = document.querySelectorAll(`[name="${fieldName}"]:checked`);
+      const checkboxes = document.querySelectorAll(`[name="${escapeHtml(fieldName)}"]:checked`);
       answers[fieldName] = Array.from(checkboxes).map(cb => cb.value);
     } else {
       const value = formData.get(fieldName);

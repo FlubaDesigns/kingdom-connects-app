@@ -1,3 +1,5 @@
+import { adminReady } from './admin-auth-guard.js';
+await adminReady;
 import { changeHierarchy } from '../../js/services/hierarchy-service.js';
     import { db } from "../../js/firebase-config.js";
     import { onReady } from "../../js/dom-ready.js";

@@ -1,3 +1,4 @@
+import { loadCommissionLedger, ledgerTotals } from '../../js/services/commission-ledger.js';
 import { watchAdminTasks } from '../../js/services/admin-tasks.js';
     import { db } from "../../js/firebase-config.js";
     import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -18,8 +19,8 @@ import { watchAdminTasks } from '../../js/services/admin-tasks.js';
         const [usersSnap, businessesSnap, reviewsSnap, commissionsSnap] = await Promise.all([
           getDocs(collection(db, "users")),
           getDocs(collection(db, "business_listings_public")),
-          getDocs(query(collection(db, "reviews"), where("status", "==", "pending"))),
-          getDocs(collection(db, "commission_ledger"))
+          getDocs(collection(db, "reviews")),
+          loadCommissionLedger()
         ]);
 
         const totalUsers = usersSnap.size;
@@ -32,19 +33,9 @@ import { watchAdminTasks } from '../../js/services/admin-tasks.js';
           if (!data.church_id) unchurchedBusinesses++;
         });
 
-        const pendingReviews = reviewsSnap.size;
+        const pendingReviews = reviewsSnap.docs.filter(doc => (doc.data().status || 'pending') === 'pending').length;
 
-        let totalRevenue = 0;
-        let charitableFund = 0;
-        commissionsSnap.forEach(doc => {
-          const data = doc.data();
-          totalRevenue += (data.platform_share || 0);
-          
-          // If church_id is null, the tithe goes to charitable fund
-          if (!data.church_id) {
-            charitableFund += (data.church_tithe || 0);
-          }
-        });
+        const {platform:totalRevenue, charitable:charitableFund} = ledgerTotals(commissionsSnap);
 
         document.getElementById('totalRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
         document.getElementById('proBusinesses').textContent = proBusinesses;

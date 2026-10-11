@@ -10,7 +10,7 @@ async function loadPricingSettings() {
       
       const monthlyPrice = parseFloat(data.monthly_price) || 8.99;
       const annualPrice = parseFloat(data.annual_price) || 74.99;
-      const freeTrialDays = parseInt(data.free_trial_days) || 30;
+      const freeTrialDays = Number(data.free_trial_days ?? 30);
       
       // Update monthly price displays (with null checks)
       const monthlyPriceEl = document.getElementById('monthlyPrice');
