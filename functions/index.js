@@ -1089,3 +1089,6 @@ exports.sitemapXml  = sitemap.sitemapXml;
 exports.slugLookup  = sitemap.slugLookup;
 exports.pingSitemap = sitemap.pingSitemap;
 
+
+// Public contact intake is separate from authenticated hierarchy actions.
+exports.submitContact = require('./contact-endpoint').submitContact;

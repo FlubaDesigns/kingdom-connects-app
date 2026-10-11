@@ -18,7 +18,7 @@ function handlers(){
   if(name==='resend')return {Resend:class{}};
   if(name==='stripe')return class{};
   if(name==='jsonwebtoken')return {};
-  if(['./brain','./ssr','./submissions','./sitemap'].includes(name))return {};
+  if(['./brain','./ssr','./submissions','./sitemap','./contact-endpoint'].includes(name))return {};
   return require(path.join(__dirname,'../functions',name));
  }
  vm.runInNewContext(fs.readFileSync(filename,'utf8'),{require:fakeRequire,exports:exported,console:{error(){}},process,Buffer,URL,Map,Date},{filename});

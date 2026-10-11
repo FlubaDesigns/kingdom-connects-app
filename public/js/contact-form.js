@@ -1,5 +1,4 @@
-import { db } from './firebase-config.js';
-import { collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { submitContact } from './services/contact-service.js';
 import { onAuthChange } from './auth/access-control.js';
 import { initSpamProtection } from './utils/spam-protection.js';
 import { handleFormError, getFriendlyMessage } from './utils/error-handler.js';
@@ -92,18 +91,12 @@ document.addEventListener('DOMContentLoaded', () => {
         email: emailInput.value.trim(),
         subject: document.getElementById('subject').value.trim(),
         message: document.getElementById('message').value.trim(),
-        status: 'new',
         source: sourceParam,
         dashboard: dashboardParam,
         page_url: window.location.href,
-        created_at: serverTimestamp(),
-        user_id: currentUser?.uid || null,
-        admin_response: null,
-        responded_at: null,
-        responded_by: null
       };
 
-      await addDoc(collection(db, 'contact_submissions'), formData);
+      await submitContact(formData, currentUser);
       
       spamProtection.recordSubmission();
 
@@ -121,16 +114,9 @@ document.addEventListener('DOMContentLoaded', () => {
       formStatus.classList.remove('hidden');
 
     } catch (error) {
-      const message = handleFormError(error, form);
+      const message = error.contactMessage || handleFormError(error, form);
       formStatus.className = 'form-error';
-      formStatus.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="15" y1="9" x2="9" y2="15"/>
-          <line x1="9" y1="9" x2="15" y2="15"/>
-        </svg>
-        <span>${message}</span>
-      `;
+      formStatus.textContent = message;
       formStatus.classList.remove('hidden');
     } finally {
       submitBtn.disabled = false;

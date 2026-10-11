@@ -42,6 +42,10 @@
         "trailingSlash": false,
         "rewrites": [
             {
+                "source": "/api/contact",
+                "function": "submitContact"
+            },
+            {
                 "source": "/api/hierarchy",
                 "function": "hierarchyAction"
             },

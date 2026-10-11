@@ -1,3 +1,4 @@
+import { escapeHtml } from './sanitize.js';
 /* Kingdom Connects - Business Directory Logic */
 import { db } from './firebase-config.js';
 import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -79,16 +80,22 @@ const H = (strings, ...vals) => strings.map((s,i)=>s+(vals[i]??"")).join("");
 function safe(v){ return (v || "").toString().trim(); }
 
 // UPDATED: robust URL normalizer to allow plain domains
-function cleanUrl(u){
-  const s = safe(u).replace(/\s+/g, "");
-  if (!s) return "";
+function cleanUrl(value) {
+  const raw = safe(value);
+  if (!raw || /[\u0000-\u0020\u007f]/.test(raw)) return '';
   try {
-    const hasScheme = /^https?:\/\//i.test(s);
-    const url = new URL(hasScheme ? s : "https://" + s);
-    return url.href; // always absolute
-  } catch (e) {
-    return ""; // if malformed, render nothing
-  }
+    const url = new URL(/^[a-z][a-z0-9+.-]*:/i.test(raw) ? raw : 'https://' + raw);
+    return ['http:', 'https:'].includes(url.protocol) && !url.username && !url.password
+      ? escapeHtml(url.href) : '';
+  } catch { return ''; }
+}
+function detailUrl(biz) {
+  return escapeHtml('business.html?' + (safe(biz.slug)
+    ? 'slug=' + encodeURIComponent(safe(biz.slug)) : 'id=' + encodeURIComponent(safe(biz.id))));
+}
+function ratingValue(value) {
+  const rating = Number(value);
+  return Number.isFinite(rating) ? Math.max(0, Math.min(5, rating)) : 0;
 }
 
 function showSkeleton(n=4){
@@ -117,22 +124,22 @@ function renderBusinesses(data) {
   });
   
   businessList.innerHTML = data.map(biz => {
-    const name = safe(biz.business_name) || "Unnamed Business";
-    const desc = safe(biz.description) || "No description provided.";
-    const cat  = safe(biz.primary_category);
-    const city = safe(biz.city);
-    const state = safe(biz.state);
-    const phone = safe(biz.phone_number);
+    const name = escapeHtml(safe(biz.business_name)) || "Unnamed Business";
+    const desc = escapeHtml(safe(biz.description)) || "No description provided.";
+    const cat  = escapeHtml(safe(biz.primary_category));
+    const city = escapeHtml(safe(biz.city));
+    const state = escapeHtml(safe(biz.state));
+    const phone = escapeHtml(safe(biz.phone_number));
     const website = safe(biz.website_url);
     const isPro = isBusinessPro(biz);
-    const logo = biz.logo || '';
-    const rating = parseFloat(biz.average_rating) || 0;
+    const logo = cleanUrl(biz.logo);
+    const rating = ratingValue(biz.average_rating);
     const reviewCount = parseInt(biz.review_count) || 0;
     
     // Get church name
     const churchId = biz.church_id;
     const church = allChurches.find(c => c.id === churchId);
-    const churchName = church ? (church.church_name || church.name) : null;
+    const churchName = church ? escapeHtml(church.church_name || church.name) : null;
 
     // Star rating display
     const stars = rating > 0 ? '⭐'.repeat(Math.round(rating)) : '';
@@ -155,11 +162,11 @@ function renderBusinesses(data) {
     const metaLine = location;
     
     // Categories for header - primary + subcategories
-    const subcats = biz.secondary_categories || [];
+    const subcats = Array.isArray(biz.secondary_categories) ? biz.secondary_categories.map(escapeHtml) : [];
     const allCardCats = [cat, ...subcats].filter(Boolean).join(', ');
     
     // Address
-    const address = safe(biz.address) || '';
+    const address = escapeHtml(safe(biz.address)) || '';
     
     // Church badge for upper right
     const churchCornerBadge = churchName
@@ -189,7 +196,7 @@ function renderBusinesses(data) {
     // Favorite star - only show for logged in users
     const isFavorited = userFavorites.has(biz.id);
     const favoriteStarHTML = currentUser ? H`
-      <button class="favorite-star-card" data-business-id="${biz.id}" title="${isFavorited ? 'Remove from favorites' : 'Save to favorites'}">
+      <button class="favorite-star-card" data-business-id="${escapeHtml(biz.id)}" title="${isFavorited ? 'Remove from favorites' : 'Save to favorites'}">
         <svg class="star-icon star-outline ${isFavorited ? 'hidden' : ''}" viewBox="0 0 24 24" width="28" height="28">
           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="#d4af37" stroke-width="2"/>
         </svg>
@@ -228,7 +235,7 @@ function renderBusinesses(data) {
           </div>
 
           <div class="flex-between-center mt-sm">
-            <a href="business.html?${(biz.slug && biz.slug.trim()) ? `slug=${biz.slug}` : `id=${biz.id}`}" class="btn btn-gold flex-1">View Details</a>
+            <a href="${detailUrl(biz)}" class="btn btn-gold flex-1">View Details</a>
             ${favoriteStarHTML}
           </div>
         </div>
@@ -308,29 +315,29 @@ function renderListView(data) {
   }
 
   businessList.innerHTML = `<div class="business-list-view">${data.map(biz => {
-    const name = safe(biz.business_name) || "Unnamed Business";
-    const desc = safe(biz.description) || "";
-    const cat = safe(biz.primary_category);
-    const city = safe(biz.city);
-    const state = safe(biz.state);
+    const name = escapeHtml(safe(biz.business_name)) || "Unnamed Business";
+    const desc = escapeHtml(safe(biz.description)) || "";
+    const cat = escapeHtml(safe(biz.primary_category));
+    const city = escapeHtml(safe(biz.city));
+    const state = escapeHtml(safe(biz.state));
     const isPro = isBusinessPro(biz);
-    const rating = parseFloat(biz.average_rating) || 0;
-    const logo = biz.logo || '';
-    const address = safe(biz.address) || '';
+    const rating = ratingValue(biz.average_rating);
+    const logo = cleanUrl(biz.logo);
+    const address = escapeHtml(safe(biz.address)) || '';
 
     const location = [city, state].filter(Boolean).join(', ');
     const stars = rating > 0 ? '⭐'.repeat(Math.round(rating)) : '';
     const ratingText = rating > 0 ? `${stars} ${rating.toFixed(1)}` : 'No rating';
     const proBadge = isPro ? '<span class="pro-badge-gradient">PRO</span>' : '';
     const itemClass = isPro ? 'business-list-item pro-list-item' : 'business-list-item';
-    const viewUrl = (biz.slug && biz.slug.trim()) ? `business.html?slug=${biz.slug}` : `business.html?id=${biz.id}`;
+    const viewUrl = detailUrl(biz);
     
     const logoHTML = logo 
       ? `<img src="${logo}" alt="" class="business-list-logo">`
       : `<div class="business-list-logo-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></div>`;
     
     // Only subcategories to avoid duplicate with primary in metaLine
-    const subcats = biz.secondary_categories || [];
+    const subcats = Array.isArray(biz.secondary_categories) ? biz.secondary_categories.map(escapeHtml) : [];
     const allCats = subcats.length > 0 ? subcats.join(', ') : '';
 
     return H`
@@ -394,8 +401,8 @@ async function loadData() {
       loadCategories()
     ]);
     
-    allBusinesses = bizSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    allChurches = churchSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).filter(church => church.listing_status === 'active');
+    allBusinesses = bizSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+    allChurches = churchSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })).filter(church => church.listing_status === 'active');
     const activeChurchIds = new Set(allChurches.map(church => church.id));
     allBusinesses = allBusinesses.filter(business => activeChurchIds.has(business.church_id));
     
@@ -485,7 +492,7 @@ function applyFilters() {
 
     // Rating filter (average_rating >= minimum)
     if (filters.rating > 0) {
-      const bizRating = parseFloat(biz.average_rating) || 0;
+      const bizRating = ratingValue(biz.average_rating);
       if (bizRating < filters.rating) {
         return false;
       }
