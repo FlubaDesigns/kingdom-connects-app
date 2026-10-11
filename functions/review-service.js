@@ -16,4 +16,15 @@ async function writeReview(tx, db, reviewRef, previous, next, timestamp) {
     average_rating: ratings.length ? ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length : 0,
     updated_at: timestamp() });
 }
-module.exports = { writeReview };
+// Firestore normally retries contention itself. A closed read transaction can instead
+// surface as INVALID_ARGUMENT, so restart only that narrowly identified failed transaction.
+// The callback must contain database operations only; never external effects such as mail or payments.
+async function runReviewTransaction(db, operation) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try { return await db.runTransaction(operation); }
+    catch (error) {
+      if (attempt === 2 || error.code !== 3 || !/transaction is invalid or closed/i.test(error.message)) throw error;
+    }
+  }
+}
+module.exports = { writeReview, runReviewTransaction };

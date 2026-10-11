@@ -1,6 +1,6 @@
 'use strict';
 const policy=require('./hierarchy-policy');
-const { writeReview } = require('./review-service');
+const { writeReview, runReviewTransaction } = require('./review-service');
 const {queueMemberMail}=require('./member-mail');
 const fail=(status,message)=>{throw Object.assign(new Error(message),{status})};
 const id=value=>{if(typeof value!=='string'||!value||value.includes('/')||value.length>128)fail(400,'Invalid record ID.');return value};
@@ -43,7 +43,7 @@ function createMemberService(db,auth,bucket,timestamp) {
   const isAdmin=policy.isAdmin(user);
   if (['setAdminUserRoles','setAdminUserStatus','moderateMemberReview'].includes(input.action)) {
    if (!isAdmin) fail(403, 'Administrator access required.');
-   return db.runTransaction(async tx => {
+   return runReviewTransaction(db, async tx => {
     const latest = (await tx.get(db.doc('users/'+actor.uid))).data();
     if (!latest || policy.isBlocked(latest) || !policy.isAdmin(latest)) fail(403, 'Administrator access required.');
     if (input.action === 'moderateMemberReview') {
@@ -82,7 +82,7 @@ function createMemberService(db,auth,bucket,timestamp) {
   if(input.action==='saveMemberReview'||input.action==='deleteMemberReview') {
    if(user.account_status!=='active')fail(403,'Approved membership is required to manage reviews.');
    const reviewRef=input.reviewId?db.doc('reviews/'+id(input.reviewId)):db.collection('reviews').doc();
-   return db.runTransaction(async tx=>{
+   return runReviewTransaction(db, async tx=>{
     const latest=(await tx.get(db.doc('users/'+actor.uid))).data();
     if(!latest || latest.account_status!=='active')fail(403,'Approved membership is required to manage reviews.');
     const current=(await tx.get(reviewRef)).data();
@@ -141,7 +141,7 @@ function createMemberService(db,auth,bucket,timestamp) {
   try{await auth.updateUser(uid,{disabled:true});await auth.revokeRefreshTokens(uid);}catch(e){if(e.code!=='auth/user-not-found')throw e;}
   if(profile)await db.doc('users/'+uid).update({account_status:'disabled'});
   for(const [collection,field]of [['favorite_businesses','user_id'],['reviews','user_id'],['member_mail','uid']]) {
-   while(true){const page=await db.collection(collection).where(field,'==',uid).limit(100).get();if(page.empty)break;if(collection==='reviews'){for(const review of page.docs)await db.runTransaction(async tx=>{const latest=await tx.get(review.ref);if(latest.exists)await writeReview(tx,db,review.ref,latest.data(),null,timestamp)});}else{const batch=db.batch();page.docs.forEach(d=>batch.delete(d.ref));await batch.commit();}}
+   while(true){const page=await db.collection(collection).where(field,'==',uid).limit(100).get();if(page.empty)break;if(collection==='reviews'){for(const review of page.docs)await runReviewTransaction(db, async tx=>{const latest=await tx.get(review.ref);if(latest.exists)await writeReview(tx,db,review.ref,latest.data(),null,timestamp)});}else{const batch=db.batch();page.docs.forEach(d=>batch.delete(d.ref));await batch.commit();}}
   }
   await bucket.deleteFiles({prefix:'users/'+uid+'/'});
   await db.recursiveDelete(db.doc('users/'+uid));
