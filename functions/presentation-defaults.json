@@ -1,0 +1,247 @@
+{
+  "sales_agent": {
+    "email": {
+      "subject": "Earn {{agent_commission}} Commission with Kingdom Connects",
+      "headline": "Turn Your Network Into Income",
+      "intro": "Kingdom Connects is building the largest faith-based business directory, and we want YOU to help us grow. As a Sales Agent, you'll earn recurring commissions just by connecting Christian businesses with our platform.",
+      "highlights": [
+        "Earn {{agent_commission}} commission on every Pro subscription you bring in",
+        "Recurring monthly income - you earn as long as they stay subscribed",
+        "No cap on earnings - the more you sell, the more you make",
+        "Marketing materials and sales dashboard provided"
+      ],
+      "cta": "See the full opportunity details in our presentation below."
+    },
+    "slides": [
+      {
+        "type": "title",
+        "title": "Kingdom Connects",
+        "subtitle": "Sales Agent Commission Program"
+      },
+      {
+        "type": "content",
+        "title": "What You'll Earn",
+        "bullets": [
+          "{{agent_commission}} commission on Pro subscriptions you sell",
+          "Recurring revenue each month",
+          "Unlimited earning potential",
+          "Support and marketing materials provided"
+        ]
+      },
+      {
+        "type": "content",
+        "title": "How It Works",
+        "bullets": [
+          "Sign up as a Sales Agent",
+          "Share your unique referral link",
+          "Earn {{agent_commission}} when customers subscribe",
+          "Track earnings in your dashboard"
+        ]
+      },
+      {
+        "type": "content",
+        "title": "Why Kingdom Connects?",
+        "bullets": [
+          "Faith-based marketplace for churches and businesses",
+          "Growing Christian commerce ecosystem",
+          "Affiliated Pro subscriptions support churches ({{church_tithe}} tithe)",
+          "Professional tools and support"
+        ]
+      },
+      {
+        "type": "closing",
+        "title": "Ready to Earn?",
+        "message": "Sign up today and start earning commissions"
+      }
+    ]
+  },
+  "church_admin": {
+    "email": {
+      "subject": "Strengthen Your Ministry Through Kingdom Partnerships",
+      "headline": "Partner With Us to Build God's Kingdom",
+      "intro": "Kingdom Connects creates a powerful connection between your church and the Christian business owners in your congregation. When these businesses thrive, your ministry thrives—because every Pro subscription from an affiliated business tithes {{church_tithe}} directly back to your church.",
+      "highlights": [
+        "Receive {{church_tithe}} Tithe from every Pro business subscription affiliated with your church—ongoing, passive support for your ministry",
+        "Help Your Business Owners Flourish—as they grow, they're empowered to give more generously to your church and community",
+        "Guide Your Members to trusted, faith-aligned businesses they can support with confidence",
+        "Free Church Listing Page—showcase your service times, address, and mission, or direct visitors straight to your website",
+        "Zero Cost to Join—register your church today and start building Kingdom connections"
+      ],
+      "cta": "Learn how to set up your church dashboard and start receiving tithes."
+    },
+    "slides": [
+      {
+        "type": "title",
+        "title": "Kingdom Connects",
+        "subtitle": "Church Partnership Program"
+      },
+      {
+        "type": "content",
+        "title": "Receive {{church_tithe}} Tithe",
+        "bullets": [
+          "Every Pro business affiliated with your church tithes {{church_tithe}} to your ministry",
+          "Ongoing, passive support as long as they're subscribed",
+          "Transparent tracking in your church dashboard",
+          "Monthly payouts to your church account"
+        ]
+      },
+      {
+        "type": "content",
+        "title": "Help Businesses Grow",
+        "bullets": [
+          "When Christian businesses in your congregation flourish, they give more",
+          "Connect them with faith-based customers seeking their services",
+          "Strengthen the economic health of your church community",
+          "Build a network of trusted Kingdom businesses"
+        ]
+      },
+      {
+        "type": "content",
+        "title": "Guide Your Members",
+        "bullets": [
+          "Help your congregation find trusted, faith-aligned businesses",
+          "Members can confidently support businesses that share their values",
+          "Build community through Kingdom commerce",
+          "Every purchase supports a fellow believer"
+        ]
+      },
+      {
+        "type": "content",
+        "title": "Free Church Listing",
+        "bullets": [
+          "Beautiful listing page at no cost",
+          "Display service times, address, and your mission",
+          "Or direct visitors straight to your church website",
+          "Help new visitors discover your church"
+        ]
+      },
+      {
+        "type": "closing",
+        "title": "Join Free Today",
+        "message": "Start building Kingdom connections and strengthening your ministry"
+      }
+    ]
+  },
+  "business_owner": {
+    "email": {
+      "subject": "List Your Business on Kingdom Connects - Free to Start",
+      "headline": "Grow Your Business in the Christian Community",
+      "intro": "Kingdom Connects connects Christian-owned businesses with customers who share their values. List your business for free and reach thousands of families looking to support faith-based commerce.",
+      "highlights": [
+        "Free basic listing with your business info and contact details",
+        "Pro features starting at just {{monthly_price}}/month - showcase products, run promotions",
+        "{{church_tithe}} of your subscription tithes back to your affiliated church",
+        "Build trust with customer reviews and testimonials"
+      ],
+      "cta": "See all the benefits and features in our presentation."
+    },
+    "slides": [
+      {
+        "type": "title",
+        "title": "Kingdom Connects",
+        "subtitle": "Business Listing & Growth"
+      },
+      {
+        "type": "content",
+        "title": "Your Free Listing",
+        "bullets": [
+          "List your Christian business for free",
+          "Share your mission and contact info",
+          "Receive customer reviews",
+          "Connect with your church community"
+        ]
+      },
+      {
+        "type": "content",
+        "title": "Go Pro - Unlock Premium Features",
+        "bullets": [
+          "Premium {{monthly_price}}/month or {{annual_price}}/year",
+          "Manage products & services",
+          "Share customer testimonials",
+          "Run special promotions"
+        ]
+      },
+      {
+        "type": "content",
+        "title": "Pro Features",
+        "bullets": [
+          "Feature your products & services",
+          "Build customer trust with testimonials",
+          "Create and manage promotions",
+          "Access detailed business analytics"
+        ]
+      },
+      {
+        "type": "content",
+        "title": "Support Your Church",
+        "bullets": [
+          "Affiliate with your church",
+          "{{church_tithe}} tithe supports your ministry",
+          "Build community within faith",
+          "Grow your business with purpose"
+        ]
+      },
+      {
+        "type": "closing",
+        "title": "Grow Your Kingdom Business",
+        "message": "List your business today"
+      }
+    ]
+  },
+  "member": {
+    "email": {
+      "subject": "Welcome to Kingdom Connects - Discover Christian Businesses",
+      "headline": "Find & Support Christian Businesses Near You",
+      "intro": "Kingdom Connects makes it easy to discover and support Christian-owned businesses in your community. Save your favorites, leave reviews, and help build a thriving faith-based economy.",
+      "highlights": [
+        "Search local Christian businesses and churches",
+        "Save your favorites for quick access",
+        "Leave reviews to help others find great businesses",
+        "Support businesses that share your values"
+      ],
+      "cta": "Learn all the ways to use Kingdom Connects in our presentation."
+    },
+    "slides": [
+      {
+        "type": "title",
+        "title": "Kingdom Connects",
+        "subtitle": "Member Features Guide"
+      },
+      {
+        "type": "content",
+        "title": "Discover Businesses",
+        "bullets": [
+          "Search by category, location, or name",
+          "Find Christian-owned businesses near you",
+          "View business profiles and reviews",
+          "Get directions and contact info"
+        ]
+      },
+      {
+        "type": "content",
+        "title": "Save Your Favorites",
+        "bullets": [
+          "Bookmark businesses you love",
+          "Quick access to your favorites list",
+          "Get updates on businesses you follow",
+          "Build your personal directory"
+        ]
+      },
+      {
+        "type": "content",
+        "title": "Leave Reviews",
+        "bullets": [
+          "Share your experience with others",
+          "Help businesses grow their reputation",
+          "Rate products and services",
+          "Build community trust"
+        ]
+      },
+      {
+        "type": "closing",
+        "title": "Join Kingdom Connects",
+        "message": "Start discovering today"
+      }
+    ]
+  }
+}

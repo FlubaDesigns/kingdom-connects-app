@@ -228,7 +228,7 @@ function renderBusinesses(businesses) {
             `<button class="btn btn-small btn-secondary" data-action="revokePro" data-id="${business.id}" title="Remove Pro status">❌ Revoke Pro</button>`
           }
           <button class="btn btn-small btn-secondary" data-action="editBusiness" data-id="${business.id}">Edit</button>
-          <button class="btn btn-small btn-danger" data-action="deleteBusiness" data-id="${business.id}">Delete</button>
+          <button class="btn btn-small btn-danger" data-action="deleteBusiness" data-id="${business.id}">Suspend</button>
         </div>
       </td>
     `;
@@ -445,22 +445,14 @@ window.editBusiness = (id) => {
 };
 
 window.deleteBusiness = async (id) => {
-  const confirmed = window.showConfirmDialog 
-    ? await window.showConfirmDialog('Delete Business', 'DELETE this business permanently? This cannot be undone. Kingdom Connects policy is to downgrade, not delete.', 'Delete Forever', 'danger')
-    : confirm('⚠️ DELETE this business permanently? This cannot be undone.\n\nNote: Kingdom Connects policy is to downgrade, not delete. Are you sure?');
+  const confirmed = await window.showConfirmDialog('Suspend Business', 'Hide this business while preserving its account, reviews, and history?', 'Suspend', 'danger');
   if (!confirmed) return;
-  
   try {
-    // Delete from both collections
-    await Promise.all([
-      deleteDoc(doc(db, "business_listings_public", id)),
-      deleteDoc(doc(db, "business_listings_private", id))
-    ]);
-    window.showToast('Business deleted!', 'success');
+    await changeHierarchy('reviewBusiness', { businessId: id, decision: 'suspend' });
+    window.showToast('Business suspended.', 'success');
     await loadBusinesses();
   } catch (error) {
-    console.error('Error deleting business:', error);
-    window.showToast('Error deleting business: ' + error.message, 'error');
+    window.showToast('Unable to suspend business: ' + error.message, 'error');
   }
 };
 

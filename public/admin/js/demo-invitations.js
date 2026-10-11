@@ -1,9 +1,11 @@
+import { changeHierarchy } from '../../js/services/hierarchy-service.js';
+import { escapeHtml } from '../../js/utils.js';
 import { db, auth } from "../../js/firebase-config.js";
-import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc, query, where, getDocs, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { requireAdmin } from "./admin-auth-guard.js";
 import { sendDemoInvite } from "../../js/email/email-service.js";
 
-const BASE_URL = 'https://kingdomconnects.org';
+const BASE_URL = window.location.origin;
 
 const DEMO_OPTIONS = {
   member: { label: 'Member Signup', path: '/add_to_directory.html?demo=member', desc: 'Member registration with pre-filled data' },
@@ -21,7 +23,7 @@ function getDemoUrl(type) {
 function buildEmailHtml(name, demoType, note) {
   const opt = DEMO_OPTIONS[demoType];
   const url = getDemoUrl(demoType);
-  const greeting = name ? `Hi ${name},` : 'Hello,';
+  const greeting = name ? `Hi ${escapeHtml(name)},` : 'Hello,';
   
   return `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#1a1a1a;font-family:Arial,sans-serif;">
@@ -33,7 +35,7 @@ function buildEmailHtml(name, demoType, note) {
 </div>
 <p style="color:#fff;font-size:16px;line-height:1.6;">${greeting}</p>
 <p style="color:#ccc;font-size:16px;line-height:1.6;">You've been invited to experience Kingdom Connects through an interactive demo.</p>
-${note ? `<div style="background:#333;border-left:4px solid #d4af37;padding:15px 20px;margin:20px 0;border-radius:0 8px 8px 0;"><p style="color:#fff;margin:0;font-style:italic;">"${note}"</p></div>` : ''}
+${note ? `<div style="background:#333;border-left:4px solid #d4af37;padding:15px 20px;margin:20px 0;border-radius:0 8px 8px 0;"><p style="color:#fff;margin:0;font-style:italic;">"${escapeHtml(note)}"</p></div>` : ''}
 <div style="background:#1a1a1a;border-radius:8px;padding:20px;margin:25px 0;border:1px solid #444;">
 <h3 style="color:#d4af37;margin:0 0 10px 0;">${opt.label} Demo</h3>
 <p style="color:#aaa;margin:0;font-size:14px;">${opt.desc}</p>
@@ -87,10 +89,10 @@ function renderQuickSend(lastRecipient) {
   }
   
   container.innerHTML = `
-    <p class="text-sm mb-md">Quick send to: <strong>${lastRecipient.name || lastRecipient.email}</strong></p>
+    <p class="text-sm mb-md">Quick send to: <strong>${escapeHtml(lastRecipient.name || lastRecipient.email)}</strong></p>
     <div class="quick-send-grid">
       ${Object.entries(DEMO_OPTIONS).map(([key, opt]) => `
-        <button type="button" class="btn btn-outline btn-small quick-send-btn" data-demo="${key}" data-email="${lastRecipient.email}" data-name="${lastRecipient.name || ''}">
+        <button type="button" class="btn btn-outline btn-small quick-send-btn" data-demo="${key}" data-email="${escapeHtml(lastRecipient.email).replace(/"/g, '&quot;')}" data-name="${escapeHtml(lastRecipient.name || '').replace(/"/g, '&quot;')}">
           ${opt.label}
         </button>
       `).join('')}
@@ -131,9 +133,9 @@ async function loadDemoRecords() {
     ]);
     
     allDemoRecords = {
-      users: usersSnap.docs.map(d => ({ id: d.id, ...d.data() })),
-      businesses: businessSnap.docs.map(d => ({ id: d.id, ...d.data() })),
-      churches: churchSnap.docs.map(d => ({ id: d.id, ...d.data() }))
+      users: usersSnap.docs.map(d => ({ ...d.data(), id: d.id })),
+      businesses: businessSnap.docs.map(d => ({ ...d.data(), id: d.id })).filter(b => !b.platform_suspended),
+      churches: churchSnap.docs.map(d => ({ ...d.data(), id: d.id })).filter(c => c.listing_status !== 'suspended')
     };
     
     renderDemoRecords();
@@ -172,7 +174,7 @@ function renderDemoRecords() {
     html += `<div class="mb-sm"><strong class="gold">Members (${visibleUsers.length})</strong></div>`;
     visibleUsers.forEach(u => {
       html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);">
-        <span class="text-sm">${u.name || 'Unknown'}</span>
+        <span class="text-sm">${escapeHtml(u.name || 'Unknown')}</span>
         <button type="button" class="btn btn-red btn-small demo-delete-btn" data-col="users" data-id="${u.id}">Delete</button>
       </div>`;
     });
@@ -182,8 +184,8 @@ function renderDemoRecords() {
     html += `<div class="mb-sm ${visibleUsers.length > 0 ? 'mt-md' : ''}"><strong class="gold">Businesses (${visibleBusinesses.length})</strong></div>`;
     visibleBusinesses.forEach(b => {
       html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);">
-        <span class="text-sm">${b.business_name || 'Unknown'}</span>
-        <button type="button" class="btn btn-red btn-small demo-delete-btn" data-col="business_listings_public" data-id="${b.id}">Delete</button>
+        <span class="text-sm">${escapeHtml(b.business_name || 'Unknown')}</span>
+        <button type="button" class="btn btn-red btn-small demo-delete-btn" data-col="business_listings_public" data-id="${b.id}">Suspend</button>
       </div>`;
     });
   }
@@ -192,8 +194,8 @@ function renderDemoRecords() {
     html += `<div class="mb-sm ${(visibleUsers.length > 0 || visibleBusinesses.length > 0) ? 'mt-md' : ''}"><strong class="gold">Churches (${visibleChurches.length})</strong></div>`;
     visibleChurches.forEach(c => {
       html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);">
-        <span class="text-sm">${c.church_name || 'Unknown'}</span>
-        <button type="button" class="btn btn-red btn-small demo-delete-btn" data-col="churches" data-id="${c.id}">Delete</button>
+        <span class="text-sm">${escapeHtml(c.church_name || 'Unknown')}</span>
+        <button type="button" class="btn btn-red btn-small demo-delete-btn" data-col="churches" data-id="${c.id}">Suspend</button>
       </div>`;
     });
   }
@@ -205,12 +207,12 @@ function renderDemoRecords() {
       e.stopPropagation();
       const col = btn.dataset.col;
       const id = btn.dataset.id;
-      if (!confirm('Delete this demo record?')) return;
+      if (!confirm('Retire this demo record? Members are deleted through account cleanup; businesses and churches are suspended.')) return;
       btn.disabled = true;
       btn.textContent = '...';
       try {
-        await deleteDoc(doc(db, col, id));
-        showStatus('Deleted.', 'success');
+        await retireDemoRecord(col, id);
+        showStatus('Demo record retired.', 'success');
         await loadDemoRecords();
       } catch (err) {
         showStatus('Error: ' + err.message, 'error');
@@ -236,11 +238,11 @@ function setDemoFilter(filter) {
 }
 
 window.deleteDemoRecord = async function(collectionName, docId) {
-  if (!confirm('Delete this demo record?')) return;
+  if (!confirm('Retire this demo record? Members are deleted through account cleanup; businesses and churches are suspended.')) return;
   
   try {
-    await deleteDoc(doc(db, collectionName, docId));
-    showStatus('Record deleted.', 'success');
+    await retireDemoRecord(collectionName, docId);
+    showStatus('Demo record retired.', 'success');
     await loadDemoRecords();
   } catch (err) {
     showStatus('Error: ' + err.message, 'error');
@@ -260,27 +262,28 @@ async function deleteAllDemoRecords() {
   if (total === 0) return;
   
   const filterLabel = currentFilter === 'all' ? 'ALL' : currentFilter;
-  if (!confirm(`Delete ${total} ${filterLabel} demo record(s)? This cannot be undone.`)) return;
+  if (!confirm(`Retire ${total} ${filterLabel} demo record(s)? Member accounts will be deleted; businesses and churches will be suspended.`)) return;
   
   const btn = document.getElementById('deleteAllDemoRecords');
   btn.disabled = true;
-  btn.textContent = 'Deleting...';
+  btn.textContent = 'Processing...';
   
   try {
-    const batch = writeBatch(db);
-    
-    usersToDelete.forEach(u => batch.delete(doc(db, 'users', u.id)));
-    businessesToDelete.forEach(b => batch.delete(doc(db, 'business_listings_public', b.id)));
-    churchesToDelete.forEach(c => batch.delete(doc(db, 'churches', c.id)));
-    
-    await batch.commit();
-    showStatus(`Deleted ${total} demo records.`, 'success');
+    let completed = 0;
+    const failures = [];
+    for (const [col, records] of [['business_listings_public', businessesToDelete], ['churches', churchesToDelete], ['users', usersToDelete]]) {
+      for (const record of records) {
+        try { await retireDemoRecord(col, record.id); completed++; }
+        catch (error) { failures.push(error.message); }
+      }
+    }
+    showStatus(`${completed} demo records processed.${failures.length ? ' ' + failures.length + ' could not be processed: ' + failures.join('; ') : ''}`, failures.length ? 'error' : 'success');
     await loadDemoRecords();
   } catch (err) {
     showStatus('Error: ' + err.message, 'error');
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Delete All Shown';
+    btn.textContent = 'Retire All Shown';
   }
 }
 
@@ -366,3 +369,12 @@ requireAdmin(async (userContext, firebaseUser) => {
     btn.addEventListener('click', () => setDemoFilter(btn.dataset.filter));
   });
 });
+
+async function retireDemoRecord(collectionName, id) {
+  const record = await getDoc(doc(db, collectionName, id));
+  if (!record.exists() || record.data().is_demo !== true) throw new Error('Only marked demo records can be retired here.');
+  if (collectionName === 'users') return changeHierarchy('deleteMemberAccount', { memberId: id });
+  if (collectionName === 'business_listings_public') return changeHierarchy('reviewBusiness', { businessId: id, decision: 'suspend' });
+  if (collectionName === 'churches') return changeHierarchy('setChurchStatus', { churchId: id, status: 'suspended' });
+  throw new Error('Unsupported demo record type.');
+}

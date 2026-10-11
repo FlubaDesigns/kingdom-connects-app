@@ -580,6 +580,20 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // Published manuals use one content record; only platform admins may edit it.
+    match /public_manuals/{manualId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /admin_prefs/{userId} {
+      allow read, write: if isAdmin() && request.auth.uid == userId;
+    }
+    match /demo_invites/{inviteId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() && request.resource.data.sentBy == request.auth.uid;
+      allow update, delete: if false;
+    }
+
     // Private platform work list. Existing canonical administrator authority applies.
     match /admin_tasks/{taskId} {
       function validTask() {

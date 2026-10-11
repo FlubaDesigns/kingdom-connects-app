@@ -12,7 +12,7 @@ function page(file, overrides={}) {
   changeHierarchy:async(...v)=>writes.push(v),normalizeUserRoles:user=>user.roles||['member'],
   mergeBusiness:(id,pub,priv)=>({...priv,...pub,id}),escapeHtml:value=>String(value??'').replace(/</g,'&lt;'),
   serverTimestamp:()=> 'server',setTimeout(){},clearTimeout(){},...overrides});
- vm.runInContext(source(file).replace(/^await adminReady;\n/gm,''),context);
+ vm.runInContext(source(file).replace(/await adminReady/g,'({user:{uid:"admin",email:"admin@example.invalid"}})'),context);
  return {context,el,notices,writes,run:code=>vm.runInContext(code,context)};
 }
 const snap=records=>({docs:records.map(([id,data])=>({id,data:()=>data})),empty:!records.length});
@@ -85,4 +85,40 @@ test('donation oversight reads existing webhook records and keeps pending reques
  const recorded=p.run("normalizeDonation('receipt',{email:'donor@example.test',amount:25,recurring:true,stripe_session_id:'session'},'donations')");
  assert.equal(recorded.donor_email,'donor@example.test');assert.equal(recorded.status,'completed');assert.equal(recorded.frequency,'recurring');
  const pending=p.run("normalizeDonation('request',{donor_email:'donor@example.test',amount:25},'donation_requests')");assert.equal(pending.status,'pending_stripe_setup');
+});
+
+test('manual editor save persists selected content and authenticated actor',async()=>{
+ const saved=[];
+ const p=page('public/admin/js/manual-editor.js',{setDoc:async(ref,data)=>saved.push({ref,data})});
+ p.run("currentManual='member'");p.el('hero_title').value='Updated title';p.el('hero_description').value='Updated description';
+ await p.el('manualForm').handlers.submit({preventDefault(){}});
+ assert.equal(saved.length,1);assert.equal(saved[0].ref,'public_manuals/member');assert.equal(saved[0].data.updated_by,'admin');assert.equal(saved[0].data.hero_title,'Updated title');
+ assert.equal(p.notices[0][1],'success');
+});
+test('demo retirement uses canonical hierarchy and rejects unmarked records',async()=>{
+ let isDemo=true;
+ const p=page('public/admin/js/demo-invitations.js',{getDoc:async()=>({exists:()=>true,data:()=>({is_demo:isDemo})}),window:{location:{origin:'https://kingdom-commerce.web.app'}}});
+ await p.run("retireDemoRecord('business_listings_public','business')");await p.run("retireDemoRecord('churches','church')");await p.run("retireDemoRecord('users','member')");
+ assert.deepEqual(p.writes.map(v=>v[0]),['reviewBusiness','setChurchStatus','deleteMemberAccount']);
+ isDemo=false;await assert.rejects(p.run("retireDemoRecord('users','member')"),/Only marked demo/);assert.equal(p.writes.length,3);
+});
+test('sharing queue respects canonical sharing authority and member review rating',async()=>{
+ const records=[['allowed',{business_id:'business',user_id:'member',rating:4,review_text:'Allowed'}],['blocked',{business_id:'business',user_id:'blocked',rating:5}]];
+ const empty={docs:[],forEach(){}};
+ const p=page('public/admin/js/social-sharing-admin.js',{getDocs:async path=>path==='reviews'?snap(records):empty,canShareReview:async uid=>({allowed:uid==='member'})});
+ await p.run('loadShareableContent()');assert.equal(p.run('allContent.length'),1);assert.equal(p.run('allContent[0].rating'),4);
+});
+test('testimonials and contact content display submitted text without executing markup',async()=>{
+ const p=page('public/admin/js/testimonials.js');
+ p.run("renderTestimonials('pendingList',[{id:'review',author_name:'<img onerror=alert(1)>',content:'<script>bad</script>',rating:999}], 'pending')");
+ assert.doesNotMatch(p.el('pendingList').innerHTML,/<img|<script>/);assert.match(p.el('pendingList').innerHTML,/&lt;script>/);
+ const contact=page('public/admin/js/contact-submissions.js',{onReady(){}});
+ contact.run("renderSubmissions([{id:'contact',status:'new',name:'<img>',message:'<script>bad</script>'}])");
+ assert.doesNotMatch(contact.el('submissionsList').innerHTML,/<img|<script>/);
+});
+test('published manuals still load when protected commission settings are unavailable',async()=>{
+ for(const group of ['sales','business-admin','church-admin','marketing']){
+  const p=page(`public/${group}/js/user-manual.js`,{getDoc:async path=>{if(path.startsWith('commission_policies/'))throw Error('Sign in required');return {exists:()=>true,data:()=>path.startsWith('public_manuals/')?{hero_title:'Saved manual title',hero_description:'Saved manual description'}:{monthly_price:8.99,annual_price:74.99}};}});
+  await p.run('loadSettings()');assert.equal(p.el('heroTitle').textContent,'Saved manual title');assert.equal(p.el('heroDescription').innerHTML,'Saved manual description');
+ }
 });

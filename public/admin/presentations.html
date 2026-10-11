@@ -51,8 +51,8 @@
             
             <div class="form-field">
               <label for="recipient-phone">Phone Number (SMS)</label>
-              <input type="tel" id="recipient-phone" placeholder="+1 (555) 000-0000">
-              <small class="text-muted">Optional - leave blank to send email only</small>
+              <input type="tel" id="recipient-phone" disabled placeholder="+1 (555) 000-0000">
+              <small class="text-muted">Email delivery is available. SMS is not configured.</small>
             </div>
             
             <div class="form-field">
@@ -60,7 +60,7 @@
                 <input type="checkbox" id="include-presentation" checked>
                 <span>Include PowerPoint presentation</span>
               </label>
-              <small class="text-muted">Uncheck to send email only (no View/Download buttons)</small>
+              <small class="text-muted">Uncheck to send email without a PowerPoint attachment.</small>
             </div>
             
             <div class="form-field">
@@ -72,8 +72,8 @@
             
             <div class="form-field">
               <label class="checkbox-label">
-                <input type="checkbox" id="send-sms">
-                <span>Send via SMS (with download link)</span>
+                <input type="checkbox" id="send-sms" disabled>
+                <span>SMS delivery — not configured</span>
               </label>
             </div>
             

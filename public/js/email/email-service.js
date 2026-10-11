@@ -180,3 +180,11 @@ export default {
   checkHealth,
   notifyAdminNewSubmission
 };
+
+export async function loadPresentationTemplate(role, templateId = null) {
+  const token = await getAuthToken();
+  const response = await fetch(`${API_BASE}/api/presentations/preview/${encodeURIComponent(role)}${templateId ? '?templateId=' + encodeURIComponent(templateId) : ''}`, {headers:{Authorization:`Bearer ${token}`}});
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || 'Unable to load presentation');
+  return data.template;
+}

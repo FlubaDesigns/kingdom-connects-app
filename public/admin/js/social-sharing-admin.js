@@ -1,3 +1,4 @@
+import { canShareReview } from '../../js/review-sharing-permissions.js';
 import { db } from "../../js/firebase-config.js";
 import { collection, getDocs, doc, getDoc, setDoc, updateDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { requireAdmin } from "./admin-auth-guard.js";
@@ -48,6 +49,7 @@ async function saveSettings() {
     
     await setDoc(doc(db, "platform_settings", "default"), settings, { merge: true });
     window.showToast('Settings saved!', 'success');
+    await loadShareableContent();
   } catch (error) {
     console.error('Error saving settings:', error);
     window.showToast('Error saving settings: ' + error.message, 'error');
@@ -71,6 +73,7 @@ async function loadShareableContent() {
     
     for (const reviewDoc of reviewsSnapshot.docs) {
       const review = reviewDoc.data();
+      if (!(await canShareReview(review.user_id, review.business_id)).allowed) continue;
       let businessName = 'Unknown Business';
       
       if (review.business_id) {
@@ -86,11 +89,11 @@ async function loadShareableContent() {
         id: reviewDoc.id,
         type: 'review',
         title: `Review for ${businessName}`,
-        subtitle: `${review.star_rating || 0} stars by ${review.reviewer_name || 'Anonymous'}`,
+        subtitle: `${review.rating ?? review.star_rating ?? 0} stars by ${review.reviewer_name || 'Anonymous'}`,
         text: review.review_text || '',
         businessName,
-        rating: review.star_rating || 0,
-        date: review.submitted_at?.toDate ? review.submitted_at.toDate() : new Date()
+        rating: review.rating ?? review.star_rating ?? 0,
+        date: (review.created_at || review.submitted_at)?.toDate?.() || new Date(0)
       });
     }
 
@@ -205,7 +208,7 @@ function renderContentQueue() {
              target="_blank" rel="noopener" class="btn btn-small share-btn-twitter">
             🐦 X / Twitter
           </a>
-          <button class="btn btn-small" data-action="copyShare" data-text="${item.text.replace(/"/g, '&quot;')}" data-title="${item.title.replace(/"/g, '&quot;')}">
+          <button class="btn btn-small" data-action="copyShare" data-text="${escapeHtml(item.text).replace(/"/g, '&quot;')}" data-title="${escapeHtml(item.title).replace(/"/g, '&quot;')}">
             🔗 Copy
           </button>
         </div>

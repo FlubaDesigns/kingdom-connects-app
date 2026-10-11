@@ -18,6 +18,7 @@
     "firebase-admin": "^13.6.0",
     "firebase-functions": "^7.0.2",
     "jsonwebtoken": "^9.0.3",
+    "pptxgenjs": "4.0.1",
     "resend": "^6.6.0",
     "stripe": "^20.1.0"
   }

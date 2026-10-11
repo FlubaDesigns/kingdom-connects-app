@@ -1,6 +1,7 @@
 import { db } from '../../js/firebase-config.js';
 import { doc, getDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-import { requireAdmin } from './admin-auth-guard.js';
+import { adminReady } from './admin-auth-guard.js';
+const { user: currentUser } = await adminReady;
 
 const manualConfigs = {
   sales_agent: {
@@ -63,9 +64,6 @@ const previewContent = document.getElementById('previewContent');
 let currentManual = null;
 let currentContent = {};
 
-requireAdmin(() => {
-  // Admin check done by requireAdmin - super_admin check can be added if needed
-});
 
 manualSelect.addEventListener('change', async () => {
   const manualId = manualSelect.value;
@@ -173,7 +171,7 @@ manualForm.addEventListener('submit', async (e) => {
     });
 
     content.updated_at = serverTimestamp();
-    content.updated_by = auth.currentUser?.email || 'unknown';
+    content.updated_by = currentUser.uid;
 
     await setDoc(doc(db, 'public_manuals', currentManual), content, { merge: true });
     
@@ -190,7 +188,7 @@ manualForm.addEventListener('submit', async (e) => {
 document.getElementById('previewBtn').addEventListener('click', async () => {
   if (!currentManual) return;
   
-  let pricingSettings = { monthly_price: 9, annual_price: 69.99 };
+  let pricingSettings = { monthly_price: 8.99, annual_price: 74.99 };
   let commissionSettings = { salesperson_percentage: 20, sales_director_percentage: 15, church_percentage: 10 };
 
   try {
@@ -213,7 +211,7 @@ document.getElementById('previewBtn').addEventListener('click', async () => {
       .replace(/\{\{agent_commission\}\}/g, commissionSettings.salesperson_percentage + '%')
       .replace(/\{\{director_commission\}\}/g, commissionSettings.sales_director_percentage + '%')
       .replace(/\{\{monthly_price\}\}/g, '$' + pricingSettings.monthly_price)
-      .replace(/\{\{annual_price\}\}/g, '$' + (pricingSettings.annual_price || 69.99).toFixed(2))
+      .replace(/\{\{annual_price\}\}/g, '$' + Number(pricingSettings.annual_price ?? 74.99).toFixed(2))
       .replace(/\{\{church_tithe\}\}/g, commissionSettings.church_percentage + '%')
       .replace(/\{\{platform_name\}\}/g, 'Kingdom Connects');
   }

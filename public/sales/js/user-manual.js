@@ -31,14 +31,20 @@ async function loadSettings() {
       CHURCH_TITHE = data.church_percentage ?? 10;
     }
 
+
+  } catch (error) {
+    // Silently use defaults if not authenticated - expected for public viewing
+  }
+
+  try {
     const manualDoc = await getDoc(doc(db, 'public_manuals', 'sales_agent'));
     if (manualDoc.exists()) {
       editableContent = { ...defaultContent, ...manualDoc.data() };
     }
   } catch (error) {
-    // Silently use defaults if not authenticated - expected for public viewing
+    console.error('Unable to load published manual content:', error);
   }
-  
+
   updateManualContent();
 }
 
@@ -60,6 +66,13 @@ function replaceVariables(text) {
 }
 
 function updateManualContent() {
+  document.querySelectorAll('[data-manual-field]').forEach(element => {
+    const value = editableContent[element.dataset.manualField];
+    if (typeof value === 'string' && value) {
+      element.innerHTML = replaceVariables(value);
+      element.classList.remove('hidden');
+    }
+  });
   const heroTitleEl = document.getElementById('heroTitle');
   if (heroTitleEl) {
     heroTitleEl.textContent = replaceVariables(editableContent.hero_title);

@@ -1,3 +1,4 @@
+import { escapeHtml } from '../../js/utils.js';
 import { onReady } from '../../js/dom-ready.js';
 import { adminReady } from './admin-auth-guard.js';
 await adminReady;
@@ -51,6 +52,10 @@ onReady(() => {
   loadSubmissions();
   setupFilters();
   setupModal();
+  document.getElementById('submissionsList').addEventListener('click', event => {
+    const button = event.target.closest('[data-response-id]');
+    if (button) window.openResponseModal(button.dataset.responseId);
+  });
 });
 
 async function loadSubmissions() {
@@ -81,8 +86,9 @@ async function loadSubmissions() {
       }
       
       allSubmissions.push({
-        id: docSnap.id,
         ...data,
+        id: docSnap.id,
+        status: data.status || "new",
         user_role: userRole
       });
     }
@@ -192,10 +198,10 @@ function renderSubmissions(submissions) {
     const dashboardLabel = s.dashboard ? DASHBOARD_LABELS[s.dashboard] : '';
 
     return `
-      <article class="card submission-card" data-id="${s.id}">
+      <article class="card submission-card" data-id="${escapeHtml(s.id)}">
         <div class="submission-header">
           <div class="submission-meta">
-            <span class="submission-status ${statusClass}">${s.status.toUpperCase()}</span>
+            <span class="submission-status ${statusClass}">${escapeHtml(s.status.toUpperCase())}</span>
             <span class="submission-source">${sourceLabel}</span>
             ${dashboardLabel ? `<span class="submission-dashboard">${dashboardLabel}</span>` : ''}
           </div>
@@ -204,30 +210,30 @@ function renderSubmissions(submissions) {
         
         <div class="submission-user">
           <div class="user-info">
-            <strong class="gold">${s.name || 'Unknown'}</strong>
-            <span class="user-email">${s.email || 'No email'}</span>
+            <strong class="gold">${escapeHtml(s.name || 'Unknown')}</strong>
+            <span class="user-email">${escapeHtml(s.email || 'No email')}</span>
           </div>
           <div class="user-role">
-            <span class="role-badge">${s.user_role}</span>
+            <span class="role-badge">${escapeHtml(s.user_role)}</span>
           </div>
         </div>
 
         <div class="submission-category">
-          <span class="category-label">${CATEGORY_LABELS[s.category] || s.category}</span>
-          ${s.subcategory ? `<span class="subcategory-label">${SUBCATEGORY_LABELS[s.subcategory] || s.subcategory}</span>` : ''}
+          <span class="category-label">${escapeHtml(CATEGORY_LABELS[s.category] || s.category)}</span>
+          ${s.subcategory ? `<span class="subcategory-label">${escapeHtml(SUBCATEGORY_LABELS[s.subcategory] || s.subcategory)}</span>` : ''}
         </div>
 
-        <h4 class="submission-subject">${s.subject || 'No subject'}</h4>
-        <p class="submission-message">${s.message || 'No message'}</p>
+        <h4 class="submission-subject">${escapeHtml(s.subject || 'No subject')}</h4>
+        <p class="submission-message">${escapeHtml(s.message || 'No message')}</p>
 
         ${s.admin_response ? `
           <div class="admin-response-preview">
-            <strong>Your Response:</strong> ${s.admin_response.substring(0, 100)}${s.admin_response.length > 100 ? '...' : ''}
+            <strong>Your Response:</strong> ${escapeHtml(s.admin_response.substring(0, 100))}${s.admin_response.length > 100 ? '...' : ''}
           </div>
         ` : ''}
 
         <div class="submission-actions">
-          <button class="btn btn-gold btn-small" onclick="openResponseModal('${s.id}')">
+          <button class="btn btn-gold btn-small" data-response-id="${escapeHtml(s.id)}">
             ${s.admin_response ? 'View / Edit Response' : 'Respond'}
           </button>
         </div>
@@ -268,15 +274,15 @@ window.openResponseModal = function(id) {
     <div class="detail-grid">
       <div class="detail-row">
         <span class="detail-label">From:</span>
-        <span class="detail-value"><strong>${submission.name}</strong> (${submission.email})</span>
+        <span class="detail-value"><strong>${escapeHtml(submission.name)}</strong> (${escapeHtml(submission.email)})</span>
       </div>
       <div class="detail-row">
         <span class="detail-label">Role:</span>
-        <span class="detail-value role-badge">${submission.user_role}</span>
+        <span class="detail-value role-badge">${escapeHtml(submission.user_role)}</span>
       </div>
       <div class="detail-row">
         <span class="detail-label">Category:</span>
-        <span class="detail-value">${CATEGORY_LABELS[submission.category] || submission.category} - ${SUBCATEGORY_LABELS[submission.subcategory] || submission.subcategory || 'N/A'}</span>
+        <span class="detail-value">${escapeHtml(CATEGORY_LABELS[submission.category] || submission.category)} - ${escapeHtml(SUBCATEGORY_LABELS[submission.subcategory] || submission.subcategory || 'N/A')}</span>
       </div>
       <div class="detail-row">
         <span class="detail-label">Source:</span>
@@ -288,12 +294,12 @@ window.openResponseModal = function(id) {
       </div>
       <div class="detail-row">
         <span class="detail-label">Subject:</span>
-        <span class="detail-value">${submission.subject || 'No subject'}</span>
+        <span class="detail-value">${escapeHtml(submission.subject || 'No subject')}</span>
       </div>
     </div>
     <div class="message-box">
       <strong>Message:</strong>
-      <p>${submission.message}</p>
+      <p>${escapeHtml(submission.message)}</p>
     </div>
   `;
 

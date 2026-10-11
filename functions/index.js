@@ -21,6 +21,7 @@ const { createMemberService, memberActions } = require('./member-service');
 const { createMemberMailDelivery, queueMemberMail } = require('./member-mail');
 const memberService = createMemberService(admin.firestore(), admin.auth(), admin.storage().bucket('kingdom-commerce.firebasestorage.app'), () => admin.firestore.FieldValue.serverTimestamp());
 const resendApiKey = defineSecret('RESEND_API_KEY');
+const presentations = require('./presentation-service').createPresentationService(admin.firestore());
 
 exports.hierarchyAction = onRequest((req, res) => cors(req, res, async () => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Use POST.' });
@@ -212,52 +213,26 @@ exports.sendPresentation = onRequest({ secrets: [resendApiKey] }, (req, res) => 
         console.log('Missing fields - role:', role, 'email:', email);
         return res.status(400).json({ error: 'Missing required fields: role, email' });
       }
-      const ROLE_DEFAULTS = {
-        sales_agent: {
-          subject: 'Earn 20% Commission with Kingdom Connects',
-          headline: 'Join Our Sales Team',
-          intro: 'Kingdom Connects is looking for motivated sales agents to help grow our faith-based business directory.',
-          highlights: ['Earn 20% commission on all sales', 'Flexible work schedule', 'Make a difference in your community', 'Support Christian businesses']
-        },
-        church_admin: {
-          subject: 'Strengthen Your Ministry Through Kingdom Partnerships',
-          headline: 'Partner With Us to Build God\'s Kingdom',
-          intro: 'Kingdom Connects creates a powerful connection between your church and the Christian business owners in your congregation. When these businesses thrive, your ministry thrives—because every Pro subscription from an affiliated business tithes 10% directly back to your church.',
-          highlights: [
-            '<strong>Receive 10% Tithe</strong> from every Pro business subscription affiliated with your church—ongoing, passive support for your ministry',
-            '<strong>Help Your Business Owners Flourish</strong>—as they grow, they\'re empowered to give more generously to your church and community',
-            '<strong>Guide Your Members</strong> to trusted, faith-aligned businesses they can support with confidence',
-            '<strong>Free Church Listing Page</strong>—showcase your service times, address, and mission, or direct visitors straight to your website',
-            '<strong>Zero Cost to Join</strong>—register your church today and start building Kingdom connections'
-          ]
-        },
-        business_owner: {
-          subject: 'Grow Your Business with Kingdom Connects',
-          headline: 'Reach Faith-Based Customers',
-          intro: 'Kingdom Connects is the premier directory for Christian businesses.',
-          highlights: ['Connect with local churches', 'Reach faith-based customers', 'Support your community', 'Affordable listing options']
-        },
-        member: {
-          subject: 'Welcome to Kingdom Connects',
-          headline: 'Find Trusted Christian Businesses',
-          intro: 'Kingdom Connects helps you find and support local Christian businesses.',
-          highlights: ['Find trusted services', 'Support local businesses', 'Connect with your community', 'Share your favorites']
-        }
-      };
-      const template = ROLE_DEFAULTS[role] || ROLE_DEFAULTS.member;
-      const htmlBody = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:Arial,sans-serif;line-height:1.6;color:#333;max-width:600px;margin:0 auto;padding:20px}h1{color:#1e4e9a}.highlights{background:#f5f5f5;padding:20px;border-radius:8px;margin:20px 0}.highlights li{margin:10px 0}.cta{text-align:center;margin:30px 0}.btn{display:inline-block;background:#c9a227;color:white;padding:12px 30px;text-decoration:none;border-radius:5px;font-weight:bold}</style></head><body><h1>${template.headline}</h1><p>${template.intro}</p><div class="highlights"><ul>${template.highlights.map(h => `<li>${h}</li>`).join('')}</ul></div><div class="cta"><a href="https://kingdomconnects.org" class="btn">Learn More</a></div><p>Best regards,<br>The Kingdom Connects Team</p></body></html>`;
+      const template = await presentations.load(role, templateId);
+      const htmlBody = presentations.renderEmail(template);
+      const attachments = includePresentation === false ? [] : [await presentations.attachment(template)];
       const { client, fromEmail } = getResendClient();
       console.log('Sending presentation email from:', fromEmail, 'to:', email);
       const { data, error } = await client.emails.send({
         from: fromEmail,
         to: email,
-        subject: template.subject,
-        html: htmlBody
+        subject: template.email.subject,
+        html: htmlBody,
+        attachments
       });
       if (error) {
         console.error('Resend API error for presentation:', JSON.stringify(error));
         return res.status(400).json({ error: 'Email send failed', details: error.message || error });
       }
+      // The provider result is authoritative; recording history must not trigger a duplicate send.
+      try {
+        await admin.firestore().collection('email_logs').add({type:'presentation',role,email,template_id:templateId || null,message_id:data?.id || null,status:'sent',sent_by:user.uid,timestamp:admin.firestore.FieldValue.serverTimestamp()});
+      } catch (logError) { console.error('Presentation sent; history could not be recorded.'); }
       console.log('Presentation email sent successfully:', JSON.stringify(data));
       res.json({ success: true, messageId: data?.id });
     } catch (error) {
@@ -268,66 +243,17 @@ exports.sendPresentation = onRequest({ secrets: [resendApiKey] }, (req, res) => 
   });
 });
 
-exports.presentationPreview = onRequest((req, res) => {
-  cors(req, res, async () => {
-    // Parse role from path (/api/presentations/preview/church_admin) or query param
-    const pathParts = req.path.split('/').filter(p => p);
-    const roleFromPath = pathParts[pathParts.length - 1];
-    const role = (roleFromPath && roleFromPath !== 'preview') ? roleFromPath : (req.query.role || 'sales_agent');
-    const PRESENTATIONS = {
-      sales_agent: {
-        title: 'Kingdom Connects Sales Opportunity',
-        slides: [
-          { title: 'Join Our Team', content: 'Earn 20% commission connecting Christian businesses with their community' },
-          { title: 'Your Potential', content: 'Flexible schedule, meaningful work, unlimited earning potential' },
-          { title: 'Get Started', content: 'Sign up today and start earning immediately' }
-        ]
-      },
-      church_admin: {
-        title: 'Kingdom Connects Church Partnership',
-        slides: [
-          { title: 'Receive 10% Tithe', content: 'Every Pro business affiliated with your church tithes 10% of their subscription directly to your ministry—ongoing, passive support' },
-          { title: 'Help Businesses Grow', content: 'When the Christian businesses in your congregation flourish, they\'re able to give more generously to your church and community' },
-          { title: 'Guide Your Members', content: 'Help your congregation find trusted, faith-based businesses to support with their purchases' },
-          { title: 'Free Church Listing', content: 'Get a beautiful listing page with your service times, address, and mission—or direct visitors to your website' },
-          { title: 'Join Free Today', content: 'Zero cost to register. Start building Kingdom connections now.' }
-        ]
-      },
-      business_owner: {
-        title: 'Kingdom Connects Business Listing',
-        slides: [
-          { title: 'Reach Your Audience', content: 'Connect with faith-based customers actively seeking Christian businesses' },
-          { title: 'Support Churches', content: 'Tithe a portion to your chosen church partner' },
-          { title: 'Get Listed', content: 'Affordable plans starting at just $29/month' }
-        ]
-      },
-      member: {
-        title: 'Welcome to Kingdom Connects',
-        slides: [
-          { title: 'Find Trusted Services', content: 'Discover Christian-owned businesses in your area' },
-          { title: 'Support Your Community', content: 'Your patronage supports local churches' },
-          { title: 'Join Today', content: 'Free membership for individuals' }
-        ]
-      }
-    };
-    const presentation = PRESENTATIONS[role] || PRESENTATIONS.sales_agent;
-    
-    // Return JSON for client-side rendering
-    const template = {
-      title: presentation.title,
-      slides: presentation.slides.map(s => ({
-        type: s.type || 'content',
-        title: s.title,
-        subtitle: s.subtitle || '',
-        bullets: s.content ? [s.content] : (s.bullets || []),
-        message: s.message || s.content || ''
-      }))
-    };
-    
-    res.set('Content-Type', 'application/json');
-    res.json({ template });
-  });
-});
+exports.presentationPreview = onRequest((req, res) => cors(req, res, async () => {
+  if (req.method !== 'GET') return res.status(405).json({error:'Use GET.'});
+  try {
+    const {userData} = await verifyAuth(req);
+    checkRole(userData, ['admin','platform_admin','sales_agent']);
+    const role = req.path.split('/').filter(Boolean).pop();
+    const template = await presentations.load(role, req.query.templateId || null);
+    res.set('Cache-Control','private, no-store');
+    res.json({template});
+  } catch (error) { res.status(error.status || 500).json({error:error.status ? error.message : 'Unable to load presentation.'}); }
+}));
 
 const widgetJwtSecret = defineSecret('WIDGET_JWT_SECRET');
 const stripeWebhookSecret = defineSecret('STRIPE_WEBHOOK_SECRET');

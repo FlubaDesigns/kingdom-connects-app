@@ -217,10 +217,9 @@ export function toggleElement(elementOrId, show) {
  * @returns {string} - Escaped string
  */
 export function escapeHtml(str) {
-  if (!str) return '';
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
+  return String(str ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[char]));
 }
 
 /**

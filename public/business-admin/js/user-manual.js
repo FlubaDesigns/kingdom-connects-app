@@ -27,14 +27,20 @@ async function loadSettings() {
       CHURCH_TITHE = data.church_percentage ?? 10;
     }
 
+
+  } catch (error) {
+    // Silently use defaults if not authenticated
+  }
+
+  try {
     const manualDoc = await getDoc(doc(db, 'public_manuals', 'business_admin'));
     if (manualDoc.exists()) {
       editableContent = { ...defaultContent, ...manualDoc.data() };
     }
   } catch (error) {
-    // Silently use defaults if not authenticated
+    console.error('Unable to load published manual content:', error);
   }
-  
+
   updateManualContent();
 }
 
