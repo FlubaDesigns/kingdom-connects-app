@@ -1,3 +1,4 @@
+import { safeWebUrl } from '../../js/business-presentation.js';
 import { db } from '../../js/firebase-config.js';
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDoc, getDocs, query, where, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { requireAuth } from '../../js/auth/access-control.js';
@@ -90,7 +91,7 @@ function loadItems() {
         </div>
       </div>
     `).join('')}</div>`;
-  });
+  }, () => { itemsList.textContent = 'Could not load your offerings. Please refresh and try again.'; });
 }
 
 function escapeHtml(text) {
@@ -119,7 +120,13 @@ form.addEventListener('submit', async (e) => {
   submitBtn.textContent = 'Saving...';
 
   try {
+    for (const id of ['imageUrl', 'detailsUrl']) {
+      const input = document.getElementById(id);
+      if (input.value.trim() && !safeWebUrl(input.value)) throw new Error('Use a valid http or https URL.');
+    }
     const itemData = {
+      image_url: safeWebUrl(document.getElementById('imageUrl').value),
+      details_url: safeWebUrl(document.getElementById('detailsUrl').value),
       name: document.getElementById('name').value.trim(),
       item_type: document.getElementById('itemType').value,
       description: document.getElementById('description').value.trim(),
@@ -145,7 +152,7 @@ form.addEventListener('submit', async (e) => {
   } catch (error) {
     console.error('Error saving item:', error);
     if (typeof window.showToast === 'function') {
-      window.showToast('Error saving item. Please try again.', 'error');
+      window.showToast(error.message || 'Error saving item. Please try again.', 'error');
     }
   } finally {
     submitBtn.disabled = false;
@@ -159,6 +166,8 @@ window.editItem = async (itemId) => {
   
   if (docSnap.exists()) {
     const data = docSnap.data();
+    document.getElementById('imageUrl').value = data.image_url || '';
+    document.getElementById('detailsUrl').value = data.details_url || '';
     document.getElementById('name').value = data.name || '';
     document.getElementById('itemType').value = data.item_type || 'service';
     document.getElementById('description').value = data.description || '';

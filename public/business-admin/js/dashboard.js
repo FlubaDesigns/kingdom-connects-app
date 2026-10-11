@@ -234,7 +234,7 @@ async function loadDashboard(user, businesses) {
 
 async function loadStats(businessId, business) {
   try {
-    const reviewsQuery = query(collection(db, "reviews"), where("business_id", "==", businessId));
+    const reviewsQuery = query(collection(db, "reviews"), where("business_id", "==", businessId), where("status", "==", "approved"));
     const reviewsSnapshot = await getDocs(reviewsQuery);
     
     let totalReviews = reviewsSnapshot.size;
@@ -479,7 +479,7 @@ async function checkNewReviews(businessId) {
 
     const reviewsQuery = query(
       collection(db, "reviews"),
-      where("business_id", "==", businessId)
+      where("business_id", "==", businessId), where("status", "==", "approved")
     );
     const snapshot = await getDocs(reviewsQuery);
 

@@ -1,5 +1,5 @@
 import { db } from "../firebase-config.js";
-import { collection, getDocs, query, where, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { collection, getDocs, query, where, doc, getDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const PUBLIC_FIELDS = [
   'business_name', 'description', 'city', 'state', 'zip_code', 'country',
@@ -22,6 +22,12 @@ const PRIVATE_FIELDS = [
   'submission_date', 'approved_at', 'approved_by'
 ];
 
+// Only known private fields join a public listing; authority and identity stay canonical.
+export function mergeBusiness(id, publicData = {}, privateData = {}) {
+  const privateFields = Object.fromEntries(Object.entries(privateData).filter(([key]) => PRIVATE_FIELDS.includes(key)));
+  return { ...privateFields, ...publicData, owner_uid: privateData.owner_uid, id };
+}
+
 export async function getBusinessForUser(uid, email = null) {
   try {
     const results = [];
@@ -39,11 +45,7 @@ export async function getBusinessForUser(uid, email = null) {
       const publicDoc = await getDoc(doc(db, "business_listings_public", id));
       const publicData = publicDoc.exists() ? publicDoc.data() : {};
       
-      results.push({
-        id,
-        ...publicData,
-        ...privateData
-      });
+      if (publicDoc.exists()) results.push(mergeBusiness(id, publicData, privateData));
     }
     
     if (results.length === 0) {
@@ -78,11 +80,7 @@ export async function getBusinessByEmail(email) {
       const publicDoc = await getDoc(doc(db, "business_listings_public", id));
       const publicData = publicDoc.exists() ? publicDoc.data() : {};
       
-      results.push({
-        id,
-        ...publicData,
-        ...privateData
-      });
+      if (publicDoc.exists()) results.push(mergeBusiness(id, publicData, privateData));
     }
     
     return results;
@@ -99,15 +97,11 @@ export async function getBusinessById(id) {
       getDoc(doc(db, "business_listings_private", id))
     ]);
     
-    if (!publicDoc.exists() && !privateDoc.exists()) {
+    if (!publicDoc.exists()) {
       return null;
     }
     
-    return {
-      id,
-      ...(publicDoc.exists() ? publicDoc.data() : {}),
-      ...(privateDoc.exists() ? privateDoc.data() : {})
-    };
+    return mergeBusiness(id, publicDoc.data(), privateDoc.exists() ? privateDoc.data() : {});
   } catch (error) {
     console.error("Error fetching business by ID:", error);
     return null;
@@ -120,7 +114,7 @@ export async function getBusinessPublicOnly(id) {
     if (!publicDoc.exists()) {
       return null;
     }
-    return { id, ...publicDoc.data() };
+    return { ...publicDoc.data(), id };
   } catch (error) {
     console.error("Error fetching public business:", error);
     return null;
@@ -140,11 +134,7 @@ export async function getAllBusinessesMerged() {
     const results = [];
     publicSnapshot.docs.forEach(d => {
       const privateData = privateMap.get(d.id) || {};
-      results.push({
-        id: d.id,
-        ...d.data(),
-        ...privateData
-      });
+      results.push(mergeBusiness(d.id, d.data(), privateData));
     });
     
     return results;
@@ -168,15 +158,15 @@ export async function updateBusiness(id, data) {
     }
   }
   
-  const updates = [];
+  const batch = writeBatch(db);
   
   if (Object.keys(publicData).length > 0) {
-    updates.push(updateDoc(doc(db, "business_listings_public", id), publicData));
+    batch.update(doc(db, "business_listings_public", id), publicData);
   }
   
   if (Object.keys(privateData).length > 0) {
-    updates.push(updateDoc(doc(db, "business_listings_private", id), privateData));
+    batch.update(doc(db, "business_listings_private", id), privateData);
   }
   
-  await Promise.all(updates);
+  await batch.commit();
 }

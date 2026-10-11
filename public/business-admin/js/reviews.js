@@ -55,7 +55,7 @@ async function initPage(businesses) {
 
     async function loadReviews() {
       try {
-        const q = query(collection(db, "reviews"), where("business_id", "==", businessId));
+        const q = query(collection(db, "reviews"), where("business_id", "==", businessId), where("status", "==", "approved"));
         const querySnapshot = await getDocs(q);
 
         allReviews = [];
@@ -81,6 +81,7 @@ async function initPage(businesses) {
 
       } catch (error) {
         console.error('Error loading reviews:', error);
+        document.getElementById('reviewsList').textContent = 'Reviews could not be loaded. Please refresh and try again.';
       }
     }
 
@@ -193,3 +194,12 @@ async function initPage(businesses) {
       }
       return clean;
     }
+
+// Dynamic response buttons need a delegated listener after reviews render.
+document.getElementById('reviewsList').addEventListener('click', async event => {
+  const button = event.target.closest('[data-action="submitResponse"]');
+  if (!button || button.disabled) return;
+  button.disabled = true;
+  try { await window.submitResponse(button.dataset.id); }
+  finally { button.disabled = false; }
+});

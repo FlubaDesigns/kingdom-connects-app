@@ -1,3 +1,4 @@
+import { escapeHtml } from '../../js/business-presentation.js';
 import { db } from "../../js/firebase-config.js";
 import { collection, getDocs, query, where, orderBy, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { requireAuth } from "../../js/auth/access-control.js";
@@ -18,12 +19,10 @@ const form = document.getElementById('questionnaireForm');
       try {
         const q = query(
           collection(db, 'questionnaire_questions'), 
-          where('audience', '==', 'business'),
-          where('active', '==', true),
-          orderBy('order', 'asc')
+          where('audience', '==', 'business')
         );
         const snapshot = await getDocs(q);
-        questions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        questions = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })).filter(q => q.active !== false).sort((a,b) => (a.order ?? a.order_index ?? 0) - (b.order ?? b.order_index ?? 0));
         return questions;
       } catch (error) {
         console.error('Error loading questions:', error);
@@ -40,28 +39,28 @@ const form = document.getElementById('questionnaireForm');
       questionsContainer.innerHTML = questions.map((q, index) => {
         const fieldName = `q_${q.id}`;
         const isRequired = q.required ? 'required' : '';
-        const placeholder = q.placeholder || '';
+        const placeholder = escapeHtml(q.placeholder || '');
 
         let inputHTML = '';
 
         switch (q.question_type) {
           case 'text':
-            inputHTML = `<input type="text" class="" id="${fieldName}" name="${fieldName}" placeholder="${placeholder}" ${isRequired}>`;
+            inputHTML = `<input type="text" class="" id="${escapeHtml(fieldName)}" name="${escapeHtml(fieldName)}" placeholder="${placeholder}" ${isRequired}>`;
             break;
           
           case 'number':
-            inputHTML = `<input type="number" class="" id="${fieldName}" name="${fieldName}" placeholder="${placeholder}" ${isRequired} min="0">`;
+            inputHTML = `<input type="number" class="" id="${escapeHtml(fieldName)}" name="${escapeHtml(fieldName)}" placeholder="${placeholder}" ${isRequired} min="0">`;
             break;
           
           case 'textarea':
-            inputHTML = `<textarea class="" id="${fieldName}" name="${fieldName}" rows="4" placeholder="${placeholder}" ${isRequired}></textarea>`;
+            inputHTML = `<textarea class="" id="${escapeHtml(fieldName)}" name="${escapeHtml(fieldName)}" rows="4" placeholder="${placeholder}" ${isRequired}></textarea>`;
             break;
           
           case 'select':
             inputHTML = `
-              <select class="" id="${fieldName}" name="${fieldName}" ${isRequired}>
+              <select class="" id="${escapeHtml(fieldName)}" name="${escapeHtml(fieldName)}" ${isRequired}>
                 <option value="">Select an option...</option>
-                ${q.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+                ${(q.options || []).map(opt => `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`).join('')}
               </select>
             `;
             break;
@@ -69,10 +68,10 @@ const form = document.getElementById('questionnaireForm');
           case 'multiselect':
             inputHTML = `
               <div class="checkbox-group">
-                ${q.options.map(opt => `
+                ${(q.options || []).map(opt => `
                   <label class="flex-align-center cursor-pointer mb-sm">
-                    <input type="checkbox" name="${fieldName}" value="${opt}">
-                    <span>${opt}</span>
+                    <input type="checkbox" name="${escapeHtml(fieldName)}" value="${escapeHtml(opt)}">
+                    <span>${escapeHtml(opt)}</span>
                   </label>
                 `).join('')}
               </div>
@@ -81,7 +80,7 @@ const form = document.getElementById('questionnaireForm');
           
           case 'yesno':
             inputHTML = `
-              <select class="" id="${fieldName}" name="${fieldName}" ${isRequired}>
+              <select class="" id="${escapeHtml(fieldName)}" name="${escapeHtml(fieldName)}" ${isRequired}>
                 <option value="">Select...</option>
                 <option value="yes">Yes</option>
                 <option value="no">No</option>
@@ -93,8 +92,8 @@ const form = document.getElementById('questionnaireForm');
 
         return `
           <div class="form-field question-item">
-            <label class="" for="${fieldName}">
-              ${index + 1}. ${q.question_text}${q.required ? '<span class="req">*</span>' : ''}
+            <label class="" for="${escapeHtml(fieldName)}">
+              ${index + 1}. ${escapeHtml(q.question_text)}${q.required ? '<span class="req">*</span>' : ''}
             </label>
             ${inputHTML}
           </div>
@@ -147,7 +146,7 @@ const form = document.getElementById('questionnaireForm');
         const fieldName = `q_${q.id}`;
         
         if (q.question_type === 'multiselect') {
-          const checkboxes = document.querySelectorAll(`[name="${fieldName}"]:checked`);
+          const checkboxes = document.querySelectorAll(`[name="${escapeHtml(fieldName)}"]:checked`);
           answers[fieldName] = Array.from(checkboxes).map(cb => cb.value);
         } else {
           const value = formData.get(fieldName);
@@ -171,6 +170,7 @@ const form = document.getElementById('questionnaireForm');
       const insightsRef = doc(db, 'business_insights', businessId);
       await setDoc(insightsRef, data, { merge: true });
 
+      currentData = { ...currentData, ...data };
       return data;
     }
 

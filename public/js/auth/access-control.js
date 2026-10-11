@@ -11,7 +11,7 @@ import { auth, db } from "../firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { normalizeUserRoles, loadUserContext } from "../role-utils.js";
-import { getBusinessForUser } from "../services/business-service.js";
+import { getBusinessForUser, getBusinessById, getAllBusinessesMerged } from "../services/business-service.js";
 
 const LOGIN_URL = '/login.html';
 const HOME_URL = '/index.html';
@@ -89,28 +89,8 @@ export function requireAuth(options = {}, onSuccess) {
 
       let businessContext = null;
       if (requireBusiness) {
-        businessContext = await getBusinessForUser(firebaseUser.uid);
-        if (!businessContext && !isAdmin) {
-          showAccessDenied('No business listing found for your account.');
-          redirectTo(HOME_URL);
-          return;
-        }
-      }
-
-      if (businessContext && !isAdmin) {
-        const requestedId = new URLSearchParams(window.location.search).get('id');
-        const eligible = [];
-        for (const business of businessContext) {
-          const parent = business.church_id ? await getDoc(doc(db, 'churches', business.church_id)) : null;
-          if (!['suspended', 'rejected'].includes(business.listing_status) &&
-              (!business.church_id || parent?.data()?.listing_status === 'active')) eligible.push(business);
-        }
-        businessContext = requestedId ? eligible.filter(business => business.id === requestedId) : eligible;
-        if (!businessContext.length) {
-          showAccessDenied('This business is unavailable or is not owned by your account.');
-          redirectTo(HOME_URL);
-          return;
-        }
+        businessContext = await selectBusinessContext(firebaseUser.uid, isAdmin);
+        if (!businessContext) return;
       }
 
       let churchContext = null;
@@ -230,6 +210,54 @@ export function getAuthState() {
       });
     });
   });
+}
+
+async function selectBusinessContext(uid, isAdmin) {
+  const requested = new URLSearchParams(window.location.search).get('id');
+  let businesses = isAdmin
+    ? (requested ? [await getBusinessById(requested)].filter(Boolean) : await getAllBusinessesMerged())
+    : (await getBusinessForUser(uid) || []);
+  if (!isAdmin) {
+    const eligible = [];
+    for (const business of businesses) {
+      const parent = business.church_id ? await getDoc(doc(db, 'churches', business.church_id)) : null;
+      if (!['suspended', 'rejected'].includes(business.listing_status) &&
+          (!business.church_id || parent?.data()?.listing_status === 'active')) eligible.push(business);
+    }
+    businesses = eligible;
+  }
+  if (requested) {
+    businesses = businesses.filter(business => business.id === requested);
+    if (!businesses.length) throw Error('This business is unavailable or is not under your authority.');
+  }
+  if (businesses.length !== 1) {
+    if (document.getElementById('businessContextSelector')) return null;
+    const section = document.createElement('section'); section.id = 'businessContextSelector'; section.className = 'card p-lg';
+    const heading = document.createElement('h2'); heading.textContent = businesses.length ? 'Choose a business' : 'No available business is connected to this account.';
+    section.append(heading);
+    for (const business of businesses.sort((a,b) => (a.business_name || '').localeCompare(b.business_name || ''))) {
+      const link = document.createElement('a'); link.className = 'btn btn-secondary m-sm';
+      const url = new URL(window.location.href); url.searchParams.set('id', business.id); link.href = url.href;
+      link.textContent = (business.business_name || 'Unnamed business') + ' (' + (business.listing_status || 'pending') + ')'; section.append(link);
+    }
+    const main = document.querySelector('main') || document.body;
+    for (const child of main.children) child.classList.add('hidden');
+    main.append(section);
+    return null;
+  }
+  const business = businesses[0];
+  const current = new URL(window.location.href); current.searchParams.set('id', business.id); window.history.replaceState(null, '', current);
+  const carryContext = link => {
+    const url = new URL(link.href, window.location.href);
+    if (url.origin === window.location.origin && (url.pathname === '/business-admin' || url.pathname.startsWith('/business-admin/'))) {
+      url.searchParams.set('id', business.id); link.href = url.href;
+    }
+  };
+  document.querySelectorAll('a[href]').forEach(carryContext);
+  document.addEventListener('click', event => {
+    const link = event.target.closest('a[href]'); if (link) carryContext(link);
+  }, true);
+  return [business];
 }
 
 async function getChurchForUser(uid, email, userContext = null) {

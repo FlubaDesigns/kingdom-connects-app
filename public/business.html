@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="styles/forms.css?v=8">
   <link rel="stylesheet" href="styles/components/business-cards.css?v=8">
   <link rel="stylesheet" href="styles/overrides.css?v=8">
+  <link rel="stylesheet" href="styles/components/business-storefront.css?v=1">
 </head>
 <body>
   <a id="top"></a>
@@ -41,55 +42,38 @@
           </article>
         </div>
 
-        <div id="businessContent" class="hidden">
+        <div id="businessContent" class="hidden business-storefront">
           <div class="m-block">
             <a href="business_directory.html" class="btn btn-small">← Back to Directory</a>
           </div>
 
-          <article class="card">
-            <div id="proBadge" class="hidden mb-sm">
-              <span class="badge badge-gold">PRO BUSINESS</span>
+          <article class="card storefront-hero">
+            <div class="storefront-identity">
+              <img id="businessLogo" class="storefront-logo hidden" alt="">
+              <div>
+                <div id="businessCategory" class="storefront-eyebrow"></div>
+                <h1 id="businessName" class="gold-metallic"></h1>
+                <div id="ratingDisplay"></div>
+                <div id="proBadge" class="hidden"><span class="badge badge-gold">PRO BUSINESS</span></div>
+              </div>
             </div>
-            
-            <h1 id="businessName" class="gold-metallic mb-sm"></h1>
-            
-            <div id="businessCategory" class="business-meta"></div>
-            
-            <div id="ratingDisplay" class="mb-md"></div>
-            
-            <div id="businessDescription" class="mb-md"></div>
-
-            <div id="churchAffiliation" class="mb-md hidden">
-              <h3 class="gold">Church Affiliation</h3>
-              <p id="churchName"></p>
+            <div id="businessDescription" class="storefront-description"></div>
+            <div id="storefrontActions" class="storefront-actions" aria-label="Contact this business"></div>
+            <div id="churchAffiliation" class="storefront-affiliation hidden">
+              <span class="text-muted">Connected through</span> <span id="churchName"></span>
             </div>
+          </article>
+          <div class="storefront-layout">
+          <div class="storefront-main">
+          <article id="productsServicesSection" class="card hidden">
+            <div class="storefront-section-heading"><div><p class="storefront-eyebrow">Explore what we offer</p><h2 class="gold">Products & Services</h2></div></div>
+            <div id="productsServicesList"></div>
           </article>
 
           <article id="mediaSection" class="card hidden">
             <h2 class="gold">Photos & Videos</h2>
             <div id="photoGallery" class="grid-3 gap-md mb-md"></div>
             <div id="videoGallery"></div>
-          </article>
-
-          <article class="card">
-            <h2 class="gold">Contact Information</h2>
-            <div class="grid-2 gap-md">
-              <div>
-                <h3 class="text-md mb-sm">Address</h3>
-                <p id="businessAddress"></p>
-              </div>
-              <div>
-                <h3 class="text-md mb-sm">Contact</h3>
-                <p id="businessPhone" class="mb-sm"></p>
-                <p id="businessEmail" class="mb-sm"></p>
-                <p id="businessWebsite" class="mb-sm"></p>
-              </div>
-            </div>
-          </article>
-
-          <article id="hoursSection" class="card hidden">
-            <h2 class="gold">Hours of Operation</h2>
-            <div id="businessHours"></div>
           </article>
 
           <div id="favoriteContainer" class="text-right mt-md hidden">
@@ -106,11 +90,6 @@
           <article id="promotionsSection" class="card hidden">
             <h2 class="gold">Current Promotions</h2>
             <div id="promotionsList"></div>
-          </article>
-
-          <article id="productsServicesSection" class="card hidden">
-            <h2 class="gold">Products & Services</h2>
-            <div id="productsServicesList"></div>
           </article>
 
           <article id="testimonialsSection" class="card hidden">
@@ -142,6 +121,31 @@
               <a id="submitReviewBtn" href="#" class="btn btn-gold">Write a Review</a>
             </div>
           </article>
+          </div>
+          <aside class="storefront-sidebar" aria-label="Business contact and hours">
+          <article class="card" id="contactSection">
+            <h2 class="gold">Get in touch</h2>
+            <div class="storefront-contact-details">
+              <div>
+                <h3 class="text-md mb-sm">Address</h3>
+                <p id="businessAddress"></p>
+              </div>
+              <div>
+                <h3 class="text-md mb-sm">Contact</h3>
+                <p id="businessPhone" class="mb-sm"></p>
+                <p id="businessEmail" class="mb-sm"></p>
+                <p id="businessWebsite" class="mb-sm"></p>
+              </div>
+            </div>
+          </article>
+
+          <article id="hoursSection" class="card hidden">
+            <h2 class="gold">Hours of Operation</h2>
+            <div id="businessHours"></div>
+          </article>
+
+          </aside>
+          </div>
         </div>
     </main>
 
@@ -151,11 +155,8 @@
   <script src="js/maintenance-check.js" type="module"></script>
   <script src="/js/header.js" type="module"></script>
   <script src="/js/footer.js" defer></script>
-  <script src="js/maintenance-check.js" type="module"></script>
   <script src="js/button-effects.js" defer></script>
-  <script src="js/maintenance-check.js" type="module"></script>
   <script src="js/breadcrumbs.js" defer></script>
-  <script src="js/maintenance-check.js" type="module"></script>
   <script type="module" src="js/business.js"></script>
 </body>
 </html>

@@ -70,9 +70,20 @@ service cloud.firestore {
       return accountEnabled() && church.admin_uid == request.auth.uid && !(church.listing_status in ['suspended', 'rejected']);
     }
 
-    function isPro() {
-      let userData = isAuthenticated() ? getUserData() : null;
-      return userData != null && userData.subscription_status == 'active';
+    function businessPro(businessId) {
+      return get(/databases/$(database)/documents/business_listings_public/$(businessId)).data.get('pro_status', null) in [true, 'pro', 'active'];
+    }
+    function mayManageProBusiness(businessId) {
+      let business = get(/databases/$(database)/documents/business_listings_public/$(businessId)).data;
+      let subscription = business.get('stripe_subscription_id', null);
+      let user = getUserData();
+      // A paid listing must retain its matching active subscription. Explicit platform grants are independent.
+      return businessPro(businessId) && (business.get('promotional_grant', false) == true || subscription == null ||
+        (user.get('stripeSubscriptionId', null) == subscription && user.get('subscription_status', '') in ['active', 'trialing']));
+    }
+    function publishedBusiness(businessId) {
+      let business = get(/databases/$(database)/documents/business_listings_public/$(businessId)).data;
+      return business.get('is_visible', false) == true && business.listing_status == 'active' && churchActive(business.get('church_id', null));
     }
 
     function isValidString(field, minLen, maxLen) {
@@ -147,7 +158,10 @@ service cloud.firestore {
                     && request.resource.data.get('church_approved', false) == false
                     && request.resource.data.get('is_pro', false) == false
                     && request.resource.data.get('pro_status', null) == null
-                    && request.resource.data.get('subscription_tier', 'free') == 'free';
+                    && request.resource.data.get('subscription_tier', 'free') == 'free'
+                    && request.resource.data.get('promotional_grant', false) == false
+                    && request.resource.data.get('stripe_subscription_id', null) == null
+                    && request.resource.data.get('stripe_customer_id', null) == null;
 
       // Owners can update their own, admins can update any
       allow update: if isAdmin() || (mayEditBusiness(businessId) &&
@@ -163,17 +177,17 @@ service cloud.firestore {
       // Pro features subcollections - owners with Pro status can manage
       match /promotions/{promotionId} {
         allow read: if get(/databases/$(database)/documents/business_listings_public/$(businessId)).data.get('is_visible', false) == true || isAdmin() || isOwnerOfBusiness(businessId) || managesBusiness(businessId);
-        allow write: if isAdmin() || (mayEditBusiness(businessId) && isPro());
+        allow write: if isAdmin() || (mayEditBusiness(businessId) && mayManageProBusiness(businessId));
       }
 
       match /products_services/{productId} {
-        allow read: if get(/databases/$(database)/documents/business_listings_public/$(businessId)).data.get('is_visible', false) == true || isAdmin() || isOwnerOfBusiness(businessId) || managesBusiness(businessId);
-        allow write: if isAdmin() || (mayEditBusiness(businessId) && isPro());
+        allow read: if (publishedBusiness(businessId) && businessPro(businessId) && resource.data.get('is_active', false) == true) || isAdmin() || isOwnerOfBusiness(businessId) || managesBusiness(businessId);
+        allow write: if isAdmin() || (mayEditBusiness(businessId) && mayManageProBusiness(businessId));
       }
 
       match /testimonials/{testimonialId} {
-        allow read: if get(/databases/$(database)/documents/business_listings_public/$(businessId)).data.get('is_visible', false) == true || isAdmin() || isOwnerOfBusiness(businessId) || managesBusiness(businessId);
-        allow write: if isAdmin() || (mayEditBusiness(businessId) && isPro());
+        allow read: if (publishedBusiness(businessId) && businessPro(businessId) && resource.data.get('is_active', false) == true) || isAdmin() || isOwnerOfBusiness(businessId) || managesBusiness(businessId);
+        allow write: if isAdmin() || (mayEditBusiness(businessId) && mayManageProBusiness(businessId));
       }
     }
 
@@ -282,7 +296,10 @@ service cloud.firestore {
       // Authenticated member review changes use the backend ownership and moderation checks.
       allow create: if false;
 
-      allow update: if isAdmin();
+      allow update: if isAdmin() || (resource.data.status == 'approved' && mayEditBusiness(resource.data.business_id) && mayManageProBusiness(resource.data.business_id)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['response_text', 'response_date'])
+        && isValidString(request.resource.data.response_text, 1, 500)
+        && request.resource.data.response_date == request.time);
       allow delete: if isAdmin();
     }
 
@@ -482,6 +499,14 @@ service cloud.firestore {
     // ========================================
     // CHURCH INSIGHTS
     // ========================================
+    match /business_insights/{businessId} {
+      allow read: if isAdmin() || mayEditBusiness(businessId);
+      allow create, update: if (isAdmin() || mayEditBusiness(businessId))
+        && request.resource.data.business_id == businessId
+        && request.resource.data.keys().hasOnly(['business_id', 'answers', 'completed', 'created_at', 'updated_at']);
+      allow delete: if isAdmin();
+    }
+
     match /church_insights/{churchId} {
       allow read: if isAdmin() || managesChurch(churchId);
       allow create: if (isAdmin() || managesChurch(churchId)) && request.resource.data.church_id == churchId;

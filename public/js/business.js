@@ -1,3 +1,4 @@
+import { escapeHtml, safeWebUrl as sanitizeUrl, businessContact, renderOffering } from './business-presentation.js';
 import { db } from "./firebase-config.js";
 import { doc, getDoc, collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onAuthChange } from './auth/access-control.js';
@@ -9,37 +10,15 @@ import { isBusinessPro } from './role-utils.js';
 
 let currentUser = null;
 let businessId = null;
+let loadedBusiness = null;
 
 onAuthChange((user) => {
   currentUser = user;
   if (user && businessId) {
     setupFavoriteButton();
-    setupShareButtons();
+    if (loadedBusiness?.created_by_uid === user.uid) document.getElementById('submitReviewContainer').classList.add('hidden');
   }
 });
-
-function escapeHtml(text) {
-  if (!text) return '';
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
-
-function sanitizeUrl(url) {
-  if (!url) return '';
-  const urlStr = url.toString().trim();
-  if (!urlStr) return '';
-  
-  try {
-    const parsed = new URL(urlStr.startsWith('http') ? urlStr : 'https://' + urlStr);
-    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
-      return parsed.href;
-    }
-  } catch (e) {
-    return '';
-  }
-  return '';
-}
 
 const urlParams = new URLSearchParams(window.location.search);
 const slug = urlParams.get('slug');
@@ -83,11 +62,14 @@ async function loadBusinessDetails() {
       business = businessDoc.data();
       businessId = idParam;
     }
+    if (business.is_visible !== true || business.listing_status !== 'active') throw new Error('This listing is not published.');
     if (!business.church_id) throw new Error('This listing is awaiting church affiliation.');
     const controllingChurch = await getDoc(doc(db, 'churches', business.church_id));
     if (controllingChurch.data()?.listing_status !== 'active') throw new Error('The controlling church is not active.');
 
+    loadedBusiness = business;
     const isPro = isBusinessPro(business);
+    document.title = `${business.business_name || "Business"} - Kingdom Connects`;
 
     document.getElementById('loadingMessage').classList.add('hidden');
     document.getElementById('businessContent').classList.remove('hidden');
@@ -99,61 +81,39 @@ async function loadBusinessDetails() {
     }
 
     if (business.primary_category) {
-      document.getElementById('businessCategory').innerHTML = `<strong>Category:</strong> ${escapeHtml(business.primary_category)}`;
+      document.getElementById('businessCategory').innerHTML = escapeHtml(business.primary_category);
     }
 
     if (business.description) {
       document.getElementById('businessDescription').innerHTML = `<p class="line-height-relaxed">${escapeHtml(business.description)}</p>`;
     }
 
-    const address = [
-      escapeHtml(business.address_line1),
-      escapeHtml(business.address_line2),
-      `${escapeHtml(business.city)}, ${escapeHtml(business.state)} ${escapeHtml(business.zip_code || '')}`
-    ].filter(Boolean).join('<br>');
-    
-    document.getElementById('businessAddress').innerHTML = address || 'No address provided';
-
-    const phoneContainer = document.getElementById('businessPhone');
-    const emailContainer = document.getElementById('businessEmail');
-    const websiteContainer = document.getElementById('businessWebsite');
-    
-    phoneContainer.textContent = '';
-    emailContainer.textContent = '';
-    websiteContainer.textContent = '';
-
-    const phoneNumber = business.phone_number;
-    if (phoneNumber) {
-      phoneContainer.textContent = '📞 ';
-      const phoneLink = document.createElement('a');
-      phoneLink.href = `tel:${phoneNumber.replace(/[^0-9+()-\s]/g, '')}`;
-      phoneLink.textContent = phoneNumber;
-      phoneLink.addEventListener('click', () => {
-        analytics.trackPhoneClick(businessId);
-      });
-      phoneContainer.appendChild(phoneLink);
+    const contact = businessContact(business);
+    document.getElementById('businessAddress').innerHTML = contact.address.map(escapeHtml).join('<br>') || 'Contact this business for location details.';
+    const actions = document.getElementById('storefrontActions');
+    const addContact = (id, label, value, href, actionLabel, onClick) => {
+      const container = document.getElementById(id); container.replaceChildren();
+      if (!value) { container.classList.add('hidden'); return; }
+      const link = document.createElement('a'); link.href = href; link.textContent = label + value;
+      if (href.startsWith('http')) { link.target = '_blank'; link.rel = 'noopener noreferrer'; }
+      if (onClick) link.addEventListener('click', onClick);
+      container.append(link);
+      const action = link.cloneNode(true); action.textContent = actionLabel; action.className = 'btn btn-gold';
+      if (onClick) action.addEventListener('click', onClick);
+      actions.append(action);
+    };
+    addContact('businessPhone', '', contact.phone, `tel:${contact.phone.replace(/[^0-9+]/g, '')}`, 'Call business', () => analytics.trackPhoneClick(businessId));
+    addContact('businessEmail', '', contact.email, `mailto:${encodeURIComponent(contact.email)}`, 'Send an email');
+    addContact('businessWebsite', '', contact.website, contact.website, 'Visit website ↗', () => analytics.trackWebsiteClick(businessId));
+    if (contact.address.length) {
+      const directions = document.createElement('a'); directions.className = 'btn btn-secondary'; directions.textContent = 'Get directions ↗';
+      directions.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.address.join(', '))}`;
+      directions.target = '_blank'; directions.rel = 'noopener noreferrer'; actions.append(directions);
     }
-
-    if (business.email) {
-      emailContainer.textContent = '📧 ';
-      const emailLink = document.createElement('a');
-      emailLink.href = `mailto:${business.email}`;
-      emailLink.textContent = business.email;
-      emailContainer.appendChild(emailLink);
-    }
-
-    const websiteURL = sanitizeUrl(business.website_url || '');
-    if (websiteURL) {
-      websiteContainer.textContent = '🌐 ';
-      const websiteLink = document.createElement('a');
-      websiteLink.href = websiteURL;
-      websiteLink.textContent = 'Visit Website';
-      websiteLink.target = '_blank';
-      websiteLink.rel = 'noopener';
-      websiteLink.addEventListener('click', () => {
-        analytics.trackWebsiteClick(businessId);
-      });
-      websiteContainer.appendChild(websiteLink);
+    const logoUrl = sanitizeUrl(business.logo_url || business.logo);
+    if (logoUrl) {
+      const logo = document.getElementById('businessLogo'); logo.src = logoUrl; logo.alt = `${business.business_name || 'Business'} logo`; logo.classList.remove('hidden');
+      logo.addEventListener('error', () => logo.classList.add('hidden'), {once:true});
     }
 
     const churchId = business.church_id;
@@ -165,17 +125,7 @@ async function loadBusinessDetails() {
       displayHours(business.hours_of_operation);
     }
 
-    console.log('[KC DEBUG] Business loaded:', business.business_name);
-    console.log('[KC DEBUG] isPro:', isPro, 'pro_status:', business.pro_status);
-    console.log('[KC DEBUG] photos:', business.photos?.length || 0, business.photos);
-    console.log('[KC DEBUG] subcategories:', business.subcategories);
-    
-    if (isPro && (business.photos || business.videos || business.video_url || business.video_files)) {
-      console.log('[KC DEBUG] Calling displayMedia');
-      displayMedia(business);
-    } else {
-      console.log('[KC DEBUG] Skipping displayMedia - isPro:', isPro, 'has photos:', !!business.photos, 'video_files:', !!business.video_files);
-    }
+    if (isPro) displayMedia(business);
 
     if (isPro && business.social_media && business.show_social_media !== false) {
       const sm = business.social_media;
@@ -185,9 +135,7 @@ async function loadBusinessDetails() {
     }
 
     if (isPro) {
-      await loadPromotions(businessId);
-      await loadProductsServices(businessId);
-      await loadTestimonials(businessId);
+      await Promise.all([loadPromotions(businessId), loadProductsServices(businessId), loadTestimonials(businessId)]);
     }
 
     await loadReviews(businessId, business);
@@ -195,21 +143,25 @@ async function loadBusinessDetails() {
     document.getElementById('submitReviewBtn').href = `submit_review.html?id=${businessId}`;
     
     // Hide review button if viewing your own business
-    if (currentUser && business.admin_uid === currentUser.uid) {
+    if (currentUser && business.created_by_uid === currentUser.uid) {
       const reviewContainer = document.getElementById('submitReviewContainer');
       if (reviewContainer) {
         reviewContainer.classList.add('hidden');
       }
     }
 
+    if (business.allow_reviews === false) document.getElementById('submitReviewContainer').classList.add('hidden');
+    setupShareButtons(business);
     if (currentUser) {
       setupFavoriteButton();
-      setupShareButtons();
+
     }
 
   } catch (error) {
     console.error('Error loading business:', error);
-    document.getElementById('loadingMessage').textContent = 'Error loading business: ' + error.message;
+    document.getElementById('loadingMessage').classList.add('hidden');
+    document.getElementById('businessContent').classList.add('hidden');
+    document.getElementById('errorMessage').classList.remove('hidden');
   }
 }
 
@@ -246,7 +198,7 @@ function displayHours(hours) {
     'sun': 'Sunday'
   };
 
-  let hoursHTML = '<div class="grid-2 gap-sm">';
+  let hoursHTML = '<div class="storefront-hours">';
   
   daysOrder.forEach(day => {
     const dayHours = hours[day];
@@ -281,7 +233,7 @@ function displayMedia(business) {
       if (!safeUrl) return '';
       return `
         <div class="media-item">
-          <img src="${safeUrl}" alt="Business photo" class="business-photo">
+          <img src="${escapeHtml(safeUrl)}" alt="Business photo" class="business-photo" loading="lazy">
         </div>
       `;
     }).filter(Boolean).join('');
@@ -294,7 +246,7 @@ function displayMedia(business) {
       if (!safeUrl) return '';
       return `
         <div class="video-file-container mb-md">
-          <video src="${safeUrl}" controls class="uploaded-video" preload="metadata">
+          <video src="${escapeHtml(safeUrl)}" controls class="uploaded-video" preload="metadata">
             Your browser does not support the video tag.
           </video>
         </div>
@@ -348,7 +300,7 @@ function displayMedia(business) {
         `;
         hasMedia = true;
       } else {
-        videoHTML += `<p><a href="${videoUrl}" target="_blank" rel="noopener" class="btn btn-small btn-gold">Watch Video</a></p>`;
+        videoHTML += `<p><a href="${escapeHtml(videoUrl)}" target="_blank" rel="noopener" class="btn btn-small btn-gold">Watch Video</a></p>`;
         hasMedia = true;
       }
     });
@@ -465,7 +417,7 @@ async function loadPromotions(businessId) {
 
 async function loadProductsServices(businessId) {
   try {
-    const q = query(collection(db, `business_listings_public/${businessId}/products_services`));
+    const q = query(collection(db, `business_listings_public/${businessId}/products_services`), where('is_active', '==', true));
     const snapshot = await getDocs(q);
     
     if (snapshot.empty) return;
@@ -481,20 +433,7 @@ async function loadProductsServices(businessId) {
     
     if (items.length === 0) return;
     
-    const itemsHTML = items.map(item => `
-      <div class="product-service-card mb-md">
-        <div class="flex-between">
-          <div>
-            <h3>${escapeHtml(item.name)}</h3>
-            <span class="badge ${item.item_type === 'product' ? 'badge-info' : 'badge-warning'}">${item.item_type === 'product' ? 'Product' : 'Service'}</span>
-            ${item.is_featured ? '<span class="badge badge-gold ml-sm">Featured</span>' : ''}
-          </div>
-          ${item.price ? `<span class="text-lg gold-metallic">${escapeHtml(item.price)}</span>` : ''}
-        </div>
-        <p class="mt-sm">${escapeHtml(item.description)}</p>
-        ${item.duration ? `<p class="text-sm text-muted mt-sm">${escapeHtml(item.duration)}</p>` : ''}
-      </div>
-    `).join('');
+    const itemsHTML = items.map(renderOffering).join('');
     
     document.getElementById('productsServicesList').innerHTML = itemsHTML;
     document.getElementById('productsServicesSection').classList.remove('hidden');
@@ -505,7 +444,7 @@ async function loadProductsServices(businessId) {
 
 async function loadTestimonials(businessId) {
   try {
-    const q = query(collection(db, `business_listings_public/${businessId}/testimonials`));
+    const q = query(collection(db, `business_listings_public/${businessId}/testimonials`), where('is_active', '==', true));
     const snapshot = await getDocs(q);
     
     if (snapshot.empty) return;
@@ -660,17 +599,10 @@ function updateFavoriteButton(isFavorited) {
   }
 }
 
-async function setupShareButtons() {
-  if (!currentUser) return;
-
+function setupShareButtons(business) {
   const shareSection = document.getElementById('shareSection');
-  if (!shareSection) return;
+  if (!shareSection || business.allow_social_sharing === false) return;
 
-  const businessDoc = await getDoc(doc(db, 'business_listings_public', businessId));
-  if (!businessDoc.exists()) return;
-
-  const business = businessDoc.data();
-  
   // Use slug or ID for preview URL
   const previewId = business.slug || businessId;
   const previewUrl = `${window.location.origin}/preview/business/${previewId}`;

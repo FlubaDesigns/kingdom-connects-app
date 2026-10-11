@@ -84,6 +84,16 @@
         </div>
 
         <div class="form-group">
+          <label for="imageUrl">Product or service image URL</label>
+          <input type="url" id="imageUrl" class="input-dark" placeholder="https://…">
+          <p class="text-sm text-muted">Optional. Use a public image you have permission to display.</p>
+        </div>
+        <div class="form-group">
+          <label for="detailsUrl">Details or booking link</label>
+          <input type="url" id="detailsUrl" class="input-dark" placeholder="https://…">
+          <p class="text-sm text-muted">Optional. Link to your existing product, service, or booking page.</p>
+        </div>
+        <div class="form-group">
           <label>
             <input type="checkbox" id="isFeatured">
             Feature this item (shows first)
@@ -107,7 +117,7 @@
 
   <script src="js/header.js" defer></script>
   <script src="js/footer.js" defer></script>
-  <script src="js/business-auth-guard.js" defer></script>
+  <script src="js/business-auth-guard.js" type="module"></script>
   <script src="/js/breadcrumbs.js" defer></script>
   <script type="module" src="js/products-services.js"></script>
   <script src="/js/feedback-widget.js" type="module"></script>
