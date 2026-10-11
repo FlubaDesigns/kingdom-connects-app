@@ -50,7 +50,7 @@ function createMemberMailDelivery(db, auth, client, timestamp) {
       if(!mail.payload)return;
     }
     const {data,error}=await client.emails.send(mail.payload,{idempotencyKey:'kc-member-'+ref.id});
-    if(error) { await ref.update({status:'pending',last_error:String(error.name || 'delivery_error')}); throw new Error('Member email delivery failed.'); }
+    if(error) { await ref.update({status:'pending',last_error:String(error.name || 'delivery_error'),last_error_message:String(error.message || 'Provider rejected delivery').slice(0,500),last_error_status:Number(error.statusCode)||null}); throw new Error('Member email delivery failed.'); }
     await ref.update({status:'sent',message_id:data.id,sent_at:timestamp()});
   };
 }
