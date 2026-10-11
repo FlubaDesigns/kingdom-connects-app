@@ -98,7 +98,7 @@
             <li class="has-dropdown">
               <span class="dropdown-toggle">Tools ▼</span>
               <ul class="dropdown-menu">
-                <li><a href="/admin/activity-log.html">Activity Log</a></li><li><a href="/admin/contact-submissions.html">Contact Submissions</a></li>
+                <li><a href="/admin/activity_log.html">Activity Log</a></li><li><a href="/admin/contact-submissions.html">Contact Submissions</a></li>
               </ul>
             </li>
             <li><a href="/admin/settings.html">Settings</a></li>
