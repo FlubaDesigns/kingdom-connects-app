@@ -4,6 +4,7 @@
  * and role-based dashboard access
  */
 
+import { mergeBusiness } from "./services/business-service.js";
 import { db } from "./firebase-config.js";
 import { doc, getDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -244,7 +245,7 @@ export async function loadBusinessByEmail(userEmail) {
       // Get public data to merge
       const publicDoc = await getDoc(doc(db, "business_listings_public", docSnap.id));
       const publicData = publicDoc.exists() ? publicDoc.data() : {};
-      const merged = { id: docSnap.id, ...publicData, ...privateData };
+      const merged = mergeBusiness(docSnap.id, publicData, privateData);
       
       if (merged.listing_status === 'active') {
         activeBusiness = merged;
@@ -280,11 +281,9 @@ export function isBusinessPro(business) {
   const biz = business || cachedBusinessData;
   if (!biz) return false;
   
-  const status = biz.pro_status;
-  const isPro = status === true || status === "pro" || status === "active";
-  
-  console.log('[RoleUtils] isBusinessPro check:', status, '→', isPro);
-  return isPro;
+  return [true, 'pro', 'active'].includes(biz.pro_status) &&
+    (biz.promotional_grant === true || !biz.stripe_subscription_id ||
+     biz.subscription_status === undefined || ['active','trialing'].includes(biz.subscription_status));
 }
 
 /**

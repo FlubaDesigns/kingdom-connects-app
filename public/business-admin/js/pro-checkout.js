@@ -32,7 +32,7 @@ requireAuth({ requireBusiness: true }, async (userContext, firebaseUser, busines
   
   // Get business ID from context
   if (businessContext && businessContext.length > 0) {
-    const activeBusiness = businessContext.find(b => b.listing_status === 'active');
+    const activeBusiness = businessContext.find(b => !['suspended','rejected'].includes(b.listing_status));
     if (activeBusiness) {
       businessId = activeBusiness.id;
     }

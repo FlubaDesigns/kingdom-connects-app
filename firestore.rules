@@ -71,15 +71,31 @@ service cloud.firestore {
     }
 
     function businessPro(businessId) {
-      return get(/databases/$(database)/documents/business_listings_public/$(businessId)).data.get('pro_status', null) in [true, 'pro', 'active'];
+      let b = get(/databases/$(database)/documents/business_listings_public/$(businessId)).data;
+      return b.get('pro_status', null) in [true, 'pro', 'active'] &&
+        (b.get('promotional_grant', false) == true || b.get('stripe_subscription_id', null) == null ||
+         !('subscription_status' in b) || b.subscription_status in ['active', 'trialing']);
     }
     function mayManageProBusiness(businessId) {
-      let business = get(/databases/$(database)/documents/business_listings_public/$(businessId)).data;
-      let subscription = business.get('stripe_subscription_id', null);
+      let b = get(/databases/$(database)/documents/business_listings_public/$(businessId)).data;
       let user = getUserData();
-      // A paid listing must retain its matching active subscription. Explicit platform grants are independent.
-      return businessPro(businessId) && (business.get('promotional_grant', false) == true || subscription == null ||
-        (user.get('stripeSubscriptionId', null) == subscription && user.get('subscription_status', '') in ['active', 'trialing']));
+      return businessPro(businessId) && (b.get('promotional_grant', false) == true || b.get('stripe_subscription_id', null) == null ||
+        (('subscription_status' in b) ? b.subscription_status in ['active', 'trialing'] :
+         (user.get('stripeSubscriptionId', null) == b.stripe_subscription_id && user.get('subscription_status', '') in ['active', 'trialing'])));
+    }
+    function businessProfileFields() {
+      return ['business_name','description','primary_category','subcategories','secondary_categories','country',
+        'email','phone_number','website_url','address_line1','address_line2','city','state','zip_code',
+        'logo','logo_url','hours_of_operation','photos','videos','video_files','social_media','show_social_media',
+        'allow_reviews','allow_social_sharing','allow_review_sharing','show_phone','show_email','show_address','show_website','updated_at'];
+    }
+    function businessProfileValid(data) {
+      return isValidString(data.business_name, 2, 200) && isValidString(data.get('description',''), 0, 10000)
+        && data.get('photos',[]) is list && data.get('photos',[]).size() <= 10
+        && data.get('videos',[]) is list && data.get('video_files',[]) is list
+        && data.get('videos',[]).size() + data.get('video_files',[]).size() <= 3
+        && data.get('subcategories',[]) is list && data.get('subcategories',[]).size() <= 3
+        && data.get('secondary_categories',[]) is list && data.get('secondary_categories',[]).size() <= 3;
     }
     function publishedBusiness(businessId) {
       let business = get(/databases/$(database)/documents/business_listings_public/$(businessId)).data;
@@ -147,7 +163,11 @@ service cloud.firestore {
 
       // Authenticated users can create new submissions (pending, not visible)
       allow create: if accountEnabled()
-                    && isValidString(request.resource.data.business_name, 2, 200)
+                    && businessProfileValid(request.resource.data)
+                    && request.resource.data.keys().hasOnly(businessProfileFields().concat(['created_by_uid','church_id','referring_church_id','platform_approved','church_approved','listing_status','is_visible','subscription_tier','pro_status','is_pro','promotional_grant','stripe_subscription_id','stripe_customer_id','created_at','is_demo']))
+                    && request.resource.data.get('photos',[]).size() == 0 && request.resource.data.get('videos',[]).size() == 0 && request.resource.data.get('video_files',[]).size() == 0
+                    && request.resource.data.get('subcategories',[]).size() <= 1 && request.resource.data.get('secondary_categories',[]).size() <= 1
+                    && request.resource.data.get('social_media',{}) == {}
                     && request.resource.data.listing_status == 'pending'
                     && request.resource.data.is_visible == false
                     && request.resource.data.created_by_uid == request.auth.uid
@@ -163,20 +183,18 @@ service cloud.firestore {
                     && request.resource.data.get('stripe_subscription_id', null) == null
                     && request.resource.data.get('stripe_customer_id', null) == null;
 
-      // Owners can update their own, admins can update any
-      allow update: if isAdmin() || (mayEditBusiness(businessId) &&
-        !request.resource.data.diff(resource.data).affectedKeys().hasAny([
-          'created_by_uid', 'church_id', 'referring_church_id', 'listing_status', 'is_visible',
-          'platform_approved', 'church_approved', 'platform_suspended', 'church_suspended',
-          'is_featured', 'pro_status', 'is_pro', 'subscription_tier', 'created_at', 'approved_at', 'approved_by',
-          'stripe_customer_id', 'stripe_subscription_id', 'stripe_checkout_session_id', 'billing_cycle',
-          'trial_start_date', 'trial_end_date', 'pro_activated_at', 'pro_start_date', 'pro_end_date',
-          'promotional_grant', 'promotional_type', 'church_promotion']));
+      // The profile editor cannot write billing, moderation, ratings, metrics or unknown fields.
+      allow update: if isAdmin() || (mayEditBusiness(businessId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(businessProfileFields())
+        && businessProfileValid(request.resource.data)
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['photos','videos','video_files','social_media','show_social_media']) || mayManageProBusiness(businessId))
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['subcategories','secondary_categories']) ||
+          (request.resource.data.get('subcategories',[]).size() <= 1 && request.resource.data.get('secondary_categories',[]).size() <= 1) || mayManageProBusiness(businessId)));
       allow delete: if isAdmin();
 
       // Pro features subcollections - owners with Pro status can manage
       match /promotions/{promotionId} {
-        allow read: if get(/databases/$(database)/documents/business_listings_public/$(businessId)).data.get('is_visible', false) == true || isAdmin() || isOwnerOfBusiness(businessId) || managesBusiness(businessId);
+        allow read: if (publishedBusiness(businessId) && businessPro(businessId)) || isAdmin() || isOwnerOfBusiness(businessId) || managesBusiness(businessId);
         allow write: if isAdmin() || (mayEditBusiness(businessId) && mayManageProBusiness(businessId));
       }
 
@@ -203,21 +221,14 @@ service cloud.firestore {
       // Authenticated users can create (for submissions), must set owner_uid to self
       allow create: if accountEnabled()
                     && request.resource.data.owner_uid == request.auth.uid
+                    && request.resource.data.keys().hasOnly(['owner_uid','owner_email','your_name','phone_ext','billing_cycle','trial_status','submission_date','created_at','is_demo'])
+                    && request.resource.data.get('billing_cycle',null) in [null,'monthly','annual']
+                    && request.resource.data.get('trial_status',null) in [null,'pending_approval']
                     && getAfter(/databases/$(database)/documents/business_listings_public/$(businessId)).data.created_by_uid == request.auth.uid
                     && getAfter(/databases/$(database)/documents/business_listings_public/$(businessId)).data.listing_status == 'pending';
 
-      // Owners can update their own (but can't change sensitive fields), admins can update any
-      allow update: if isAdmin() || (
-                      mayEditBusiness(businessId)
-                      && notChanging('owner_uid')
-                      && notChanging('stripe_customer_id')
-                      && notChanging('stripe_subscription_id')
-                      && notChanging('billing_cycle')
-                      && notChanging('trial_status')
-                      && notChanging('submission_date')
-                      && notChanging('approved_at')
-                      && notChanging('approved_by')
-                    );
+      allow update: if isAdmin() || (mayEditBusiness(businessId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['your_name','phone_ext','owner_email','updated_at']));
       allow delete: if isAdmin();
 
       // Commissions subcollection - admin/sales only

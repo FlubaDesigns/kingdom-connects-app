@@ -135,3 +135,30 @@ test('legacy server-rendered business pages hydrate the shared layout, keep meta
   assert.deepEqual(replacements.map(n=>n.id),['businessContent','errorMessage']);assert.equal(styles[0].href,'/styles/components/business-storefront.css?v=1');
   modern=true;await context.ensureStorefrontLayout();assert.equal(fetches,1);
 });
+
+test('business profile edits preserve authority, enforce media limits and reject forged signup fields',async()=>{
+  const ref=doc(client('owner'),'business_listings_public/one');
+  await assertSucceeds(updateDoc(ref,{business_name:'Renamed business',description:'Profile update',photos:['https://example.test/photo.png'],videos:['https://example.test/one'],video_files:[]}));
+  for(const change of [{average_rating:5},{review_count:100},{total_views:100},{subscription_status:'active'},{unknown_field:true},{business_name:'x'},{photos:Array(11).fill('https://example.test/photo')},{videos:['a','b'],video_files:['c','d']}]) await assertFails(updateDoc(ref,change));
+  await assertFails(updateDoc(doc(client('owner'),'business_listings_public/free'),{photos:['https://example.test/p']}));
+  await assertFails(updateDoc(doc(client('owner'),'business_listings_private/one'),{pro_status:'pro'}));
+  await assertSucceeds(updateDoc(doc(client('owner'),'business_listings_private/one'),{your_name:'Owner',phone_ext:'12'}));
+  await env.withSecurityRulesDisabled(c=>updateDoc(doc(c.firestore(),'business_listings_public/one'),{stripe_subscription_id:'sub_one',subscription_status:'active'}));
+  await assertSucceeds(updateDoc(ref,{photos:['https://example.test/paid']}));
+  await env.withSecurityRulesDisabled(c=>updateDoc(doc(c.firestore(),'business_listings_public/one'),{subscription_status:'canceled'}));
+  await assertFails(updateDoc(ref,{photos:[]}));
+  await assertSucceeds(updateDoc(ref,{description:'Free profile remains editable'}));
+  const {writeBatch}=require('firebase/firestore');
+  const signupDb=client('owner');
+  const base={business_name:'New signup',created_by_uid:'owner',listing_status:'pending',is_visible:false,church_id:null};
+  for(const forged of [{average_rating:5},{subscription_status:'active'},{photos:['https://example.test/p']},{platform_suspended:false}]) {
+    const batch=writeBatch(signupDb);
+    batch.set(doc(signupDb,'business_listings_public/new'),{...base,...forged});
+    batch.set(doc(signupDb,'business_listings_private/new'),{owner_uid:'owner'});
+    await assertFails(batch.commit());
+  }
+  const batch=writeBatch(signupDb);
+  batch.set(doc(signupDb,'business_listings_public/new'),base);
+  batch.set(doc(signupDb,'business_listings_private/new'),{owner_uid:'owner',your_name:'New owner',billing_cycle:'monthly',trial_status:'pending_approval'});
+  await assertSucceeds(batch.commit());
+});

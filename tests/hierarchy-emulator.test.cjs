@@ -143,6 +143,7 @@ test('business media backend checks live owner, parent, and account authority be
   const media = createBusinessMediaService(db, { name: 'test-bucket', file: path => ({
     save: async bytes => writes.push({path,size:bytes.length}), delete: async () => deletes.push(path)
   }) });
+  await db.doc('business_listings_public/business-one').update({pro_status:'pro'});
   const input = { action:'uploadBusinessMedia',businessId:'business-one',name:'photo.png',contentType:'image/png',data:'AQ==' };
   const result = await media.execute(actor('owner'),input);
   assert.equal(result.success,true); assert.equal(writes.length,1);
@@ -162,4 +163,67 @@ test('business media backend checks live owner, parent, and account authority be
   await assert.rejects(media.execute(actor('owner'),{...input,contentType:'text/html'}),{status:400});
   await media.execute(actor('owner'),{...input,action:'deleteBusinessMedia',path:result.path});
   assert.deepEqual(deletes,[result.path]);
+});
+
+test('billing reconciles each business independently, revokes canceled benefits, preserves grants and suspension',async()=>{
+  const billing=require('../functions/business-billing').createBusinessBillingService(db);
+  await db.doc('users/owner').update({stripeCustomerId:'cus_owner',stripeSubscriptionId:'sub_first',subscription_status:'active'});
+  await db.doc('business_listings_public/business-one').update({stripe_subscription_id:'sub_first',pro_status:'pro'});
+  await db.doc('business_listings_public/business-two').set({business_name:'Second',church_id:'church-one',listing_status:'active',is_visible:true,platform_approved:true,church_approved:true,stripe_subscription_id:'sub_second',pro_status:'pro'});
+  await db.doc('business_listings_private/business-two').set({owner_uid:'owner'});
+  const sub={id:'sub_first',customer:'cus_owner',status:'canceled'};
+  await billing.sync(sub,{eventCreated:200});
+  await billing.sync({...sub,status:'active'},{eventCreated:100});
+  assert.equal((await db.doc('business_listings_public/business-one').get()).data().pro_status,null);
+  assert.equal((await db.doc('business_listings_public/business-two').get()).data().pro_status,'pro');
+  await billing.sync({...sub,status:'active',cancel_at_period_end:true});
+  assert.equal((await db.doc('business_listings_public/business-one').get()).data().pro_status,'pro');
+  await db.doc('business_listings_public/business-one').update({promotional_grant:true,platform_suspended:true});
+  await billing.sync(sub);
+  const b=(await db.doc('business_listings_public/business-one').get()).data();
+  assert.equal(b.pro_status,'pro');assert.equal(b.listing_status,'suspended');assert.equal(b.is_visible,false);
+  await assert.rejects(billing.sync({...sub,customer:'cus_foreign'}),/does not belong/);
+  await assert.rejects(billing.sync({...sub,id:'sub_new',status:'active'},{attachBusinessId:'business-one',checkoutSessionId:'old_checkout'}),/superseded/);
+  await db.doc('business_listings_public/business-one').update({stripe_checkout_session_id:'cs_current'});
+  await billing.sync({...sub,id:'sub_new',status:'trialing'},{attachBusinessId:'business-one',checkoutSessionId:'cs_current',expectedCustomerId:'cus_owner'});
+  await billing.sync(sub);
+  assert.equal((await db.doc('business_listings_public/business-one').get()).data().stripe_subscription_id,'sub_new');
+});
+
+test('media enforces Pro, combined video quotas, concurrent photo reservations and releases failed uploads',async()=>{
+  const {createBusinessMediaService}=require('../functions/business-media');
+  const media=createBusinessMediaService(db,{name:'test-bucket',file:()=>({save:async()=>{},delete:async()=>{}})});
+  const input={action:'uploadBusinessMedia',businessId:'business-one',type:'photos',name:'image.png',contentType:'image/png',data:'AQ=='};
+  await assert.rejects(media.execute(actor('owner'),input),{status:403});
+  await db.doc('business_listings_public/business-one').update({pro_status:'pro',stripe_subscription_id:'sub_business',subscription_status:'active'});
+  // Other businesses on the same account do not revoke this business's paid access.
+  await db.doc('users/owner').update({stripeSubscriptionId:'sub_other',subscription_status:'canceled'});
+  const outcomes=await Promise.allSettled(Array.from({length:11},()=>media.execute(actor('owner'),input)));
+  assert.equal(outcomes.filter(r=>r.status==='fulfilled').length,10);
+  assert.equal(outcomes.filter(r=>r.status==='rejected')[0].reason.status,409);
+  await db.doc('business_listings_public/business-one').update({videos:['https://example.test/1','https://example.test/2','https://example.test/3']});
+  await assert.rejects(media.execute(actor('owner'),{...input,type:'videos',contentType:'video/mp4'}),{status:409});
+  await db.doc('business_listings_public/business-one').update({subscription_status:'canceled'});
+  await assert.rejects(media.execute(actor('owner'),input),{status:403});
+  const uploaded=outcomes.find(r=>r.status==='fulfilled').value;
+  await media.execute(actor('owner'),{action:'deleteBusinessMedia',businessId:'business-one',path:uploaded.path});
+  assert.equal(Object.keys((await db.doc('business_media/business-one').get()).data().files).length,9);
+  await db.doc('business_listings_public/business-one').update({promotional_grant:true});
+  const failing=createBusinessMediaService(db,{name:'test-bucket',file:()=>({save:async()=>{throw Error('storage unavailable');}})});
+  await assert.rejects(failing.execute(actor('owner'),input),/storage unavailable/);
+  assert.equal(Object.keys((await db.doc('business_media/business-one').get()).data().files).length,9);
+});
+
+test('analytics persists deduplicated events, isolates owners, and refuses unpublished businesses',async()=>{
+  const analytics=require('../functions/business-analytics').createBusinessAnalyticsService(db);
+  await db.doc('business_listings_public/business-one').update({pro_status:'pro'});
+  const input={action:'trackBusinessEvent',businessId:'business-one',eventType:'impression'};
+  assert.equal((await analytics.execute(actor('member'),input)).recorded,true);
+  assert.equal((await analytics.execute(actor('member'),input)).recorded,false);
+  await analytics.execute(actor('member'),{...input,eventType:'website_click'});
+  const result=await analytics.execute(actor('owner'),{action:'getBusinessAnalytics',businessId:'business-one',days:30});
+  assert.equal(result.impressions,1);assert.equal(result.website_clicks,1);assert.equal(result.ctr,'100.00');
+  await assert.rejects(analytics.execute(actor('stranger'),{action:'getBusinessAnalytics',businessId:'business-one'}),{status:403});
+  await db.doc('churches/church-one').update({listing_status:'suspended'});
+  await assert.rejects(analytics.execute(actor('member'),input),{status:403});
 });

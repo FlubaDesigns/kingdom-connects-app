@@ -53,7 +53,7 @@ async function initPage(businesses) {
       const isPro = isBusinessPro(business);
 
       document.getElementById('totalViews').textContent = business.total_views || 0;
-      document.getElementById('averageRating').textContent = business.average_rating ? business.average_rating.toFixed(1) : '0.0';
+      document.getElementById('averageRating').textContent = business.average_rating ? Number(business.average_rating).toFixed(1) : '0.0';
       
       const reviewCount = await getReviewCount(businessId);
       document.getElementById('reviewCount').textContent = reviewCount;
@@ -86,9 +86,9 @@ async function initPage(businesses) {
         document.getElementById('churchAffiliation').textContent = 'None';
       }
 
-      if (business.categories && Array.isArray(business.categories) && business.categories.length > 0) {
+      if (business.subcategories && Array.isArray(business.subcategories) && business.subcategories.length > 0) {
         const categoryLabels = await Promise.all(
-          business.categories.map(slug => getCategoryLabel(slug))
+          business.subcategories.map(slug => getCategoryLabel(slug))
         );
         document.getElementById('secondaryCategories').textContent = categoryLabels.filter(Boolean).join(', ');
       } else {
@@ -97,7 +97,7 @@ async function initPage(businesses) {
       
       const locationParts = [business.city, business.state].filter(Boolean);
       document.getElementById('businessLocation').textContent = locationParts.length > 0 ? locationParts.join(', ') : 'Not set';
-      document.getElementById('websiteListed').textContent = business.website ? 'Yes' : 'No';
+      document.getElementById('websiteListed').textContent = (business.website_url || business.website) ? 'Yes' : 'No';
 
       if (isPro) {
         document.getElementById('proPromo').classList.add('hidden');
@@ -122,12 +122,12 @@ async function initPage(businesses) {
 
     async function getReviewCount(businessId) {
       try {
-        const q = query(collection(db, "reviews"), where("business_id", "==", businessId));
+        const q = query(collection(db, "reviews"), where("business_id", "==", businessId), where("status", "==", "approved"));
         const querySnapshot = await getDocs(q);
         return querySnapshot.size;
       } catch (error) {
         console.error('Error counting reviews:', error);
-        return 0;
+        return 'Unavailable';
       }
     }
 
@@ -163,11 +163,11 @@ async function initPage(businesses) {
       const tips = [];
 
       if (!business.description || business.description.length < 50) {
-        tips.push('📝 <strong>Add a detailed description</strong> - Listings with detailed descriptions get 3x more views');
+        tips.push('📝 <strong>Add a detailed description</strong> - Help customers understand your services');
       }
 
       if (photoCount === 0 && isPro) {
-        tips.push('📸 <strong>Add photos to your listing</strong> - Listings with photos get 5x more engagement');
+        tips.push('📸 <strong>Add photos to your listing</strong> - Show customers what your business offers');
       }
 
       if (photoCount > 0 && photoCount < 5 && isPro) {
@@ -190,7 +190,7 @@ async function initPage(businesses) {
         tips.push('🕐 <strong>Add business hours</strong> - Customers want to know when you\'re open');
       }
 
-      const secondaryCount = business.categories && Array.isArray(business.categories) ? business.categories.length : 0;
+      const secondaryCount = business.subcategories && Array.isArray(business.subcategories) ? business.subcategories.length : 0;
       if (secondaryCount === 0) {
         tips.push('🏷️ <strong>Add subcategories</strong> - Increase your visibility in searches');
       }
@@ -200,7 +200,7 @@ async function initPage(businesses) {
       }
 
       if (!isPro) {
-        tips.push('⭐ <strong>Consider upgrading to Pro</strong> - Pro members get 10x more visibility');
+        tips.push('⭐ <strong>Consider upgrading to Pro</strong> - Add photos, offerings and more profile features');
       }
 
       const tipsContainer = document.getElementById('optimizationTips');
@@ -226,10 +226,10 @@ async function initPage(businesses) {
           document.getElementById('websiteClicks').textContent = analyticsData.website_clicks;
           document.getElementById('phoneClicks').textContent = analyticsData.phone_clicks;
         } else {
-          document.getElementById('clickThroughRate').textContent = '0%';
-          document.getElementById('searchImpressions').textContent = '0';
-          document.getElementById('websiteClicks').textContent = '0';
-          document.getElementById('phoneClicks').textContent = '0';
+          document.getElementById('clickThroughRate').textContent = 'Unavailable';
+          document.getElementById('searchImpressions').textContent = 'Unavailable';
+          document.getElementById('websiteClicks').textContent = 'Unavailable';
+          document.getElementById('phoneClicks').textContent = 'Unavailable';
         }
       } catch (error) {
         console.error('Error loading pro analytics:', error);

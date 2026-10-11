@@ -10,9 +10,11 @@ const { Resend } = require('resend');
 
 admin.initializeApp();
 const hierarchyPolicy = require('./hierarchy-policy');
+const businessBilling = require('./business-billing').createBusinessBillingService(admin.firestore());
 const { createHierarchyService } = require('./hierarchy-service');
 const hierarchy = createHierarchyService(admin.firestore(), () => admin.firestore.FieldValue.serverTimestamp());
 const { createBusinessMediaService } = require('./business-media');
+const businessAnalytics = require('./business-analytics').createBusinessAnalyticsService(admin.firestore());
 const businessMedia = createBusinessMediaService(admin.firestore(), admin.storage().bucket('kingdom-commerce.firebasestorage.app'));
 const { onDocumentUpdated, onDocumentCreated } = require('firebase-functions/v2/firestore');
 const { createMemberService, memberActions } = require('./member-service');
@@ -27,7 +29,7 @@ exports.hierarchyAction = onRequest((req, res) => cors(req, res, async () => {
       ? await verifyToken(req) : (await verifyAuth(req)).user;
     const result = memberActions.includes(req.body?.action) ? await memberService.execute(user, req.body) : ['uploadBusinessMedia', 'deleteBusinessMedia'].includes(req.body?.action)
       ? await businessMedia.execute(user, req.body)
-      : await hierarchy.execute(user, req.body);
+      : ['trackBusinessEvent','getBusinessAnalytics'].includes(req.body?.action) ? await businessAnalytics.execute(user, req.body) : await hierarchy.execute(user, req.body);
     if (req.body.action === 'setChurchStatus') await hierarchy.syncChurchBusinesses(result.churchId);
     res.json(result);
   } catch (error) {
@@ -399,6 +401,10 @@ exports.createCheckoutSession = onRequest({ secrets: [stripeSecretKey] }, (req, 
         hierarchyPolicy.entityIdentity('business', businessId);
         const ownership = await admin.firestore().collection('business_listings_private').doc(businessId).get();
         if (ownership.data()?.owner_uid !== user.uid) return res.status(403).json({ error: 'You do not own this business.' });
+        const business = (await admin.firestore().doc('business_listings_public/' + businessId).get()).data();
+        const church = business?.church_id ? (await admin.firestore().doc('churches/' + business.church_id).get()).data() : null;
+        if (!business || ['suspended','rejected'].includes(business.listing_status) || business.platform_suspended || business.church_suspended || (business.church_id && !hierarchyPolicy.activeChurch(church))) return res.status(403).json({error:'Business access is suspended.'});
+        if (business.stripe_subscription_id && ['active','trialing','past_due','unpaid','incomplete','paused'].includes(business.subscription_status || 'active')) return res.status(409).json({error:'Manage your existing subscription through billing.'});
       }
       const stripe = getStripeClient();
       
@@ -450,7 +456,7 @@ exports.createCheckoutSession = onRequest({ secrets: [stripeSecretKey] }, (req, 
           line_items: [{ price_data: priceData, quantity: 1 }],
           mode: 'subscription',
           success_url: `https://kingdomconnects.org/thank_you_pro?billing=${billingCycle}&business_id=${businessId}`,
-          cancel_url: `https://kingdomconnects.org/business-admin/index.html?pro_cancelled=true`,
+          cancel_url: `https://kingdomconnects.org/business-admin/index.html?id=${encodeURIComponent(businessId)}&pro_cancelled=true`,
           metadata: {
             businessId: businessId,
             billingCycle: billingCycle,
@@ -472,7 +478,6 @@ exports.createCheckoutSession = onRequest({ secrets: [stripeSecretKey] }, (req, 
         const session = await stripe.checkout.sessions.create(sessionConfig);
         
         await admin.firestore().collection('business_listings_public').doc(businessId).update({
-          listing_status: 'pending_payment',
           stripe_checkout_session_id: session.id
         });
         
@@ -617,42 +622,14 @@ exports.stripeWebhook = onRequest({ secrets: [stripeWebhookSecret, stripeSecretK
       
       switch (event.type) {
         case 'customer.subscription.created':
-        case 'customer.subscription.updated': {
-          const subscription = event.data.object;
-          const customerId = subscription.customer;
-          
-          const usersRef = admin.firestore().collection('users');
-          const snapshot = await usersRef.where('stripeCustomerId', '==', customerId).get();
-          
-          if (!snapshot.empty) {
-            const userDoc = snapshot.docs[0];
-            await userDoc.ref.update({
-              stripeSubscriptionId: subscription.id,
-              subscription_status: subscription.status,
-              subscription_plan: subscription.items?.data?.[0]?.price?.id || null
-            });
-          }
-          break;
-        }
-        
+        case 'customer.subscription.updated':
         case 'customer.subscription.deleted': {
-          const subscription = event.data.object;
-          const customerId = subscription.customer;
-          
-          const usersRef = admin.firestore().collection('users');
-          const snapshot = await usersRef.where('stripeCustomerId', '==', customerId).get();
-          
-          if (!snapshot.empty) {
-            const userDoc = snapshot.docs[0];
-            await userDoc.ref.update({
-              subscription_status: 'cancelled',
-              stripeSubscriptionId: null,
-              subscription_plan: null
-            });
-          }
+          // Stripe retries and delivers out of order. Reconcile its current state.
+          const subscription = await stripe.subscriptions.retrieve(event.data.object.id);
+          await businessBilling.sync(subscription, {eventCreated:event.created});
           break;
         }
-        
+
         case 'invoice.payment_succeeded': {
           const invoice = event.data.object;
           console.log('Payment succeeded for invoice:', invoice.id);
@@ -743,43 +720,16 @@ exports.stripeWebhook = onRequest({ secrets: [stripeWebhookSecret, stripeSecretK
                   const approvalState = hierarchyPolicy.businessState(businessData, church);
                   const autoApprove = approvalState.is_visible;
 
-                  // Calculate trial dates for monthly subscriptions
-                  const now = new Date();
-                  const isMonthly = billingCycle === 'monthly';
-                  
-                  // Get trial days from pricing settings
-                  const pricingDoc = await admin.firestore().doc('pricing_settings/default').get();
-                  const trialDays = pricingDoc.exists ? (pricingDoc.data().free_trial_days || 30) : 30;
-                  
-                  const trialEndDate = isMonthly 
-                    ? new Date(now.getTime() + trialDays * 24 * 60 * 60 * 1000)
-                    : null;
-                  
-                  const updateData = {
-                    stripe_subscription_id: session.subscription,
-                    stripe_customer_id: session.customer,
-                    is_pro: true,
-                    pro_status: 'pro',
-                    subscription_tier: 'pro',
-                    billing_cycle: billingCycle,
-                    pro_activated_at: admin.firestore.FieldValue.serverTimestamp(),
-                    trial_start_date: isMonthly ? now : null,
-                    trial_end_date: trialEndDate
-                  };
-                  
-                  // Re-read inside a transaction: checkout must not undo a concurrent suspension.
-                  await admin.firestore().runTransaction(async tx => {
-                    const latest = await tx.get(businessRef);
-                    const parentId = latest.data().church_id;
-                    const parent = parentId ? await tx.get(admin.firestore().collection('churches').doc(parentId)) : null;
-                    tx.update(businessRef, { ...updateData, ...hierarchyPolicy.businessState(latest.data(), parent?.data()) });
-                  });
+                  const subscription = await stripe.subscriptions.retrieve(typeof session.subscription === 'string' ? session.subscription : session.subscription.id);
+                  await businessBilling.sync(subscription, { attachBusinessId: businessId,
+                    checkoutSessionId: session.id, eventCreated:event.created, expectedCustomerId: typeof session.customer === 'string' ? session.customer : session.customer.id });
+                  await businessRef.update({ billing_cycle: billingCycle });
 
                   console.log(`✅ Pro subscription activated for business ${businessId}, auto_approve: ${autoApprove}`);
                   
                   // Send confirmation email
                   const ownerEmail = businessData.email;
-                  if (ownerEmail) {
+                  if (ownerEmail && ['active','trialing'].includes(subscription.status)) {
                     const { client, fromEmail } = getResendClient();
                     
                     const statusMessage = autoApprove 
@@ -835,6 +785,7 @@ exports.stripeWebhook = onRequest({ secrets: [stripeWebhookSecret, stripeSecretK
                 }
               } catch (proError) {
                 console.error('Error processing Pro subscription:', proError);
+                throw proError;
               }
             }
             break;

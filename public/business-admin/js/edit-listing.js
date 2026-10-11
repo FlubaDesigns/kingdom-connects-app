@@ -1,3 +1,4 @@
+import { safeWebUrl, escapeHtml as escapeAttribute } from "../../js/business-presentation.js";
 import { db } from "../../js/firebase-config.js";
 import { collection, getDocs, query, where, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { requireAuth } from "../../js/auth/access-control.js";
@@ -75,7 +76,7 @@ async function initPage(businesses) {
     let activeBusiness = null;
     if (businesses) {
       for (const biz of businesses) {
-        if (biz.listing_status === 'active') {
+        if (!['suspended','rejected'].includes(biz.listing_status)) {
           activeBusiness = biz;
           break;
         }
@@ -328,11 +329,8 @@ async function initPage(businesses) {
         }
       }
 
-      console.log('[KC DEBUG] Loading existing photos. isPro:', isPro, 'photos:', business.photos);
       if (isPro && business.photos && Array.isArray(business.photos)) {
-        console.log('[KC DEBUG] Adding', business.photos.length, 'existing photos to array');
-        business.photos.forEach(url => addPhotoPreview(url));
-        console.log('[KC DEBUG] After loading, photoUrls has', photoUrls.length, 'items');
+        business.photos.forEach(url => addPhotoPreview(url, ownedStoragePath(url)));
       }
 
       if (isPro && business.videos && Array.isArray(business.videos)) {
@@ -340,10 +338,9 @@ async function initPage(businesses) {
       }
 
       if (isPro && business.video_files && Array.isArray(business.video_files)) {
-        console.log('[KC DEBUG] Loading', business.video_files.length, 'existing video files');
         business.video_files.forEach(url => {
           videoFileUrls.push(url);
-          videoStoragePaths.push({ url, path: null, thumbnail: null });
+          videoStoragePaths.push({ url, path: ownedStoragePath(url), thumbnail: null });
         });
         renderVideoGrid();
         updateVideoCount();
@@ -468,12 +465,24 @@ async function initPage(businesses) {
     let photoUrls = [];
     let photoStoragePaths = [];
 
+    function ownedStoragePath(url) {
+      try {
+        const parsed = new URL(url);
+        const prefix = '/v0/b/kingdom-commerce.firebasestorage.app/o/';
+        if (parsed.hostname !== 'firebasestorage.googleapis.com' || !parsed.pathname.startsWith(prefix)) return null;
+        const path = decodeURIComponent(parsed.pathname.slice(prefix.length));
+        return path.startsWith(`businesses/${businessId}/`) ? path : null;
+      } catch { return null; }
+    }
+
     function updatePhotoCount() {
       const countEl = document.getElementById('photoCount');
       if (countEl) countEl.textContent = photoUrls.length;
     }
 
     function addPhotoPreview(url, storagePath = null, isPending = false) {
+      url = safeWebUrl(url);
+      if (!url) { window.showToast('Enter a valid http or https image URL.', 'error'); return; }
       if (photoUrls.length >= 10) {
         window.showToast('Maximum 10 photos allowed', 'info');
         return;
@@ -487,9 +496,9 @@ async function initPage(businesses) {
       item.className = 'photo-item' + (isPending ? ' photo-pending' : '');
       item.dataset.url = url;
       item.innerHTML = `
-        <img src="${url}" alt="Business photo">
+        <img src="${escapeAttribute(url)}" alt="Business photo">
         ${isPending ? '<div class="photo-loading"><span class="spinner"></span></div>' : ''}
-        <button class="photo-remove" data-action="removePhoto" data-id="${url}">×</button>
+        <button class="photo-remove" data-action="removePhoto" data-id="${escapeAttribute(url)}">×</button>
       `;
       grid.appendChild(item);
       updatePhotoCount();
@@ -497,7 +506,7 @@ async function initPage(businesses) {
 
     window.removePhoto = async (url) => {
       const pathInfo = photoStoragePaths.find(p => p.url === url);
-      if (pathInfo) {
+      if (pathInfo?.path) {
         const result = await deleteFile(pathInfo.path);
         if (!result.success) {
           window.showToast('Failed to delete file from storage', 'error');
@@ -517,8 +526,8 @@ async function initPage(businesses) {
         const item = document.createElement('div');
         item.className = 'photo-item';
         item.innerHTML = `
-          <img src="${url}" alt="Business photo">
-          <button class="photo-remove" data-action="removePhoto" data-id="${url}">×</button>
+          <img src="${escapeAttribute(url)}" alt="Business photo">
+          <button class="photo-remove" data-action="removePhoto" data-id="${escapeAttribute(url)}">×</button>
         `;
         grid.appendChild(item);
       });
@@ -640,7 +649,7 @@ async function initPage(businesses) {
         if (progressArea) {
           progressArea.innerHTML = `
             <div class="upload-thumb-container">
-              <img src="${thumbUrl}" alt="Uploading" class="upload-thumb">
+              <img src="${escapeAttribute(thumbUrl)}" alt="Uploading" class="upload-thumb">
               <div class="upload-thumb-overlay">
                 <div class="progress-bar"><div class="progress-fill" id="photoProgressFill" style="width: 0%"></div></div>
                 <p class="upload-percent" id="photoProgressText">0%</p>
@@ -833,7 +842,7 @@ async function initPage(businesses) {
           continue;
         }
         
-        if (videoFileUrls.length >= 3) {
+        if (videoFileUrls.length + videoUrls.length >= 3) {
           window.showToast('Maximum 3 videos allowed', 'info');
           break;
         }
@@ -845,7 +854,7 @@ async function initPage(businesses) {
         if (progressArea) {
           progressArea.innerHTML = `
             <div class="upload-thumb-container">
-              ${thumbUrl ? `<img src="${thumbUrl}" alt="Video thumbnail" class="upload-thumb">` : '<div class="upload-thumb" style="background:#333;display:flex;align-items:center;justify-content:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></div>'}
+              ${thumbUrl ? `<img src="${escapeAttribute(thumbUrl)}" alt="Video thumbnail" class="upload-thumb">` : '<div class="upload-thumb" style="background:#333;display:flex;align-items:center;justify-content:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></div>'}
               <div class="upload-thumb-overlay">
                 <div class="progress-bar"><div class="progress-fill" id="videoProgressFill" style="width: 0%"></div></div>
                 <p class="upload-percent" id="videoProgressText">0%</p>
@@ -903,7 +912,7 @@ async function initPage(businesses) {
         const item = document.createElement('div');
         item.className = 'photo-item video-item';
         item.innerHTML = `
-          ${thumbUrl ? `<img src="${thumbUrl}" alt="Video thumbnail">` : `<video src="${url}" class="video-thumb" muted></video>`}
+          ${thumbUrl ? `<img src="${escapeAttribute(thumbUrl)}" alt="Video thumbnail">` : `<video src="${escapeAttribute(url)}" class="video-thumb" muted></video>`}
           <div class="video-play-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
           </div>
@@ -916,7 +925,7 @@ async function initPage(businesses) {
     window.removeVideoFile = async (index) => {
       const url = videoFileUrls[index];
       const pathInfo = videoStoragePaths.find(p => p.url === url);
-      if (pathInfo) {
+      if (pathInfo?.path) {
         const result = await deleteFile(pathInfo.path);
         if (!result.success) {
           window.showToast('Failed to delete video from storage', 'error');
@@ -932,7 +941,9 @@ async function initPage(businesses) {
     let videoUrls = [];
 
     function addVideoItem(url) {
-      if (videoUrls.length >= 3) {
+      url = safeWebUrl(url);
+      if (!url) { window.showToast('Enter a valid http or https video URL.', 'error'); return; }
+      if (videoUrls.length + videoFileUrls.length >= 3) {
         window.showToast('Maximum 3 videos allowed', 'info');
         return;
       }
@@ -948,7 +959,7 @@ async function initPage(businesses) {
         const item = document.createElement('div');
         item.className = 'flex-gap mt-sm';
         item.innerHTML = `
-          <input type="text" value="${url}" disabled class="input-dark">
+          <input type="text" value="${escapeAttribute(url)}" disabled class="input-dark">
           <button class="btn btn-small btn-danger" data-action="removeVideo" data-index="${index}">Remove</button>
         `;
         list.appendChild(item);
@@ -1131,11 +1142,6 @@ async function initPage(businesses) {
         show_website: document.getElementById('show_website').checked
       };
 
-      console.log('[KC DEBUG] PRE-SAVE CHECK - currentBusiness:', currentBusiness);
-      console.log('[KC DEBUG] PRE-SAVE CHECK - pro_status:', currentBusiness?.pro_status);
-      console.log('[KC DEBUG] PRE-SAVE CHECK - isBusinessPro result:', isBusinessPro(currentBusiness));
-      console.log('[KC DEBUG] PRE-SAVE CHECK - photoUrls:', photoUrls);
-      console.log('[KC DEBUG] PRE-SAVE CHECK - photoUrls.length:', photoUrls.length);
       
       if (isBusinessPro(currentBusiness)) {
         updateData.show_social_media = document.getElementById('show_social_media').checked;
@@ -1148,24 +1154,13 @@ async function initPage(businesses) {
         updateData.photos = photoUrls;
         updateData.videos = videoUrls;
         updateData.video_files = videoFileUrls;
-        console.log('[KC DEBUG] Pro business save - photos:', photoUrls.length, 'video_files:', videoFileUrls.length);
-        console.log('[KC DEBUG] Pro business save - subcategories:', secondaryCategories);
-      } else {
-        console.log('[KC DEBUG] NOT Pro - skipping photos/videos. currentBusiness.pro_status:', currentBusiness?.pro_status);
-        console.log('[KC DEBUG] FORCING photos save anyway for debugging');
-        updateData.photos = photoUrls;
-        updateData.videos = videoUrls;
-        updateData.video_files = videoFileUrls;
       }
 
-      console.log('[KC DEBUG] Saving to businessId:', businessId);
-      console.log('[KC DEBUG] Full updateData:', JSON.stringify(updateData, null, 2));
 
       try {
         await updateBusiness(businessId, updateData);
-        console.log('[KC DEBUG] Save successful!');
         window.showToast('Your business listing has been updated!', 'success');
-        setTimeout(() => window.location.href = 'index', 1500);
+        setTimeout(() => window.location.href = `index?id=${encodeURIComponent(businessId)}`, 1500);
       } catch (error) {
         console.error('[KC DEBUG] Error updating business:', error);
         window.showToast('Error updating business: ' + error.message, 'error');

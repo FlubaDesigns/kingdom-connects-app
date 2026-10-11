@@ -154,7 +154,7 @@ export async function updateBusiness(id, data) {
     } else if (PUBLIC_FIELDS.includes(key)) {
       publicData[key] = value;
     } else {
-      privateData[key] = value;
+      throw new Error(`Unsupported business field: ${key}`);
     }
   }
   
