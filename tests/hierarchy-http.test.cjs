@@ -12,6 +12,7 @@ function handlers(){
  const exported={};
  function fakeRequire(name){
   if(name==='firebase-admin')return admin;
+  if(name==='./fluba-provider-keys')return {readFlubaProviderKey:async()=>{providerCalls++;throw Error('Provider must not run');}};
   if(name.startsWith('firebase-functions/v2/'))return wrappers;
   if(name==='firebase-functions/params')return {defineSecret:()=>({value(){providerCalls++;throw Error('Provider must not run')}})};
   if(name==='cors')return ()=>((req,res,next)=>next());
