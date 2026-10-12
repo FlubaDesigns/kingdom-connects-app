@@ -830,7 +830,7 @@ exports.getProducts = onRequest({ secrets: [] }, (req, res) => {
   });
 });
 
-exports.sendVerificationEmail = onRequest((req, res) => cors(req, res, async () => {
+exports.sendVerificationEmail = onRequest({ secrets: [] }, (req, res) => cors(req, res, async () => {
   if (req.method !== 'POST') return res.status(405).json({error:'Use POST.'});
   try {
     const {user}=await verifyAuth(req);
