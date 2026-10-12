@@ -8,10 +8,11 @@ function handlers(){
  const profiles={member:{roles:['member'],account_status:'active'},admin:{roles:['admin'],account_status:'active'},blocked:{roles:['admin'],account_status:'suspended'}};
  const db={doc:uid=>({get:async()=>({exists:!!profiles[uid.split('/')[1]],data:()=>profiles[uid.split('/')[1]]})})};
  const admin={initializeApp(){},firestore:()=>db,storage:()=>({bucket:()=>({})}),auth:()=>({verifyIdToken:async(token,revoked)=>{assert.equal(revoked,true);if(token==='invalid')throw Error('invalid');return {uid:token}}})};
- const wrappers={onRequest:(...args)=>args.at(-1),onDocumentUpdated:(...args)=>args.at(-1),onDocumentCreated:(...args)=>args.at(-1)};
+ const wrappers={onRequest:(...args)=>{const handler=args.at(-1);handler.releaseOptions=args.length>1?args[0]:{};return handler;},onDocumentUpdated:(...args)=>args.at(-1),onDocumentCreated:(...args)=>args.at(-1)};
  const exported={};
  function fakeRequire(name){
   if(name==='firebase-admin')return admin;
+  if(name==='./fluba-provider-keys')return {readFlubaProviderKey:async()=>{providerCalls++;throw Error('Provider must not run');}};
   if(name.startsWith('firebase-functions/v2/'))return wrappers;
   if(name==='firebase-functions/params')return {defineSecret:()=>({value(){providerCalls++;throw Error('Provider must not run')}})};
   if(name==='cors')return ()=>((req,res,next)=>next());
@@ -29,7 +30,7 @@ function handlers(){
    Promise.resolve(exported[name](req,res)).catch(reject);
   });
  }
- return {call,providerCalls:()=>providerCalls};
+ return {call,providerCalls:()=>providerCalls,options:name=>exported[name].releaseOptions};
 }
 test('HTTP price and template endpoints enforce token, live account, and administrator before provider calls',async()=>{
  const h=handlers();
@@ -42,4 +43,8 @@ test('HTTP price and template endpoints enforce token, live account, and adminis
   assert.equal((await h.call(name,'admin')).status,400);
  }
  assert.equal(h.providerCalls(),0);
+});
+
+test('verification queue explicitly clears its retired email secret binding',()=>{
+ assert.deepEqual(Array.from(handlers().options('sendVerificationEmail').secrets),[]);
 });

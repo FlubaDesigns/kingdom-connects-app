@@ -83,43 +83,11 @@ function generateQRGearWidgetHtml(token) {
 
 console.log('QR Gear widget integration loaded');
 
-// Get Resend credentials from Replit connector
+const {readFlubaProviderKey} = require('./functions/fluba-provider-keys');
 async function getCredentials() {
-  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
-  const xReplitToken = process.env.REPL_IDENTITY 
-    ? 'repl ' + process.env.REPL_IDENTITY 
-    : process.env.WEB_REPL_RENEWAL 
-    ? 'depl ' + process.env.WEB_REPL_RENEWAL 
-    : null;
-
-  if (!xReplitToken || !hostname) {
-    throw new Error('Replit connector environment not available');
-  }
-
-  const response = await fetch(
-    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=resend',
-    {
-      headers: {
-        'Accept': 'application/json',
-        'X_REPLIT_TOKEN': xReplitToken
-      }
-    }
-  );
-  
-  const data = await response.json();
-  const connectionSettings = data.items?.[0];
-
-  if (!connectionSettings || !connectionSettings.settings?.api_key) {
-    throw new Error('Resend not connected - please configure in Replit integrations');
-  }
-  
-  // Always use Resend sandbox for now - user's email domain isn't verified
-  const fromEmail = 'onboarding@resend.dev';
-  
-  return {
-    apiKey: connectionSettings.settings.api_key,
-    fromEmail: fromEmail
-  };
+  const apiKey = await readFlubaProviderKey('RESEND_API_KEY');
+  if (!apiKey) throw new Error('Resend is not configured in Fluba');
+  return {apiKey, fromEmail: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'};
 }
 
 // Get fresh Resend client (must be called fresh each time - tokens expire)

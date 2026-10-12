@@ -1,3 +1,4 @@
+const {readFlubaProviderKey}=require('./fluba-provider-keys');
 // Kingdom Connects Firebase Cloud Functions
 // Email functions only - Stripe functions in separate file when needed
 // Updated: 2025-12-31 - Using kingdomconnects.org domain
@@ -20,7 +21,7 @@ const { onDocumentUpdated, onDocumentCreated } = require('firebase-functions/v2/
 const { createMemberService, memberActions } = require('./member-service');
 const { createMemberMailDelivery, queueMemberMail } = require('./member-mail');
 const memberService = createMemberService(admin.firestore(), admin.auth(), admin.storage().bucket('kingdom-commerce.firebasestorage.app'), () => admin.firestore.FieldValue.serverTimestamp());
-const resendApiKey = defineSecret('RESEND_API_KEY');
+
 const presentations = require('./presentation-service').createPresentationService(admin.firestore());
 const { createEmailTemplateService, renderTemplate } = require('./email-template-service');
 const emailTemplates = createEmailTemplateService(admin.firestore());
@@ -47,13 +48,13 @@ exports.syncChurchAuthority = onDocumentUpdated({ document: 'churches/{churchId}
   }
 });
 
-exports.deliverMemberNotification = onDocumentCreated({ document: 'member_mail/{mailId}', retry: true, secrets: [resendApiKey] }, async event => {
-  const { client } = getResendClient();
+exports.deliverMemberNotification = onDocumentCreated({ document: 'member_mail/{mailId}', retry: true, secrets: [] }, async event => {
+  const { client } = await getResendClient();
   await createMemberMailDelivery(admin.firestore(), admin.auth(), client, () => admin.firestore.FieldValue.serverTimestamp())(event.data.ref);
 });
 
-function getResendClient() {
-  const apiKey = resendApiKey.value();
+async function getResendClient() {
+  const apiKey = await readFlubaProviderKey('RESEND_API_KEY');
   if (!apiKey) {
     throw new Error('RESEND_API_KEY not configured');
   }
@@ -113,7 +114,7 @@ exports.health = onRequest((req, res) => {
   });
 });
 
-exports.sendTemplate = onRequest({ secrets: [resendApiKey] }, (req, res) => {
+exports.sendTemplate = onRequest({ secrets: [] }, (req, res) => {
   cors(req, res, async () => {
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method not allowed' });
@@ -131,7 +132,7 @@ exports.sendTemplate = onRequest({ secrets: [resendApiKey] }, (req, res) => {
       if (!template_name || !to) return res.status(400).json({error:'Choose a template and recipient.'});
       const prepared = await emailTemplates.prepare(template_name, variables || {});
       const subject = prepared.subject, htmlBody = prepared.html;
-      const { client, fromEmail } = getResendClient();
+      const { client, fromEmail } = await getResendClient();
       console.log('Sending template email from:', fromEmail, 'to:', to, 'subject:', subject);
       const { data, error } = await client.emails.send({
         from: fromEmail,
@@ -156,7 +157,7 @@ exports.sendTemplate = onRequest({ secrets: [resendApiKey] }, (req, res) => {
   });
 });
 
-exports.sendEmail = onRequest({ secrets: [resendApiKey] }, (req, res) => {
+exports.sendEmail = onRequest({ secrets: [] }, (req, res) => {
   cors(req, res, async () => {
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method not allowed' });
@@ -168,7 +169,7 @@ exports.sendEmail = onRequest({ secrets: [resendApiKey] }, (req, res) => {
       if (!to || !subject || (!htmlBody && !textBody)) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
-      const { client, fromEmail } = getResendClient();
+      const { client, fromEmail } = await getResendClient();
       const emailData = { from: fromEmail, to, subject };
       if (htmlBody) emailData.html = htmlBody;
       if (textBody) emailData.text = textBody;
@@ -189,7 +190,7 @@ exports.sendEmail = onRequest({ secrets: [resendApiKey] }, (req, res) => {
   });
 });
 
-exports.sendPresentation = onRequest({ secrets: [resendApiKey] }, (req, res) => {
+exports.sendPresentation = onRequest({ secrets: [] }, (req, res) => {
   cors(req, res, async () => {
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method not allowed' });
@@ -206,7 +207,7 @@ exports.sendPresentation = onRequest({ secrets: [resendApiKey] }, (req, res) => 
       const template = await presentations.load(role, templateId);
       const htmlBody = presentations.renderEmail(template);
       const attachments = includePresentation === false ? [] : [await presentations.attachment(template)];
-      const { client, fromEmail } = getResendClient();
+      const { client, fromEmail } = await getResendClient();
       console.log('Sending presentation email from:', fromEmail, 'to:', email);
       const { data, error } = await client.emails.send({
         from: fromEmail,
@@ -247,12 +248,12 @@ exports.presentationPreview = onRequest((req, res) => cors(req, res, async () =>
 
 const widgetJwtSecret = defineSecret('WIDGET_JWT_SECRET');
 const stripeWebhookSecret = defineSecret('STRIPE_WEBHOOK_SECRET');
-const stripeSecretKey = defineSecret('STRIPE_SECRET_KEY');
+
 const jwt = require('jsonwebtoken');
 const Stripe = require('stripe');
 
-function getStripeClient() {
-  const secretKey = stripeSecretKey.value();
+async function getStripeClient() {
+  const secretKey = await readFlubaProviderKey('STRIPE_SECRET_KEY');
   if (!secretKey) {
     throw new Error('STRIPE_SECRET_KEY not configured');
   }
@@ -303,7 +304,7 @@ exports.generateQrGearToken = onRequest({ secrets: [widgetJwtSecret] }, (req, re
   });
 });
 
-exports.createCheckoutSession = onRequest({ secrets: [stripeSecretKey] }, (req, res) => {
+exports.createCheckoutSession = onRequest({ secrets: [] }, (req, res) => {
   cors(req, res, async () => {
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method not allowed' });
@@ -322,7 +323,7 @@ exports.createCheckoutSession = onRequest({ secrets: [stripeSecretKey] }, (req, 
         if (!business || ['suspended','rejected'].includes(business.listing_status) || business.platform_suspended || business.church_suspended || (business.church_id && !hierarchyPolicy.activeChurch(church))) return res.status(403).json({error:'Business access is suspended.'});
         if (business.stripe_subscription_id && ['active','trialing','past_due','unpaid','incomplete','paused'].includes(business.subscription_status || 'active')) return res.status(409).json({error:'Manage your existing subscription through billing.'});
       }
-      const stripe = getStripeClient();
+      const stripe = await getStripeClient();
       
       const userDoc = await admin.firestore().collection('users').doc(user.uid).get();
       const userData = userDoc.data();
@@ -425,7 +426,7 @@ exports.createCheckoutSession = onRequest({ secrets: [stripeSecretKey] }, (req, 
 });
 
 // One-time or recurring donation checkout (no auth required)
-exports.createDonationSession = onRequest({ secrets: [stripeSecretKey] }, (req, res) => {
+exports.createDonationSession = onRequest({ secrets: [] }, (req, res) => {
   cors(req, res, async () => {
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method not allowed' });
@@ -437,7 +438,7 @@ exports.createDonationSession = onRequest({ secrets: [stripeSecretKey] }, (req, 
       // Amount in cents, minimum $5
       const donationAmount = Math.max(500, parseInt(amount) || 1000);
       
-      const stripe = getStripeClient();
+      const stripe = await getStripeClient();
       
       const priceData = {
         currency: 'usd',
@@ -478,7 +479,7 @@ exports.createDonationSession = onRequest({ secrets: [stripeSecretKey] }, (req, 
   });
 });
 
-exports.createPortalSession = onRequest({ secrets: [stripeSecretKey] }, (req, res) => {
+exports.createPortalSession = onRequest({ secrets: [] }, (req, res) => {
   cors(req, res, async () => {
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method not allowed' });
@@ -495,7 +496,7 @@ exports.createPortalSession = onRequest({ secrets: [stripeSecretKey] }, (req, re
         return res.status(400).json({ error: 'No Stripe customer found' });
       }
       
-      const stripe = getStripeClient();
+      const stripe = await getStripeClient();
       const session = await stripe.billingPortal.sessions.create({
         customer: userData.stripeCustomerId,
         return_url: returnUrl || 'https://kingdomconnects.org/dashboard.htm'
@@ -511,7 +512,7 @@ exports.createPortalSession = onRequest({ secrets: [stripeSecretKey] }, (req, re
   });
 });
 
-exports.stripeWebhook = onRequest({ secrets: [stripeWebhookSecret, stripeSecretKey, resendApiKey] }, (req, res) => {
+exports.stripeWebhook = onRequest({ secrets: [stripeWebhookSecret] }, (req, res) => {
   const rawBody = req.rawBody;
   const signature = req.headers['stripe-signature'];
   
@@ -521,7 +522,7 @@ exports.stripeWebhook = onRequest({ secrets: [stripeWebhookSecret, stripeSecretK
   
   (async () => {
     try {
-      const stripe = getStripeClient();
+      const stripe = await getStripeClient();
       const webhookSecret = stripeWebhookSecret.value();
       
       if (!webhookSecret) {
@@ -646,7 +647,7 @@ exports.stripeWebhook = onRequest({ secrets: [stripeWebhookSecret, stripeSecretK
                   // Send confirmation email
                   const ownerEmail = businessData.email;
                   if (ownerEmail && ['active','trialing'].includes(subscription.status)) {
-                    const { client, fromEmail } = getResendClient();
+                    const { client, fromEmail } = await getResendClient();
                     
                     const statusMessage = autoApprove 
                       ? 'Your Pro business listing is now live! Visit your dashboard to manage your listing.'
@@ -723,7 +724,7 @@ exports.stripeWebhook = onRequest({ secrets: [stripeWebhookSecret, stripeSecretK
             
             if (email && amount > 0) {
               try {
-                const { client, fromEmail } = getResendClient();
+                const { client, fromEmail } = await getResendClient();
                 
                 const thankYouHtml = `
                   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -800,10 +801,10 @@ exports.stripeWebhook = onRequest({ secrets: [stripeWebhookSecret, stripeSecretK
   })();
 });
 
-exports.getProducts = onRequest({ secrets: [stripeSecretKey] }, (req, res) => {
+exports.getProducts = onRequest({ secrets: [] }, (req, res) => {
   cors(req, res, async () => {
     try {
-      const stripe = getStripeClient();
+      const stripe = await getStripeClient();
       
       const products = await stripe.products.list({
         active: true,
@@ -829,7 +830,7 @@ exports.getProducts = onRequest({ secrets: [stripeSecretKey] }, (req, res) => {
   });
 });
 
-exports.sendVerificationEmail = onRequest((req, res) => cors(req, res, async () => {
+exports.sendVerificationEmail = onRequest({ secrets: [] }, (req, res) => cors(req, res, async () => {
   if (req.method !== 'POST') return res.status(405).json({error:'Use POST.'});
   try {
     const {user}=await verifyAuth(req);
@@ -843,7 +844,7 @@ exports.sendVerificationEmail = onRequest((req, res) => cors(req, res, async () 
 }));
 
 // Send Pro welcome email (different content for annual vs monthly)
-exports.sendProWelcomeEmail = onRequest({ secrets: [resendApiKey] }, (req, res) => {
+exports.sendProWelcomeEmail = onRequest({ secrets: [] }, (req, res) => {
   cors(req, res, async () => {
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method not allowed' });
@@ -868,7 +869,7 @@ exports.sendProWelcomeEmail = onRequest({ secrets: [resendApiKey] }, (req, res) 
       const displayName = userData.display_name || user.email.split('@')[0];
       const isAnnual = billingCycle === 'annual';
       
-      const { client, fromEmail } = getResendClient();
+      const { client, fromEmail } = await getResendClient();
       
       // Different content for annual vs monthly
       const swagSection = isAnnual ? `
@@ -980,7 +981,7 @@ exports.sendProWelcomeEmail = onRequest({ secrets: [resendApiKey] }, (req, res) 
   });
 });
 
-exports.updateProductPrice = onRequest({ secrets: [stripeSecretKey] }, (req, res) => {
+exports.updateProductPrice = onRequest({ secrets: [] }, (req, res) => {
   cors(req, res, async () => {
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method not allowed' });
@@ -995,7 +996,7 @@ exports.updateProductPrice = onRequest({ secrets: [stripeSecretKey] }, (req, res
         return res.status(400).json({ error: 'Missing productId or newPriceAmount' });
       }
       
-      const stripe = getStripeClient();
+      const stripe = await getStripeClient();
       
       const newPrice = await stripe.prices.create({
         product: productId,

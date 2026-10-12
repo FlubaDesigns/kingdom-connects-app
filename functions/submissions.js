@@ -1,3 +1,4 @@
+const {readFlubaProviderKey}=require('./fluba-provider-keys');
 // ============================================================
 // Submission Notification Cloud Functions - Kingdom Connects
 // Sends emails when businesses/churches/members sign up
@@ -9,7 +10,7 @@ const admin = require('firebase-admin');
 const cors = require('cors')({ origin: true });
 const { Resend } = require('resend');
 
-const resendApiKey = defineSecret('RESEND_API_KEY');
+
 const REGION = 'us-central1';
 const ADMIN_EMAIL = 'perceys@gmail.com';
 const FROM_EMAIL = 'Kingdom Connects <support@kingdomconnects.org>';
@@ -51,7 +52,7 @@ async function verifyAuth(req) {
 
 // ── POST /api/notify-admin-new-submission ─────────────────────
 exports.notifyAdminNewSubmission = onRequest(
-  { region: REGION, secrets: [resendApiKey] },
+  { region: REGION, secrets: [] },
   (req, res) => cors(req, res, async () => {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
     if (isRateLimited(req, res, 10, 60000)) return;
@@ -86,7 +87,7 @@ exports.notifyAdminNewSubmission = onRequest(
       </div>`;
 
     try {
-      const client = new Resend(resendApiKey.value());
+      const client = new Resend(await readFlubaProviderKey('RESEND_API_KEY'));
       const { data, error } = await client.emails.send({ from: FROM_EMAIL, to: ADMIN_EMAIL, subject, html: htmlBody });
       if (error) return res.status(400).json({ error: 'Email send failed', details: error.message || error });
       console.log(`Admin notification sent for new ${type}: ${name}`);
@@ -100,7 +101,7 @@ exports.notifyAdminNewSubmission = onRequest(
 
 // ── POST /api/send-business-submission-confirmation ───────────
 exports.sendBusinessSubmissionConfirmation = onRequest(
-  { region: REGION, secrets: [resendApiKey] },
+  { region: REGION, secrets: [] },
   (req, res) => cors(req, res, async () => {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
     if (isRateLimited(req, res, 10, 60000)) return;
@@ -178,7 +179,7 @@ exports.sendBusinessSubmissionConfirmation = onRequest(
           </div>`;
       }
 
-      const client = new Resend(resendApiKey.value());
+      const client = new Resend(await readFlubaProviderKey('RESEND_API_KEY'));
       const { data, error } = await client.emails.send({ from: FROM_EMAIL, to: ownerEmail, subject, html: htmlBody });
       if (error) return res.status(400).json({ error: 'Email send failed', details: error.message || error });
       console.log(`Business submission confirmation sent to ${ownerEmail}`);
