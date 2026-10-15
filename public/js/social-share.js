@@ -1,5 +1,5 @@
 export function createShareButtons(config) {
-  const { url, title, description, previewUrl } = config;
+  const { url, title, description, previewUrl, shareText } = config;
   
   // Use preview URL for social platforms (they'll get proper OG tags)
   // Keep original URL for email and copy
@@ -9,9 +9,10 @@ export function createShareButtons(config) {
   const encodedTitle = encodeURIComponent(title);
   const encodedDescription = encodeURIComponent(description || title);
   
+  const encodedPost = encodeURIComponent(shareText || title);
   const shareLinks = {
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedSocialUrl}`,
-    twitter: `https://twitter.com/intent/tweet?url=${encodedSocialUrl}&text=${encodedTitle}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedSocialUrl}${shareText ? `&quote=${encodedPost}` : ''}`,
+    twitter: `https://twitter.com/intent/tweet?url=${encodedSocialUrl}&text=${encodedPost}`,
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedSocialUrl}`,
     email: `mailto:?subject=${encodedTitle}&body=${encodedDescription}%0A%0A${encodedUrl}`
   };
@@ -53,6 +54,31 @@ export function renderShareButtons(containerId, config) {
   `;
   
   container.innerHTML = html;
+  if (config.businessPost) {
+    const post = config.businessPost;
+    const preview = document.createElement('p');
+    const businessLink = document.createElement('a');
+    businessLink.href = post.businessUrl;
+    businessLink.textContent = post.businessName;
+    const churchLink = document.createElement('a');
+    churchLink.href = post.churchUrl;
+    churchLink.textContent = post.churchName;
+    preview.append(businessLink, ', associated with ', churchLink, '.');
+    container.prepend(preview);
+    const copy = document.createElement('button');
+    copy.type = 'button';
+    copy.className = 'btn btn-secondary';
+    copy.textContent = 'Copy social post';
+    copy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(post.text);
+        window.showToast?.('Post copied with both page links.', 'success');
+      } catch {
+        window.showToast?.('Unable to copy the post.', 'error');
+      }
+    });
+    container.append(copy);
+  }
 }
 
 export function trackShare(platform, itemType, itemId) {
