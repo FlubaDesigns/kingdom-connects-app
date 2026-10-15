@@ -5,6 +5,7 @@ import { onAuthChange } from './auth/access-control.js';
 import analytics from './services/analytics-service.js';
 import { checkIfFavorited, toggleFavorite } from './favorites-service.js';
 import { renderShareButtons } from './social-share.js';
+import { buildBusinessShareContent } from './business-share-content.js';
 import { getBusinessBySlug } from './slug-generator.js';
 import { isBusinessPro } from './role-utils.js';
 
@@ -152,7 +153,7 @@ async function loadBusinessDetails() {
     }
 
     if (business.allow_reviews === false) document.getElementById('submitReviewContainer').classList.add('hidden');
-    setupShareButtons(business);
+    setupShareButtons(business, controllingChurch.data());
     if (currentUser) {
       setupFavoriteButton();
 
@@ -619,21 +620,19 @@ function updateFavoriteButton(isFavorited) {
   }
 }
 
-function setupShareButtons(business) {
+function setupShareButtons(business, church) {
   const shareSection = document.getElementById('shareSection');
   if (!shareSection || business.allow_social_sharing === false) return;
 
-  // Use slug or ID for preview URL
-  const previewId = business.slug || businessId;
-  const previewUrl = `${window.location.origin}/preview/business/${previewId}`;
-  
-  const shareConfig = {
-    url: window.location.href,
-    previewUrl: previewUrl,
-    title: `Check out ${business.business_name || 'this business'} on Kingdom Connects!`,
-    description: `${business.description || 'Christian business directory'} - Find faith-based businesses in your community.`
-  };
-
-  renderShareButtons('socialShareButtons', shareConfig);
+  const post = buildBusinessShareContent({ businessId, business, church,
+    origin: window.location.origin, detail: business.description || business.tagline || '' });
+  if (!post) return;
+  renderShareButtons('socialShareButtons', {
+    url: post.businessUrl,
+    title: post.title,
+    description: post.text,
+    shareText: post.text,
+    businessPost: post
+  });
   shareSection.classList.remove('hidden');
 }

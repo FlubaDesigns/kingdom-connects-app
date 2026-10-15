@@ -5,13 +5,14 @@ function page(file, overrides={}) {
  const nodes=new Map(), notices=[], writes=[];
  const el=id=>{if(!nodes.has(id))nodes.set(id,{value:'',textContent:'',innerHTML:'',disabled:false,handlers:{},
   classList:{add(){},remove(){},toggle(){}},addEventListener(event,fn){this.handlers[event]=fn;},querySelector(){return el(id+'-child');},querySelectorAll:()=>[],appendChild(){}});return nodes.get(id);};
- const context=vm.createContext({document:{getElementById:el,querySelectorAll:()=>[],addEventListener(){},createElement:()=>el('new')},
+ const context=vm.createContext({URL,document:{getElementById:el,querySelectorAll:()=>[],addEventListener(){},createElement:()=>el('new')},
   window:{showToast:(...v)=>notices.push(v),showConfirmDialog:async()=>true,addEventListener(){}},console:{error(){},warn(){}},
   db:{},requireAdmin(){},doc:(db,...parts)=>parts.join('/'),collection:(db,path)=>path,query:q=>q,where(){},orderBy(){},
   getDocs:async()=>({docs:[],empty:true}),getDoc:async()=>({data:()=>({}),exists:()=>true}),
   changeHierarchy:async(...v)=>writes.push(v),normalizeUserRoles:user=>user.roles||['member'],
   mergeBusiness:(id,pub,priv)=>({...priv,...pub,id}),escapeHtml:value=>String(value??'').replace(/</g,'&lt;'),
   serverTimestamp:()=> 'server',setTimeout(){},clearTimeout(){},...overrides});
+ vm.runInContext(source('public/js/business-share-content.js'),context);
  vm.runInContext(source(file).replace(/await adminReady/g,'({user:{uid:"admin",email:"admin@example.invalid"}})'),context);
  return {context,el,notices,writes,run:code=>vm.runInContext(code,context)};
 }
@@ -105,7 +106,7 @@ test('demo retirement uses canonical hierarchy and rejects unmarked records',asy
 test('sharing queue respects canonical sharing authority and member review rating',async()=>{
  const records=[['allowed',{business_id:'business',user_id:'member',rating:4,review_text:'Allowed'}],['blocked',{business_id:'business',user_id:'blocked',rating:5}]];
  const empty={docs:[],forEach(){}};
- const p=page('public/admin/js/social-sharing-admin.js',{getDocs:async path=>path==='reviews'?snap(records):empty,canShareReview:async uid=>({allowed:uid==='member'})});
+ const p=page('public/admin/js/social-sharing-admin.js',{getDocs:async path=>path==='reviews'?snap(records):empty,canShareReview:async uid=>({allowed:uid==='member'}),window:{location:{origin:'https://example.test'},showToast(){}},getDoc:async path=>({exists:()=>true,data:()=>path.startsWith('business_listings_public/')?{business_name:'Business',church_id:'church'}:{church_name:'Church'}})});
  await p.run('loadShareableContent()');assert.equal(p.run('allContent.length'),1);assert.equal(p.run('allContent[0].rating'),4);
 });
 test('testimonials and contact content display submitted text without executing markup',async()=>{
