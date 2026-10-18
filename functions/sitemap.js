@@ -84,8 +84,10 @@ exports.sitemapXml = onRequest(
         db.collection('churches').where('listing_status', '==', 'active').get()
       ]);
 
+      const activeChurches = new Map(churches.docs.map(doc => [doc.id, doc.data()]));
       for (const doc of businesses.docs) {
         const d = doc.data();
+        if (!require('./hierarchy-policy').businessState(d, activeChurches.get(d.church_id)).is_visible) continue;
         const slug = d.slug || generateSlug(d.business_name, d.city, d.state, doc.id);
         const lastMod = (d.updated_at?.toDate?.()?.toISOString() || now).split('T')[0];
         xml += `  <url><loc>${BASE_URL}/business/${slug}.htm</loc><lastmod>${lastMod}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>\n`;
