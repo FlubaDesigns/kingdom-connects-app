@@ -36,6 +36,7 @@
             <a href="/for-agents">Careers</a>
           </nav>
           <a class="back-to-top" href="#top">Back to top ↑</a>
+          <small>Powered by <a href="https://flubadesigns.com/" target="_blank" rel="noopener noreferrer">Fluba Designs</a></small>
           <small>© ${new Date().getFullYear()} Kingdom Connects. All rights reserved.</small>
         </div>
       </footer>
