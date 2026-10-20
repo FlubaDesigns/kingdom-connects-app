@@ -111,14 +111,12 @@ export class CheckOriginCapture extends CheckEngine {
       }
       
       const isLocalhost = origin.includes('localhost') || origin.includes('127.0.0.1');
-      const isReplit = origin.includes('.replit.dev') || origin.includes('.repl.co');
       const isFirebase = origin.includes('web.app') || origin.includes('firebaseapp.com');
       
       return this.pass({
         origin,
-        type: isLocalhost ? 'localhost' : isReplit ? 'replit' : isFirebase ? 'firebase' : 'other',
+        type: isLocalhost ? 'localhost' : isFirebase ? 'firebase' : 'other',
         isLocalhost,
-        isReplit,
         isFirebase
       });
     } catch (error) {
@@ -161,13 +159,6 @@ export class CheckCorsLikelihood extends CheckEngine {
         });
       }
       
-      if (origin.includes('.replit.dev') || origin.includes('.repl.co')) {
-        return this.warn('Replit dev URLs rotate and may cause CORS issues', {
-          origin,
-          corsRisk: 'high',
-          reason: 'Replit URLs are dynamic and may not be in CORS allowlist'
-        });
-      }
       
       return this.warn('Unknown origin - CORS status uncertain', {
         origin,

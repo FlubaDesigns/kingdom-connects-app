@@ -61,20 +61,6 @@ export class DiagnoseUploadsRootCause extends DiagnoseEngine {
       });
     }
     
-    const originCheck = failedChecks.find(c => c.engineId === 'check.origin.capture');
-    if (originCheck && originCheck.evidence?.isReplit) {
-      hypotheses.push({
-        title: 'Replit development URL may rotate, breaking CORS',
-        confidence: 0.75,
-        evidence: [
-          { type: 'origin', value: originCheck.evidence.origin },
-          { type: 'platform', value: 'replit' },
-          { type: 'note', value: 'Replit URLs change between sessions' }
-        ],
-        suggestedRepairs: ['repair.storage.cors.addWildcard', 'repair.deploy.useFirebaseHosting']
-      });
-    }
-    
     if (hypotheses.length === 0) {
       hypotheses.push({
         title: 'Unknown upload failure - requires manual investigation',
