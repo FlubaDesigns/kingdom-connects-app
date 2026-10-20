@@ -5,7 +5,6 @@
       "https://www.kingdomconnects.org",
       "https://kingdom-commerce.web.app",
       "https://kingdom-commerce.firebaseapp.com",
-      "https://93878a2f-7782-4a2b-8856-5310a965e985-00-2148o27kozh9u.janeway.replit.dev",
       "*"
     ],
     "method": ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"],

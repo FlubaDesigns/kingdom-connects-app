@@ -27,15 +27,10 @@ class GoogleMapsService {
     }
 
     async getApiKey() {
-        try {
-            const response = await fetch('/__replit_secrets/GOOGLE_MAPS_API_KEY');
-            if (response.ok) {
-                return await response.text();
-            }
-        } catch (error) {
-            console.warn('Google Maps API key not found in secrets');
-        }
-        return null;
+        // A Maps browser key is public configuration, separate from server secrets.
+        // Firebase-hosted pages can supply their restricted key in this metadata.
+        const configured = document.querySelector('meta[name="google-maps-api-key"]');
+        return configured?.content?.trim() || null;
     }
 
     loadGoogleMapsScript() {
